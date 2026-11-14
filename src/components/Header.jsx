@@ -18,7 +18,8 @@ export function Header({
   announceDuringPlayback = false,
   onToggleAnnounceDuringPlayback = () => {},
   onOpenShortcuts,
-  onOpenAbout
+  onOpenAbout,
+  onOpenEICGallery
 }) {
   const t = translations[lang] || translations.en;
 
@@ -123,6 +124,20 @@ export function Header({
             <span className="font-size-icon" aria-hidden="true">aA</span>
             <span className="action-tag">{t.largeText}</span>
           </button>
+
+          {/* NASA EIC Dedicated Standalone Gallery Launcher */}
+          {typeof onOpenEICGallery === 'function' && (
+            <button
+              type="button"
+              className="btn-header-pill eic-gallery-btn"
+              onClick={onOpenEICGallery}
+              title={lang === 'ar' ? 'معرض مركز معلومات الأرض المستقل' : 'NASA EIC Exhibition Gallery'}
+              aria-label={lang === 'ar' ? 'معرض مركز معلومات الأرض' : 'NASA EIC Gallery'}
+            >
+              <Sparkles className="icon-xs" aria-hidden="true" />
+              <span>{lang === 'ar' ? 'معرض ناسا EIC' : 'NASA EIC Gallery'}</span>
+            </button>
+          )}
 
           {/* Language Toggle (EN / AR) */}
           <button

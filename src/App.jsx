@@ -11,6 +11,7 @@ import { KeyboardShortcutsModal } from './components/KeyboardShortcutsModal';
 import { AboutModal } from './components/AboutModal';
 import { PollutionStagesView } from './components/PollutionStagesView';
 import { EICContextSection } from './components/eic/EICContextSection';
+import { EICModal } from './components/eic/EICModal';
 
 import { useNasaPower } from './hooks/useNasaPower';
 import { useSonification } from './hooks/useSonification';
@@ -63,6 +64,7 @@ export default function App() {
   const [locationB, setLocationB] = useState(PRESET_LOCATIONS[1]); // Alexandria
   const [isCompareMode, setIsCompareMode] = useState(false);
   const [tempViewMode, setTempViewMode] = useState('eic');
+  const [isEICModalOpen, setIsEICModalOpen] = useState(false);
 
   // Dedicated Location states for Pollution Stages (default to active stage hotspots)
   const [pollutionLocA, setPollutionLocA] = useState(POLLUTION_STAGES[0].presets[0]); // Cairo for Air stage
@@ -311,6 +313,7 @@ export default function App() {
         onToggleAnnounceDuringPlayback={() => setAnnounceDuringPlayback(prev => !prev)}
         onOpenShortcuts={() => setIsShortcutsModalOpen(true)}
         onOpenAbout={() => setIsAboutModalOpen(true)}
+        onOpenEICGallery={() => setIsEICModalOpen(true)}
       />
 
       {/* Main Content Area */}
@@ -563,6 +566,14 @@ export default function App() {
         isOpen={isAboutModalOpen}
         onClose={() => setIsAboutModalOpen(false)}
         lang={lang}
+      />
+
+      {/* Standalone Isolated NASA EIC Exhibition Modal */}
+      <EICModal
+        isOpen={isEICModalOpen}
+        onClose={() => setIsEICModalOpen(false)}
+        lang={lang}
+        theme={theme}
       />
     </div>
   );
