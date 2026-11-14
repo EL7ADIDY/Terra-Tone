@@ -1,17 +1,22 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Header } from './components/Header';
-import { OnboardingCard } from './components/OnboardingCard';
+import { Navbar } from './components/Navbar';
+import { HomeSection } from './components/HomeSection';
+import { ScienceSection } from './components/ScienceSection';
+import { ExploreDataSection } from './components/ExploreDataSection';
+import { SonificationStudio } from './components/SonificationStudio';
+import { DiscoverSection } from './components/DiscoverSection';
+import { AboutSection } from './components/AboutSection';
+
+import { KeyboardShortcutsModal } from './components/KeyboardShortcutsModal';
+import { AboutModal } from './components/AboutModal';
+import { EICModal } from './components/eic/EICModal';
+import { PollutionStagesView } from './components/PollutionStagesView';
 import { MapPicker } from './components/MapPicker';
 import { TimelineChart } from './components/TimelineChart';
 import { TimelineControls } from './components/TimelineControls';
 import { AudioControls } from './components/AudioControls';
 import { InsightsPanel } from './components/InsightsPanel';
 import { DataTable } from './components/DataTable';
-import { KeyboardShortcutsModal } from './components/KeyboardShortcutsModal';
-import { AboutModal } from './components/AboutModal';
-import { PollutionStagesView } from './components/PollutionStagesView';
-import { EICContextSection } from './components/eic/EICContextSection';
-import { EICModal } from './components/eic/EICModal';
 
 import { useNasaPower } from './hooks/useNasaPower';
 import { useSonification } from './hooks/useSonification';
@@ -22,10 +27,10 @@ import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { PRESET_LOCATIONS, VARIABLES } from './services/nasaApi';
 import { POLLUTION_STAGES } from './services/pollutionStages';
 import { translations } from './utils/translations';
-import { AlertCircle, RefreshCw, Wind, Droplets, Sprout, Thermometer, Film, MapPin } from 'lucide-react';
+import { MapPin, Layers, ChevronDown, ChevronUp, AlertCircle, RefreshCw } from 'lucide-react';
 
 export default function App() {
-  // 1. Accessibility & Globalization States
+  // 1. Accessibility, Globalization & Theme States
   const [lang, setLang] = useState('en');
   const [theme, setTheme] = useState(() => {
     try {
@@ -36,16 +41,23 @@ export default function App() {
       return 'dark';
     }
   });
+
+  const [soundEnabled, setSoundEnabled] = useState(true);
   const [isHighContrast, setIsHighContrast] = useState(false);
-  const [isLargeText, setIsLargeText] = useState(false);
-  const [showTable, setShowTable] = useState(false);
   const [isShortcutsModalOpen, setIsShortcutsModalOpen] = useState(false);
   const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
-  const [announceDuringPlayback, setAnnounceDuringPlayback] = useState(false);
+  const [isEICModalOpen, setIsEICModalOpen] = useState(false);
 
-  // Toggle Theme handler
+  // Studio Active Dataset Selection
+  const [selectedStudioDataset, setSelectedStudioDataset] = useState('night-lights-decade');
+
+  // Advanced / Classic GIS Map View Toggle
+  const [showClassicExplorer, setShowClassicExplorer] = useState(false);
+  const [classicMode, setClassicMode] = useState('power'); // 'power' | 'pollution'
+
+  // Toggle Theme with LocalStorage Persistence
   const toggleTheme = useCallback(() => {
-    setTheme(prev => {
+    setTheme((prev) => {
       const next = prev === 'dark' ? 'light' : 'dark';
       try {
         localStorage.setItem('terra-tone-theme', next);
@@ -54,28 +66,13 @@ export default function App() {
     });
   }, []);
 
-  // Top-level Mode Tab: 'air' | 'water' | 'soil' | 'temperature'
-  const [activeMode, setActiveMode] = useState('air');
+  const toggleLang = useCallback(() => {
+    setLang((prev) => (prev === 'en' ? 'ar' : 'en'));
+  }, []);
 
-  // 2. Temperature / NASA POWER Variable & Location States (kept intact in its own tab)
-  const [primaryVariable, setPrimaryVariable] = useState('T2M');
-  const [secondaryVariable, setSecondaryVariable] = useState('NONE');
-  const [locationA, setLocationA] = useState(PRESET_LOCATIONS[0]); // Zagazig
-  const [locationB, setLocationB] = useState(PRESET_LOCATIONS[1]); // Alexandria
-  const [isCompareMode, setIsCompareMode] = useState(false);
-  const [tempViewMode, setTempViewMode] = useState('eic');
-  const [isEICModalOpen, setIsEICModalOpen] = useState(false);
-
-  // Dedicated Location states for Pollution Stages (default to active stage hotspots)
-  const [pollutionLocA, setPollutionLocA] = useState(POLLUTION_STAGES[0].presets[0]); // Cairo for Air stage
-  const [pollutionLocB, setPollutionLocB] = useState(POLLUTION_STAGES[0].presets[1]); // Delhi
-  const [pollutionCompare, setPollutionCompare] = useState(false);
-
-  // Screen reader live status message
-  const [srAnnouncement, setSrAnnouncement] = useState('');
-
-  const t = translations[lang] || translations.en;
-  const varMeta = VARIABLES[primaryVariable] || VARIABLES.T2M;
+  const toggleSound = useCallback(() => {
+    setSoundEnabled((prev) => !prev);
+  }, []);
 
   // Sync HTML lang and dir attributes for RTL/LTR
   useEffect(() => {
@@ -83,7 +80,7 @@ export default function App() {
     document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
   }, [lang]);
 
-  // Sync HTML / Body Theme & High Contrast attribute
+  // Sync HTML / Body Theme & Meta Theme Color
   useEffect(() => {
     const activeTheme = isHighContrast ? 'high-contrast' : theme;
     document.documentElement.setAttribute('data-theme', activeTheme);
@@ -92,21 +89,29 @@ export default function App() {
     if (metaColor) {
       metaColor.setAttribute(
         'content',
-        activeTheme === 'light' ? '#f1f5f9' : (activeTheme === 'high-contrast' ? '#000000' : '#070a13')
+        activeTheme === 'light' ? '#F8FAFC' : '#050816'
       );
     }
   }, [theme, isHighContrast]);
 
-  // Sync Body Large Text attribute
-  useEffect(() => {
-    if (isLargeText) {
-      document.body.setAttribute('data-font-size', 'large');
-    } else {
-      document.body.removeAttribute('data-font-size');
-    }
-  }, [isLargeText]);
+  // NASA POWER & Legacy Map State Preservation
+  const [primaryVariable, setPrimaryVariable] = useState('T2M');
+  const [secondaryVariable, setSecondaryVariable] = useState('NONE');
+  const [locationA, setLocationA] = useState(PRESET_LOCATIONS[0]);
+  const [locationB, setLocationB] = useState(PRESET_LOCATIONS[1]);
+  const [isCompareMode, setIsCompareMode] = useState(false);
+  const [showTable, setShowTable] = useState(false);
 
-  // 3. Fetch Real NASA POWER Data & Statistics for Temperature view
+  // Dedicated Location states for Pollution Stages
+  const [pollutionLocA, setPollutionLocA] = useState(POLLUTION_STAGES[0].presets[0]);
+  const [pollutionLocB, setPollutionLocB] = useState(POLLUTION_STAGES[0].presets[1]);
+  const [pollutionCompare, setPollutionCompare] = useState(false);
+  const [srAnnouncement, setSrAnnouncement] = useState('');
+
+  const t = translations[lang] || translations.en;
+  const varMeta = VARIABLES[primaryVariable] || VARIABLES.T2M;
+
+  // NASA POWER hook
   const {
     loading,
     error,
@@ -125,26 +130,16 @@ export default function App() {
     isCompareMode
   });
 
-  // Handle active playback year change and smart screen reader announcements
   const handleYearChange = useCallback((newYear, isManual = false, isPause = false) => {
-    const shouldAnnounce = isManual || isPause || (announceDuringPlayback && newYear % 5 === 0);
-    if (!shouldAnnounce) return;
-
     const pointA = dataA.find(d => d.year === newYear);
-    const rec = statsA?.recordsMap?.[newYear];
-    let recordText = '';
-    if (rec?.isAllTimeMax) recordText = lang === 'ar' ? 'أعلى رقم قياسي على الإطلاق!' : 'All-time record high!';
-    if (rec?.isAllTimeMin) recordText = lang === 'ar' ? 'أدنى رقم قياسي على الإطلاق!' : 'All-time record low!';
-
     if (pointA) {
       const msg = lang === 'ar'
-        ? `سنة ${newYear}، ${varMeta.nameAr}: ${pointA.value} ${varMeta.unitAr}. ${recordText}`
-        : `Year ${newYear}, ${varMeta.nameEn}: ${pointA.value} ${varMeta.unitEn}. ${recordText}`;
+        ? `سنة ${newYear}، ${varMeta.nameAr}: ${pointA.value} ${varMeta.unitAr}`
+        : `Year ${newYear}, ${varMeta.nameEn}: ${pointA.value} ${varMeta.unitEn}`;
       setSrAnnouncement(msg);
     }
-  }, [dataA, statsA, varMeta, lang, announceDuringPlayback]);
+  }, [dataA, varMeta, lang]);
 
-  // 4. Shared Sonification Engine Hook (also provides shared audio controls across tabs)
   const {
     isPlaying,
     currentYear,
@@ -154,10 +149,6 @@ export default function App() {
     instrument,
     quantizeScale,
     isLooping,
-    audioActive,
-    pitchMappingText,
-    isScanning,
-    scanProgress,
     togglePlay,
     setYear,
     stepForward,
@@ -170,7 +161,10 @@ export default function App() {
     changeSpeed,
     unlockAudio,
     playFramePixelTone,
-    startFrameScan
+    startFrameScan,
+    isScanning,
+    scanProgress,
+    pitchMappingText
   } = useSonification({
     dataA,
     dataB,
@@ -183,18 +177,6 @@ export default function App() {
     onYearChange: handleYearChange
   });
 
-  // 4b. Pollution Stages Hook (3 stages x 3 animations)
-  const handlePollutionFrameChange = useCallback((idx, dateStr, item, isManual, isPause) => {
-    const shouldAnnounce = isManual || isPause || (announceDuringPlayback && idx % 6 === 0);
-    if (!shouldAnnounce || !dateStr) return;
-    const valStr = item?.label || '';
-    setSrAnnouncement(
-      lang === 'ar'
-        ? `تاريخ الإطار ${dateStr}${valStr ? `: ${valStr}` : ''}`
-        : `Frame ${dateStr}${valStr ? `: ${valStr}` : ''}`
-    );
-  }, [announceDuringPlayback, lang]);
-
   const pollution = usePollutionAnimation({
     initialStageId: 'air',
     locationA: pollutionLocA,
@@ -204,27 +186,9 @@ export default function App() {
     isMuted,
     instrument,
     quantizeScale,
-    unlockAudio,
-    onFrameChange: handlePollutionFrameChange
+    unlockAudio
   });
 
-  // Switch top-level tab between Air / Water / Soil / Temperature
-  const handleSelectModeTab = useCallback((mode) => {
-    setActiveMode(mode);
-    if (mode === 'air' || mode === 'water' || mode === 'soil') {
-      pollution.selectStage(mode);
-      const st = POLLUTION_STAGES.find(s => s.id === mode);
-      if (st?.presets?.length) {
-        setPollutionLocA(st.presets[0]);
-        setPollutionLocB(st.presets[1] || st.presets[0]);
-      }
-      if (isPlaying) togglePlay();
-    } else if (pollution.isPlaying) {
-      pollution.togglePlay();
-    }
-  }, [pollution, isPlaying, togglePlay]);
-
-  // 5. Spoken Summary (Web Speech API) for Temperature view
   const {
     isSpeaking,
     speechSupported,
@@ -241,263 +205,133 @@ export default function App() {
     statsB
   });
 
-  // 6. Global Keyboard Shortcuts routed to active tab
-  const isPollutionMode = activeMode === 'air' || activeMode === 'water' || activeMode === 'soil';
+  // Global Keyboard Shortcuts
   useKeyboardShortcuts({
-    onTogglePlay: isPollutionMode ? pollution.togglePlay : togglePlay,
-    onStepBackward: isPollutionMode ? pollution.stepBackward : stepBackward,
-    onStepForward: isPollutionMode ? pollution.stepForward : stepForward,
-    onIncreaseSpeed: () => {
-      if (isPollutionMode) {
-        const nextSpd = pollution.playbackSpeed >= 2 ? 0.5 : pollution.playbackSpeed + 0.5;
-        pollution.setPlaybackSpeed(nextSpd);
-      } else {
-        changeSpeed(playbackSpeed >= 2 ? 0.5 : playbackSpeed + 0.5);
-      }
-    },
-    onDecreaseSpeed: () => {
-      if (isPollutionMode) {
-        const prevSpd = pollution.playbackSpeed <= 0.5 ? 2 : pollution.playbackSpeed - 0.5;
-        pollution.setPlaybackSpeed(prevSpd);
-      } else {
-        changeSpeed(playbackSpeed <= 0.5 ? 2 : playbackSpeed - 0.5);
-      }
-    },
+    onTogglePlay: togglePlay,
+    onStepBackward: stepBackward,
+    onStepForward: stepForward,
+    onIncreaseSpeed: () => changeSpeed(playbackSpeed === 2 ? 0.5 : playbackSpeed + 0.5),
     onToggleMute: toggleMute,
-    onToggleHelpModal: () => setIsShortcutsModalOpen(prev => !prev),
-    onCloseModal: () => {
-      setIsShortcutsModalOpen(false);
-      setIsAboutModalOpen(false);
-    }
+    onOpenHelp: () => setIsShortcutsModalOpen(true)
   });
 
-  const stageTabs = [
-    { id: 'air', label: t.modeAirTab, count: '3', icon: Wind, accent: 'cyan' },
-    { id: 'water', label: t.modeWaterTab, count: '3', icon: Droplets, accent: 'emerald' },
-    { id: 'soil', label: t.modeSoilTab, count: '3', icon: Sprout, accent: 'gold' },
-    { id: 'temperature', label: t.modeTemperatureTab, count: 'POWER', icon: Thermometer, accent: 'orange' }
-  ];
+  const scrollToSection = (id) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
 
   return (
-    <div className={`earth-jukebox-app ${lang === 'ar' ? 'font-arabic' : 'font-latin'}`}>
-      {/* Dynamic Accessible Skip Link */}
-      <a href="#main-content" className="skip-to-content">
-        {t.skipToContent}
-      </a>
-
-      {/* Screen Reader Announcements Live Region */}
-      <div
-        className="sr-only"
-        role="status"
-        aria-live="polite"
-        aria-atomic="true"
-      >
+    <div className="terra-redesign-wrapper" data-theme={theme}>
+      {/* Screen reader status announcer */}
+      <div className="sr-only" role="status" aria-live="polite">
         {srAnnouncement}
       </div>
 
-      {/* Header & Global Bar */}
-      <Header
-        lang={lang}
-        onToggleLang={() => setLang(prev => (prev === 'en' ? 'ar' : 'en'))}
+      {/* Sticky Navigation Bar with Hanging Lamp */}
+      <Navbar
         theme={theme}
         onToggleTheme={toggleTheme}
-        isHighContrast={isHighContrast}
-        onToggleHighContrast={() => setIsHighContrast(prev => !prev)}
-        isLargeText={isLargeText}
-        onToggleLargeText={() => setIsLargeText(prev => !prev)}
-        isMuted={isMuted}
-        onToggleMute={toggleMute}
-        audioActive={audioActive}
-        onUnlockAudio={unlockAudio}
-        announceDuringPlayback={announceDuringPlayback}
-        onToggleAnnounceDuringPlayback={() => setAnnounceDuringPlayback(prev => !prev)}
-        onOpenShortcuts={() => setIsShortcutsModalOpen(true)}
+        lang={lang}
+        onToggleLang={toggleLang}
+        soundEnabled={soundEnabled}
+        onToggleSound={toggleSound}
         onOpenAbout={() => setIsAboutModalOpen(true)}
-        onOpenEICGallery={() => setIsEICModalOpen(true)}
+        onOpenShortcuts={() => setIsShortcutsModalOpen(true)}
+        onOpenEICModal={() => setIsEICModalOpen(true)}
       />
 
-      {/* Main Content Area */}
-      <main id="main-content" className="main-content container">
-        {/* Stage & Feature Mode Selector Tabs */}
-        <nav className="stage-tabs-bar" aria-label={lang === 'ar' ? 'مراحل التلوث وبيانات المناخ' : 'Pollution Stages and Climate View Tabs'}>
-          {stageTabs.map((tab) => {
-            const Icon = tab.icon;
-            const isActive = activeMode === tab.id;
-            return (
-              <button
-                key={tab.id}
-                type="button"
-                className={`stage-tab-btn stage-accent-${tab.accent} ${isActive ? 'active' : ''}`}
-                onClick={() => handleSelectModeTab(tab.id)}
-                aria-current={isActive ? 'page' : undefined}
-              >
-                <Icon className="icon-sm" aria-hidden="true" />
-                <span className="stage-tab-label">{tab.label}</span>
-                <span className="stage-tab-count">{tab.count}</span>
-              </button>
-            );
-          })}
-        </nav>
+      <main id="main-content">
+        {/* SECTION 1 — HOME */}
+        <HomeSection
+          lang={lang}
+          isDark={theme === 'dark'}
+          onExploreClick={() => scrollToSection('explore')}
+          onHowItWorksClick={() => scrollToSection('science')}
+        />
 
-        {activeMode !== 'temperature' ? (
-          <PollutionStagesView
-            lang={lang}
-            theme={theme}
-            pollution={pollution}
-            locationA={pollutionLocA}
-            onSelectLocationA={setPollutionLocA}
-            locationB={pollutionLocB}
-            onSelectLocationB={setPollutionLocB}
-            isCompareMode={pollutionCompare}
-            onToggleCompareMode={setPollutionCompare}
-            volume={volume}
-            onChangeVolume={setVolume}
-            isMuted={isMuted}
-            onToggleMute={toggleMute}
-            instrument={instrument}
-            onChangeInstrument={setInstrument}
-            quantizeScale={quantizeScale}
-            onToggleQuantizeScale={setQuantizeScale}
-            onAnnounce={setSrAnnouncement}
-          />
-        ) : (
-          <>
-            {/* Onboarding Guide Card (3 Steps) */}
-            <OnboardingCard lang={lang} />
+        {/* SECTION 2 — THE SCIENCE */}
+        <ScienceSection lang={lang} />
 
-            {/* Global Loading Spinner */}
-            {loading && (
-              <div className="loading-bar-wrap" role="status" aria-live="polite">
-                <RefreshCw className="icon-sm spin" aria-hidden="true" />
-                <span>{lang === 'ar' ? 'جاري جلب بيانات وكالة ناسا...' : 'Fetching NASA POWER climate series...'}</span>
-              </div>
-            )}
+        {/* SECTION 3 — EXPLORE EARTH DATA */}
+        <ExploreDataSection
+          lang={lang}
+          onSelectDataset={(datasetId) => {
+            setSelectedStudioDataset(datasetId);
+          }}
+        />
 
-            {/* Error Banner with Retry Button */}
-            {error && (
-              <div className="error-banner" role="alert">
-                <AlertCircle className="icon" aria-hidden="true" />
-                <div className="error-text">
-                  <strong>{lang === 'ar' ? 'خطأ في الاتصال' : 'Connection Error'}: </strong>
-                  <span>{error}</span>
-                </div>
-                <button type="button" className="btn-retry" onClick={refetch}>
-                  {lang === 'ar' ? 'إعادة المحاولة' : 'Retry'}
-                </button>
-              </div>
-            )}
+        {/* SECTION 4 — SONIFICATION STUDIO (Centerpiece) */}
+        <SonificationStudio
+          lang={lang}
+          isDark={theme === 'dark'}
+          selectedDatasetId={selectedStudioDataset}
+          onDatasetChange={setSelectedStudioDataset}
+        />
 
-            {/* View Mode Switcher: NASA EIC Decadal Night Lights vs NASA POWER Climate */}
-            <div className="view-mode-switcher-bar">
-              <div className="view-mode-pill-group" role="tablist" aria-label={lang === 'ar' ? 'طريقة العرض الأساسية' : 'Primary View Mode'}>
+        {/* Optional Advanced NASA GIBS Map Explorer Accordion */}
+        <div className="advanced-explorer-wrapper" style={{ maxWidth: '1380px', margin: '0 auto 4rem auto', padding: '0 1.5rem' }}>
+          <button
+            onClick={() => setShowClassicExplorer(!showClassicExplorer)}
+            className="advanced-explorer-toggle-btn"
+            style={{
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              background: 'var(--color-bg-card)',
+              border: '1px solid var(--color-border)',
+              borderRadius: '14px',
+              padding: '1.15rem 1.75rem',
+              color: 'var(--color-text-primary)',
+              fontSize: '1rem',
+              fontWeight: 700,
+              cursor: 'pointer',
+              boxShadow: 'var(--shadow-card-elevated)',
+              transition: 'all 0.2s ease'
+            }}
+          >
+            <div style={{ display: 'flex', alignItem: 'center', gap: '0.75rem' }}>
+              <Layers size={20} color="var(--color-accent-primary)" />
+              <span>
+                {lang === 'ar'
+                  ? 'مستكشف خرائط ناسا المتقدم (NASA GIBS & Global Coordinates)'
+                  : 'Advanced Geospatial Satellite Map & Coordinate Picker (NASA GIBS)'}
+              </span>
+            </div>
+            {showClassicExplorer ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+          </button>
+
+          {showClassicExplorer && (
+            <div style={{ marginTop: '1.5rem', background: 'var(--color-bg-card)', borderRadius: '16px', padding: '1.5rem', border: '1px solid var(--color-border)' }}>
+              {/* Mode Switcher */}
+              <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.25rem' }}>
                 <button
-                  type="button"
-                  role="tab"
-                  aria-selected={tempViewMode === 'eic'}
-                  className={`btn-view-mode ${tempViewMode === 'eic' ? 'active' : ''}`}
-                  onClick={() => setTempViewMode('eic')}
+                  onClick={() => setClassicMode('power')}
+                  className={`cat-pill-btn ${classicMode === 'power' ? 'active' : ''}`}
                 >
-                  <Film className="icon-xs" aria-hidden="true" />
-                  <span>{lang === 'ar' ? 'مركز معلومات الأرض (NASA EIC): أضواء الليل (2012-2023)' : 'NASA EIC: Decadal Night Lights Visual & Radiance Graph'}</span>
+                  {lang === 'ar' ? 'سلاسل المناخ (NASA POWER)' : 'NASA POWER Climate Explorer'}
                 </button>
                 <button
-                  type="button"
-                  role="tab"
-                  aria-selected={tempViewMode === 'power'}
-                  className={`btn-view-mode ${tempViewMode === 'power' ? 'active' : ''}`}
-                  onClick={() => setTempViewMode('power')}
+                  onClick={() => setClassicMode('pollution')}
+                  className={`cat-pill-btn ${classicMode === 'pollution' ? 'active' : ''}`}
                 >
-                  <MapPin className="icon-xs" aria-hidden="true" />
-                  <span>{lang === 'ar' ? 'خريطة وبيانات المناخ (NASA POWER)' : 'NASA POWER Climate Map & Timeline'}</span>
+                  {lang === 'ar' ? 'مراحل التلوث العالمية' : 'Global Pollution Stages'}
                 </button>
               </div>
-            </div>
 
-            {/* 1. PRIMARY EXPERIENCE: NASA EIC DECADAL NIGHT LIGHTS & RADIANCE GRAPH */}
-            <div style={{ display: tempViewMode === 'eic' ? 'block' : 'none' }}>
-              <EICContextSection
-                stageId="temperature"
-                lang={lang}
-                theme={theme}
-              />
-            </div>
-
-            {/* 2. NASA POWER CLIMATE MAP & TIMELINE CHART */}
-            <div style={{ display: tempViewMode === 'power' ? 'block' : 'none' }}>
-              {/* Primary Row: Map (NASA GIBS Frame Viewer) & Timeline Chart */}
-              <div className="grid-two-columns">
-                <MapPicker
+              {classicMode === 'pollution' ? (
+                <PollutionStagesView
+                  pollutionState={pollution}
                   lang={lang}
                   theme={theme}
-                  locationA={locationA}
-                  onSelectLocationA={setLocationA}
-                  locationB={locationB}
-                  onSelectLocationB={setLocationB}
-                  isCompareMode={isCompareMode}
-                  onToggleCompareMode={setIsCompareMode}
-                  currentYear={currentYear}
-                  dataA={dataA}
-                  dataB={dataB}
-                  primaryVariable={primaryVariable}
-                  onPlayFramePixelTone={playFramePixelTone}
-                  onStartFrameScan={startFrameScan}
-                  isScanning={isScanning}
-                  scanProgress={scanProgress}
-                />
-
-                {showTable ? (
-                  <DataTable
-                    lang={lang}
-                    dataA={dataA}
-                    dataB={dataB}
-                    statsA={statsA}
-                    statsB={statsB}
-                    primaryVariable={primaryVariable}
-                    locationA={locationA}
-                    locationB={locationB}
-                    isCompareMode={isCompareMode}
-                    currentYear={currentYear}
-                    showTable={showTable}
-                    onToggleTable={setShowTable}
-                  />
-                ) : (
-                  <TimelineChart
-                    lang={lang}
-                    theme={theme}
-                    dataA={dataA}
-                    dataB={dataB}
-                    statsA={statsA}
-                    statsB={statsB}
-                    currentYear={currentYear}
-                    primaryVariable={primaryVariable}
-                    locationA={locationA}
-                    locationB={locationB}
-                    isCompareMode={isCompareMode}
-                    showTable={showTable}
-                    onToggleTable={setShowTable}
-                  />
-                )}
-              </div>
-
-              {/* Secondary Row: Timeline Playback Controls & Audio Controls */}
-              <div className="grid-two-columns">
-                <TimelineControls
-                  lang={lang}
-                  currentYear={currentYear}
-                  years={years}
-                  isPlaying={isPlaying}
-                  onTogglePlay={togglePlay}
-                  onStepBackward={stepBackward}
-                  onStepForward={stepForward}
-                  onSelectYear={(yr) => setYear(yr, true)}
-                  playbackSpeed={playbackSpeed}
-                  onChangeSpeed={changeSpeed}
-                  isLooping={isLooping}
-                  onToggleLoop={() => setIsLooping(prev => !prev)}
-                />
-
-                <AudioControls
-                  lang={lang}
+                  locationA={pollutionLocA}
+                  onSelectLocationA={setPollutionLocA}
+                  locationB={pollutionLocB}
+                  onSelectLocationB={setPollutionLocB}
+                  isCompareMode={pollutionCompare}
+                  onToggleCompareMode={setPollutionCompare}
                   volume={volume}
                   onChangeVolume={setVolume}
                   isMuted={isMuted}
@@ -506,54 +340,135 @@ export default function App() {
                   onChangeInstrument={setInstrument}
                   quantizeScale={quantizeScale}
                   onToggleQuantizeScale={setQuantizeScale}
-                  primaryVariable={primaryVariable}
-                  onChangePrimaryVariable={setPrimaryVariable}
-                  secondaryVariable={secondaryVariable}
-                  onChangeSecondaryVariable={setSecondaryVariable}
-                  isCompareMode={isCompareMode}
-                  pitchMappingText={pitchMappingText}
+                  onAnnounce={setSrAnnouncement}
                 />
-              </div>
+              ) : (
+                <>
+                  {loading && (
+                    <div className="loading-bar-wrap" role="status">
+                      <RefreshCw className="icon-sm spin" />
+                      <span>{lang === 'ar' ? 'جاري جلب بيانات المناخ...' : 'Fetching NASA climate series...'}</span>
+                    </div>
+                  )}
+                  {error && (
+                    <div className="error-banner" role="alert">
+                      <AlertCircle className="icon" />
+                      <span>{error}</span>
+                      <button type="button" className="btn-retry" onClick={refetch}>Retry</button>
+                    </div>
+                  )}
+                  <div className="grid-two-columns">
+                    <MapPicker
+                      lang={lang}
+                      theme={theme}
+                      locationA={locationA}
+                      onSelectLocationA={setLocationA}
+                      locationB={locationB}
+                      onSelectLocationB={setLocationB}
+                      isCompareMode={isCompareMode}
+                      onToggleCompareMode={setIsCompareMode}
+                      currentYear={currentYear}
+                      dataA={dataA}
+                      dataB={dataB}
+                      primaryVariable={primaryVariable}
+                      onPlayFramePixelTone={playFramePixelTone}
+                      onStartFrameScan={startFrameScan}
+                      isScanning={isScanning}
+                      scanProgress={scanProgress}
+                    />
+
+                    {showTable ? (
+                      <DataTable
+                        lang={lang}
+                        dataA={dataA}
+                        dataB={dataB}
+                        statsA={statsA}
+                        statsB={statsB}
+                        primaryVariable={primaryVariable}
+                        locationA={locationA}
+                        locationB={locationB}
+                        isCompareMode={isCompareMode}
+                        currentYear={currentYear}
+                        showTable={showTable}
+                        onToggleTable={setShowTable}
+                      />
+                    ) : (
+                      <TimelineChart
+                        lang={lang}
+                        theme={theme}
+                        dataA={dataA}
+                        dataB={dataB}
+                        statsA={statsA}
+                        statsB={statsB}
+                        currentYear={currentYear}
+                        primaryVariable={primaryVariable}
+                        locationA={locationA}
+                        locationB={locationB}
+                        isCompareMode={isCompareMode}
+                        showTable={showTable}
+                        onToggleTable={setShowTable}
+                      />
+                    )}
+                  </div>
+                  <div className="grid-two-columns" style={{ marginTop: '1rem' }}>
+                    <TimelineControls
+                      lang={lang}
+                      currentYear={currentYear}
+                      years={years}
+                      isPlaying={isPlaying}
+                      onTogglePlay={togglePlay}
+                      onStepBackward={stepBackward}
+                      onStepForward={stepForward}
+                      onSelectYear={(yr) => setYear(yr, true)}
+                      playbackSpeed={playbackSpeed}
+                      onChangeSpeed={changeSpeed}
+                      isLooping={isLooping}
+                      onToggleLoop={() => setIsLooping(prev => !prev)}
+                    />
+                    <AudioControls
+                      lang={lang}
+                      volume={volume}
+                      onChangeVolume={setVolume}
+                      isMuted={isMuted}
+                      onToggleMute={toggleMute}
+                      instrument={instrument}
+                      onChangeInstrument={setInstrument}
+                      quantizeScale={quantizeScale}
+                      onToggleQuantizeScale={setQuantizeScale}
+                      primaryVariable={primaryVariable}
+                      onChangePrimaryVariable={setPrimaryVariable}
+                      secondaryVariable={secondaryVariable}
+                      onChangeSecondaryVariable={setSecondaryVariable}
+                      isCompareMode={isCompareMode}
+                      pitchMappingText={pitchMappingText}
+                    />
+                  </div>
+                  <InsightsPanel
+                    lang={lang}
+                    statsA={statsA}
+                    statsB={statsB}
+                    locationA={locationA}
+                    locationB={locationB}
+                    primaryVariable={primaryVariable}
+                    isCompareMode={isCompareMode}
+                    isSpeaking={isSpeaking}
+                    speechSupported={speechSupported}
+                    onSpeakSummary={speakSummary}
+                    onStopSpeaking={stopSpeaking}
+                    summaryText={summaryText}
+                  />
+                </>
+              )}
             </div>
-
-            {/* Plain Language Climate Insights Panel */}
-            <InsightsPanel
-              lang={lang}
-              statsA={statsA}
-              statsB={statsB}
-              locationA={locationA}
-              locationB={locationB}
-              primaryVariable={primaryVariable}
-              isCompareMode={isCompareMode}
-              isSpeaking={isSpeaking}
-              speechSupported={speechSupported}
-              onSpeakSummary={speakSummary}
-              onStopSpeaking={stopSpeaking}
-              summaryText={summaryText}
-            />
-          </>
-        )}
-      </main>
-
-      {/* Footer Crediting NASA POWER & NASA GIBS */}
-      <footer className="app-footer" role="contentinfo">
-        <div className="container footer-content">
-          <p className="footer-credit">
-            {lang === 'ar'
-              ? 'تم تطوير "Earth Jukebox" لتحدي ناسا لتطبيقات الفضاء. البيانات مستمدة من NASA GIBS و NASA POWER.'
-              : 'Built for the NASA Space Apps Challenge "The Earth Information Jukebox". Data provided by NASA GIBS & NASA POWER.'}
-          </p>
-          <div className="footer-links">
-            <button type="button" className="footer-link-btn" onClick={() => setIsAboutModalOpen(true)}>
-              {t.aboutHeading}
-            </button>
-            <span className="footer-separator">•</span>
-            <button type="button" className="footer-link-btn" onClick={() => setIsShortcutsModalOpen(true)}>
-              {t.keyboardHelpHeading}
-            </button>
-          </div>
+          )}
         </div>
-      </footer>
+
+        {/* SECTION 5 — DISCOVER WHAT YOU ARE HEARING */}
+        <DiscoverSection lang={lang} />
+
+        {/* SECTION 6 — ABOUT */}
+        <AboutSection lang={lang} />
+      </main>
 
       {/* Accessible Modals */}
       <KeyboardShortcutsModal
@@ -568,7 +483,6 @@ export default function App() {
         lang={lang}
       />
 
-      {/* Standalone Isolated NASA EIC Exhibition Modal */}
       <EICModal
         isOpen={isEICModalOpen}
         onClose={() => setIsEICModalOpen(false)}

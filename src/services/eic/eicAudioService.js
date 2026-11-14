@@ -18,6 +18,7 @@
 
 import {
   getAudioContext,
+  getAudioAnalyser,
   ensureAudioContextRunning,
   PENTATONIC_FREQUENCIES
 } from '../../utils/audioUtils.js';
@@ -198,7 +199,7 @@ function playElectricBell(ctx, freq, vol, now) {
 
   osc1.connect(gain);
   osc2.connect(gain);
-  gain.connect(ctx.destination);
+  gain.connect(getAudioAnalyser() || ctx.destination);
 
   osc1.start(now);
   osc2.start(now);
@@ -229,7 +230,7 @@ function playAerosolWind(ctx, freq, vol, now) {
 
   osc.connect(filter);
   filter.connect(gain);
-  gain.connect(ctx.destination);
+  gain.connect(getAudioAnalyser() || ctx.destination);
 
   osc.start(now);
   osc.stop(now + 0.5);
@@ -262,7 +263,7 @@ function playOceanFlow(ctx, freq, vol, now) {
   osc.connect(filter);
   subOsc.connect(filter);
   filter.connect(gain);
-  gain.connect(ctx.destination);
+  gain.connect(getAudioAnalyser() || ctx.destination);
 
   osc.start(now);
   subOsc.start(now);
@@ -291,7 +292,7 @@ function playCarbonPulse(ctx, freq, vol, now) {
 
   osc.connect(gain);
   harmonic.connect(gain);
-  gain.connect(ctx.destination);
+  gain.connect(getAudioAnalyser() || ctx.destination);
 
   osc.start(now);
   harmonic.start(now);
@@ -321,7 +322,7 @@ function playRainMarimba(ctx, freq, vol, now) {
 
   osc.connect(gain);
   strike.connect(gain);
-  gain.connect(ctx.destination);
+  gain.connect(getAudioAnalyser() || ctx.destination);
 
   osc.start(now);
   strike.start(now);
@@ -355,7 +356,7 @@ function playIceCrystal(ctx, freq, vol, now) {
   osc1.connect(filter);
   osc2.connect(filter);
   filter.connect(gain);
-  gain.connect(ctx.destination);
+  gain.connect(getAudioAnalyser() || ctx.destination);
 
   osc1.start(now);
   osc2.start(now);

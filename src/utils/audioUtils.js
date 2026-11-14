@@ -52,6 +52,7 @@ export function mapValueToFrequency(value, minVal, maxVal, quantizeScale = true)
 }
 
 let sharedAudioContext = null;
+let sharedAnalyserNode = null;
 
 /**
  * Get or initialize the shared AudioContext handling browser autoplay policies
@@ -65,6 +66,26 @@ export function getAudioContext() {
     }
   }
   return sharedAudioContext;
+}
+
+/**
+ * Get shared AnalyserNode for real-time waveform and frequency visualization
+ * @returns {AnalyserNode|null}
+ */
+export function getAudioAnalyser() {
+  const ctx = getAudioContext();
+  if (!ctx) return null;
+  if (!sharedAnalyserNode) {
+    try {
+      sharedAnalyserNode = ctx.createAnalyser();
+      sharedAnalyserNode.fftSize = 256;
+      sharedAnalyserNode.smoothingTimeConstant = 0.8;
+      sharedAnalyserNode.connect(ctx.destination);
+    } catch {
+      return null;
+    }
+  }
+  return sharedAnalyserNode;
 }
 
 /**
@@ -118,15 +139,17 @@ export function playDataTone({
   const voiceGain = ctx.createGain();
   const effectiveVolume = Math.max(0, Math.min(1, volume * secondaryVolume));
 
+  const targetNode = getAudioAnalyser() || ctx.destination;
+
   // Stereo Panning
   let pannerNode = null;
   if (ctx.createStereoPanner) {
     pannerNode = ctx.createStereoPanner();
     pannerNode.pan.setValueAtTime(Math.max(-1, Math.min(1, pan)), now);
     voiceGain.connect(pannerNode);
-    pannerNode.connect(ctx.destination);
+    pannerNode.connect(targetNode);
   } else {
-    voiceGain.connect(ctx.destination);
+    voiceGain.connect(targetNode);
   }
 
   // Instrument Voice Synthesis
