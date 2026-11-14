@@ -12,7 +12,8 @@ import {
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import { eicDataService } from '../../services/eic/eicDataService';
-import { Activity, Info, BarChart3 } from 'lucide-react';
+import { getPercentageAndFreq } from '../../services/eic/eicAudioService';
+import { Activity, Info, BarChart3, Music } from 'lucide-react';
 
 ChartJS.register(
   CategoryScale,
@@ -169,9 +170,27 @@ export const EICScientificGraph = ({
           padding: 10,
           callbacks: {
             afterBody: (context) => {
-              return lang === 'ar'
-                ? '(انقر فوق أي نقطة للانتقال إلى وقتها في الفيديو)'
-                : '(Click any point to jump video to this moment)';
+              const rawVal = context[0]?.raw;
+              const toneData = getPercentageAndFreq(resource, rawVal);
+              const reg =
+                toneData.percentage <= 33
+                  ? lang === 'ar'
+                    ? 'نغمة منخفضة (C3-G3)'
+                    : 'Low Tone (C3-G3)'
+                  : toneData.percentage <= 66
+                  ? lang === 'ar'
+                    ? 'نغمة معتدلة (A3-E5)'
+                    : 'Mid Tone (A3-E5)'
+                  : lang === 'ar'
+                    ? 'نغمة مرتفعة (G5-C6)'
+                    : 'High Tone (G5-C6)';
+
+              return [
+                `${lang === 'ar' ? 'النسبة والنغمة' : 'Intensity & Tone'}: ${toneData.percentage}% • ${toneData.noteName} (${Math.round(toneData.frequency)} Hz) [${reg}]`,
+                lang === 'ar'
+                  ? '(انقر فوق أي نقطة للانتقال إلى وقتها وسماع نغمتها)'
+                  : '(Click any point to jump video & audition tone)'
+              ];
             }
           }
         }
@@ -212,18 +231,27 @@ export const EICScientificGraph = ({
           </h3>
         </div>
 
-        {/* Real-time Current Measurement Callout Badge */}
-        {primaryReading && (
-          <div className="eic-live-reading-box animate-pulse-glow">
-            <span className="eic-live-reading-label">
-              {lang === 'ar' ? 'القيمة المتزامنة الآن' : 'Active Reading'}
-            </span>
-            <div className="eic-live-reading-val">
-              <span className="value-num">{primaryReading.currentValue}</span>
-              <span className="value-unit">{resource.unitShort}</span>
+        {/* Real-time Current Measurement & Tone Callout Badge */}
+        {primaryReading && (() => {
+          const toneData = getPercentageAndFreq(resource, primaryReading.currentValue);
+          return (
+            <div className="eic-live-reading-box animate-pulse-glow">
+              <span className="eic-live-reading-label">
+                {lang === 'ar' ? 'القيمة المتزامنة الآن' : 'Active Reading'}
+              </span>
+              <div className="eic-live-reading-val">
+                <span className="value-num">{primaryReading.currentValue}</span>
+                <span className="value-unit">{resource.unitShort}</span>
+              </div>
+              <div className="eic-graph-tone-tag">
+                <Music className="icon-xxs" />
+                <span>
+                  {toneData.percentage}% • {toneData.noteName} ({Math.round(toneData.frequency)}Hz)
+                </span>
+              </div>
             </div>
-          </div>
-        )}
+          );
+        })()}
       </div>
 
       {/* Interactive Chart Container */}

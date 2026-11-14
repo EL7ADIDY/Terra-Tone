@@ -68,6 +68,7 @@ import {
   exportFramesAsJson
 } from '../utils/exportUtils';
 import { translations } from '../utils/translations';
+import { EICContextSection } from './eic/EICContextSection';
 
 const STAGE_ICONS = {
   air: Wind,
@@ -135,6 +136,7 @@ export function PollutionStagesView({
     retry
   } = pollution;
 
+  const [primaryViewMode, setPrimaryViewMode] = useState('eic');
   const [showTable, setShowTable] = useState(false);
   const [showLegend, setShowLegend] = useState(false);
   const [activeTarget, setActiveTarget] = useState('A');
@@ -891,8 +893,53 @@ export function PollutionStagesView({
         </div>
       )}
 
-      {/* Primary Two-Column Grid: GIBS Map Time-Lapse + Chart / Table */}
-      <div className="grid-two-columns">
+      {/* Primary View Switcher: NASA EIC Visual & Graph vs Interactive Satellite Map & Sonifier */}
+      <div className="view-mode-switcher-bar">
+        <div className="view-mode-pill-group" role="tablist" aria-label={lang === 'ar' ? 'طريقة العرض الأساسية' : 'Primary View Mode'}>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={primaryViewMode === 'eic'}
+            className={`btn-view-mode ${primaryViewMode === 'eic' ? 'active' : ''}`}
+            onClick={() => setPrimaryViewMode('eic')}
+          >
+            <Film className="icon-xs" aria-hidden="true" />
+            <span>{lang === 'ar' ? 'مركز معلومات الأرض (NASA EIC): المحاكاة والمخطط العلمي' : 'NASA EIC: Visual & Scientific Graph'}</span>
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={primaryViewMode === 'satellite'}
+            className={`btn-view-mode ${primaryViewMode === 'satellite' ? 'active' : ''}`}
+            onClick={() => {
+              setPrimaryViewMode('satellite');
+              setTimeout(() => {
+                if (mapInstanceRef.current) {
+                  mapInstanceRef.current.invalidateSize();
+                }
+              }, 120);
+            }}
+          >
+            <MapPin className="icon-xs" aria-hidden="true" />
+            <span>{lang === 'ar' ? 'خريطة الأقمار الصناعية وتحويل البكسل لصوت (GIBS)' : 'Interactive Satellite Map & Sonifier'}</span>
+          </button>
+        </div>
+      </div>
+
+      {/* 1. PRIMARY EXPERIENCE: NASA EIC ORIGINAL VISUAL BESIDE SCIENTIFIC GRAPH */}
+      <div style={{ display: primaryViewMode === 'eic' ? 'block' : 'none' }}>
+        <EICContextSection
+          stageId={selectedStage.id}
+          selectedAnimation={selectedAnimation}
+          lang={lang}
+          theme={theme}
+        />
+      </div>
+
+      {/* 2. SATELLITE GIBS MAP & SAMPLED PIXEL TIME SERIES */}
+      <div style={{ display: primaryViewMode === 'satellite' ? 'block' : 'none' }}>
+        {/* Primary Two-Column Grid: GIBS Map Time-Lapse + Chart / Table */}
+        <div className="grid-two-columns">
         {/* LEFT: Interactive GIBS Time-Lapse Map */}
         <section className="card map-card" aria-labelledby="pollution-map-heading">
           <div className="card-header">
@@ -1453,6 +1500,7 @@ export function PollutionStagesView({
             </div>
           )}
         </section>
+      </div>
       </div>
 
       {/* Plain-Language Bilingual Explanation + Spoken Summary */}

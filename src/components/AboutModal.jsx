@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { X, Info, ExternalLink, Headphones, Database, ShieldCheck, Layers, AlertTriangle } from 'lucide-react';
+import { X, Info, ExternalLink, Headphones, Database, ShieldCheck, Layers, AlertTriangle, Globe } from 'lucide-react';
 import { translations } from '../utils/translations';
 import { GIBS_LAYERS } from '../services/gibsService';
 import { POLLUTION_STAGES } from '../services/pollutionStages';
@@ -162,6 +162,47 @@ export function AboutModal({
                 className="about-link"
               >
                 <span>NASA POWER Data Portal</span>
+                <ExternalLink className="icon-xs" aria-hidden="true" />
+              </a>
+            </div>
+          </div>
+
+          {/* NASA Earth Information Center (EIC) Sources */}
+          <div className="about-section">
+            <h3 className="about-section-title">
+              <Globe className="icon-sm text-cyan" aria-hidden="true" />
+              <span>{lang === 'ar' ? 'مركز معلومات الأرض ومرصد ناسا للتصور العلمي (NASA EIC & SVS)' : 'NASA Earth Information Center & Scientific Visualization Studio'}</span>
+            </h3>
+            <p className="about-text">
+              {lang === 'ar'
+                ? 'تم إثراء أقسام الموقع (الهواء، الماء، التربة، والحرارة) بمحاكيات وبيانات مركز معلومات الأرض التابع لوكالة ناسا (NASA EIC) عبر منصة SVS:'
+                : 'Enriched throughout Terra-Tone tabs with NASA Earth Information Center (EIC) supercomputer visualizations and scientific data:'}
+            </p>
+            <ul className="about-list">
+              <li><strong>SVS #5276 (Change in Night Lights 2012–2023):</strong> NASA Black Marble VIIRS calibrated nighttime radiance tracking decadal electrification and urban expansion.</li>
+              <li><strong>SVS #30910 (GEOS Aerosols 2017 Hurricane Season):</strong> NASA GMAO ultra-high resolution GEOS forward processing simulating long-range smoke, dust, and sea salt transport.</li>
+              <li><strong>SVS #3912 / #5425 (Perpetual Ocean & Western Boundary Currents):</strong> NASA JPL ECCO-2 ocean circulation model resolving thermal advection and surface velocity fields.</li>
+              <li><strong>SVS #5196 (DYAMOND Atmospheric Carbon Dioxide):</strong> NASA GMAO 3km global atmospheric simulation tracking synoptic weather advection of CO₂ plumes.</li>
+              <li><strong>SVS #4960 (3D View of an Atmospheric River):</strong> NASA MERRA-2 and GPM IMERG 3D atmospheric moisture transport driving extreme coastal rainfall and soil saturation.</li>
+              <li><strong>SVS #5064 (Daily Antarctic Sea Ice Extent):</strong> Satellite passive microwave radiometers (SSMIS & AMSR-2) recording annual freeze-thaw cryospheric pulsation.</li>
+            </ul>
+            <div className="links-row">
+              <a
+                href="https://www.nasa.gov/earth-information-center/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="about-link"
+              >
+                <span>NASA Earth Information Center</span>
+                <ExternalLink className="icon-xs" aria-hidden="true" />
+              </a>
+              <a
+                href="https://svs.gsfc.nasa.gov/gallery/earth-information-center/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="about-link"
+              >
+                <span>NASA SVS EIC Gallery</span>
                 <ExternalLink className="icon-xs" aria-hidden="true" />
               </a>
             </div>

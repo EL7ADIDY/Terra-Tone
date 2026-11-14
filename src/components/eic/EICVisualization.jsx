@@ -8,7 +8,9 @@ import {
   Film,
   AlertTriangle,
   Play,
-  Pause
+  Pause,
+  Volume2,
+  VolumeX
 } from 'lucide-react';
 
 export const EICVisualization = ({
@@ -18,6 +20,10 @@ export const EICVisualization = ({
   playbackSpeed,
   onTogglePlay,
   onVideoAttach,
+  isAudioEnabled = true,
+  onToggleAudio = () => {},
+  currentToneInfo = null,
+  isPlayingTone = false,
   lang = 'en'
 }) => {
   const videoRef = useRef(null);
@@ -155,6 +161,34 @@ export const EICVisualization = ({
           }}
           onClick={onTogglePlay}
         />
+
+        {/* Live Visual Sonification Tone Pill */}
+        {currentToneInfo && (
+          <button
+            type="button"
+            className={`eic-video-tone-pill ${isPlayingTone ? 'ping' : ''}`}
+            onClick={onToggleAudio}
+            title={
+              isAudioEnabled
+                ? lang === 'ar'
+                  ? 'انقر لكتم النغمات الصوتية'
+                  : 'Click to mute visual sonification'
+                : lang === 'ar'
+                  ? 'انقر لتفعيل النغمات الصوتية'
+                  : 'Click to enable visual sonification'
+            }
+            aria-label="Toggle visual sonification tone"
+          >
+            {isAudioEnabled ? (
+              <Volume2 className="icon-xxs text-cyan" />
+            ) : (
+              <VolumeX className="icon-xxs text-rose" />
+            )}
+            <span>
+              {currentToneInfo.percentage}% • {currentToneInfo.noteName}
+            </span>
+          </button>
+        )}
 
         {/* Milestone Callout Overlay */}
         {activeMilestone && (

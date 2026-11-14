@@ -243,9 +243,9 @@ export const EIC_RESOURCES = [
     shortDescriptionEn: 'Using NASA JPL ECCO-2 high-resolution ocean models, this visualization highlights heat transport and deep return flows across the world\'s most powerful western boundary currents.',
     shortDescriptionAr: 'باستخدام نماذج ECCO-2 عالية الدقة من مختبر الدفع النفاث بناسا، توضح هذه المحاكاة نقل الحرارة وتدفقات العودة العميقة عبر أقوى تيارات المحيطات.',
     
-    videoUrl: 'https://svs.gsfc.nasa.gov/vis/a000000/a005400/a005425/perpetual_ocean2_beauty_hw5x3_810p30_5.mp4',
-    previewImage: 'https://svs.gsfc.nasa.gov/vis/a000000/a005400/a005425/perpetual_ocean2_CLOSE_093_clean_noDate_1080p_carousel.jpg',
-    sourceUrl: 'https://svs.gsfc.nasa.gov/5425/',
+    videoUrl: 'https://svs.gsfc.nasa.gov/vis/a000000/a003900/a003912/flat_global_ecco2_6840x3420_768p30-d1.mp4',
+    previewImage: 'https://svs.gsfc.nasa.gov/vis/a000000/a003900/a003912/flat_global_ecco2_2028x1024.25000.jpg',
+    sourceUrl: 'https://svs.gsfc.nasa.gov/3912/',
     
     phenomenon: 'Western Boundary Currents & Oceanic Heat Transport',
     phenomenonAr: 'تيارات الحدود الغربية ونقل الحرارة بالمحيطات',
@@ -572,4 +572,102 @@ export const EIC_RESOURCES = [
 
 export const getEicResourceById = (id) => {
   return EIC_RESOURCES.find(r => r.id === id) || EIC_RESOURCES[0];
+};
+
+export const STAGE_EIC_CONNECTIONS = {
+  air_aod: {
+    resourceId: 'geos-aerosols-2017',
+    tagEn: 'Direct Model Lineage',
+    tagAr: 'امتداد فيزيائي للنموذج',
+    noteEn: 'NASA GMAO GEOS Forward Processing. The MERRA-2 Aerosol Optical Depth (AOD) map above is produced by the exact same atmospheric modeling and data assimilation system (GEOS) illustrated in this original 2017 Hurricane Season transport visual.',
+    noteAr: 'معالجة الهباء الجوي بنموذج NASA GMAO GEOS. تستند طبقة MERRA-2 للعمق البصري للهباء في الخريطة أعلاه إلى نفس نظام نمذجة الغلاف الجوي واستيعاب البيانات (GEOS) الموضح في هذه المحاكاة الأصلية لموسم أعاصير 2017.'
+  },
+  air_co: {
+    resourceId: 'dyamond-co2-transport',
+    tagEn: 'Combustion Tracer Comparison',
+    tagAr: 'مقارنة نواتج الاحتراق',
+    noteEn: 'Synoptic Advection of Carbon Plumes. While the AIRS instrument samples mid-tropospheric Carbon Monoxide (CO), this high-resolution DYAMOND GEOS simulation reveals how atmospheric circulation advects companion carbon dioxide (CO₂) plumes from fossil fuel emissions and wildfires.',
+    noteAr: 'حركة سحب الكربون مع الكتل الهوائية. بينما يرصد قمر AIRS أول أكسيد الكربون، تكشف محاكاة DYAMOND فائقة الدقة كيفية انتقال سحب ثاني أكسيد الكربون المرافقة من محطات الوقود والحرائق.'
+  },
+  air_ozone: {
+    resourceId: 'dyamond-co2-transport',
+    tagEn: 'Atmospheric Gas Circulation',
+    tagAr: 'دوران الغازات الجوية',
+    noteEn: 'Global Atmospheric Trace Gas Dynamics. Illustrates the planetary-scale wave patterns and synoptic weather systems that steer both stratospheric ozone and tropospheric trace emissions.',
+    noteAr: 'ديناميكيات غازات الغلاف الجوي. يوضح تموجات الكتل الهوائية وأنظمة الطقس العالمية التي تتحكم في توزيع الأوزون وانبعاثات الغازات.'
+  },
+  water_sst: {
+    resourceId: 'perpetual-ocean-2',
+    tagEn: 'Thermal Advection & Currents',
+    tagAr: 'نقل الحرارة وتيارات المحيط',
+    noteEn: 'Western Boundary Currents & Sea Surface Temperature. The MODIS Sea Surface Temperature patterns observed above are dynamically driven by the powerful oceanic thermal conveyor belts simulated in NASA JPL ECCO-2.',
+    noteAr: 'تيارات المحيطات وحرارة سطح البحر. تتطابق وتتأثر درجات حرارة سطح البحر المقاسة عبر MODIS أعلاه بنظام النقل الحراري للتيارات المائية المحاكى في نموذج ECCO-2 التابع لمختبر الدفع النفاث.'
+  },
+  water_chlorophyll: {
+    resourceId: 'atmospheric-river-3d',
+    tagEn: 'Coastal Nutrient Influx',
+    tagAr: 'تدفق المغذيات الساحلية',
+    noteEn: 'Atmospheric River Landfall & Runoff. Extreme precipitation channeled by atmospheric rivers drives heavy river discharge into coastal basins, fueling phytoplankton blooms and sediment plumes detected by MODIS Aqua Chlorophyll-a.',
+    noteAr: 'هطول الأنهار الجوية والجريان السطحي. يؤدي الهطول الغزير للأنهار الجوية إلى تدفقات نهرية عملاقة نحو السواحل، مما يغذي ازدهار العوالق النباتية وترسبات الكلوروفيل المقاسة بقمر MODIS Aqua.'
+  },
+  water_turbidity: {
+    resourceId: 'atmospheric-river-3d',
+    tagEn: 'Runoff Sediment & Plumes',
+    tagAr: 'عكارة المياه والسيول الساحلية',
+    noteEn: 'Hydrological Sediment Transport. Atmospheric river events induce flash flooding and severe sediment runoff directly visible as optical turbidity in true-color satellite imagery.',
+    noteAr: 'نقل الرواسب الهيدرولوجية. تتسبب الأنهار الجوية في سيول جارفة تنقل كميات هائلة من الطمي إلى المياه الساحلية، مسببة العكارة الواضحة في صور الأقمار الصناعية بالألوان الحقيقية.'
+  },
+  soil_moisture: {
+    resourceId: 'atmospheric-river-3d',
+    tagEn: 'Precipitation Influx & Saturation',
+    tagAr: 'الهطول وتشبع رطوبة التربة',
+    noteEn: 'Atmospheric Moisture Influx to Soil. Massive moisture transport in atmospheric rivers makes landfall to deposit high-volume precipitation, directly driving SMAP surface soil moisture saturation spikes.',
+    noteAr: 'تدفق الرطوبة الجوية إلى التربة. يفرغ النهر الجوي كميات مياه ضخمة عند اصطدامه باليابسة، مما يسبب قفزات فورية في تشبع رطوبة التربة السطحية المسجلة عبر قمر SMAP.'
+  },
+  soil_ndvi: {
+    resourceId: 'antarctic-sea-ice',
+    tagEn: 'Global Cryosphere & Biosphere Cycle',
+    tagAr: 'الدورة الحيوية والجليدية العالمية',
+    noteEn: 'Seasonal Solar & Surface Feedback. Tracks the seasonal pulsation of high-latitude ice and radiative albedo that balances regional continental vegetation greening (NDVI) and growing seasons.',
+    noteAr: 'تفاعل الإشعاع السطحي والغطاء النباتي. يوضح التذبذب الموسمي للجليد والوضاءة الإشعاعية المنظمة للمواسم الزراعية ونمو الغطاء النباتي (NDVI).'
+  },
+  soil_lst: {
+    resourceId: 'antarctic-sea-ice',
+    tagEn: 'Surface Radiative Equilibrium',
+    tagAr: 'التوازن الإشعاعي للسطح',
+    noteEn: 'Cryospheric Albedo & Surface Temperature. Illustrates the extreme cold thermal end-member of Earth’s surface radiation balance that governs global meridional temperature gradients.',
+    noteAr: 'وضاءة الجليد وحرارة السطح. يجسد الحد الأقصى للتبريد الإشعاعي لكوكب الأرض الذي يقود التدرج الحراري بين القطبين وخط الاستواء.'
+  },
+  temperature: {
+    resourceId: 'night-lights-decade',
+    tagEn: 'Anthropogenic Driver & Urban Heat',
+    tagAr: 'المحرك البشري والجزر الحرارية',
+    noteEn: 'Anthropogenic Electrification & Urban Footprint. NASA Black Marble VIIRS nighttime radiance directly documents a decade of global urbanization and infrastructure expansion, providing the human footprint context behind regional temperature and climate anomalies.',
+    noteAr: 'الأثر البشري والتوسع الحضري. توثق بيانات الرخام الأسود VIIRS من ناسا عقداً كاملاً من التوسع العمراني واستهلاك الطاقة، مقدماً التفسير البشري للجزر الحرارية والاتجاهات المناخية المسجلة.'
+  }
+};
+
+export const getEICResourceForStage = (stageId, animationId) => {
+  const conn = STAGE_EIC_CONNECTIONS[animationId] || STAGE_EIC_CONNECTIONS[stageId];
+  if (conn) {
+    const res = EIC_RESOURCES.find(r => r.id === conn.resourceId);
+    if (res) return res;
+  }
+  return EIC_RESOURCES[0];
+};
+
+export const getAvailableEICResourcesForStage = (stageId) => {
+  if (stageId === 'air') {
+    return EIC_RESOURCES.filter(r => r.id === 'geos-aerosols-2017' || r.id === 'dyamond-co2-transport');
+  }
+  if (stageId === 'water') {
+    return EIC_RESOURCES.filter(r => r.id === 'perpetual-ocean-2' || r.id === 'atmospheric-river-3d' || r.id === 'antarctic-sea-ice');
+  }
+  if (stageId === 'soil') {
+    return EIC_RESOURCES.filter(r => r.id === 'atmospheric-river-3d' || r.id === 'antarctic-sea-ice' || r.id === 'night-lights-decade');
+  }
+  if (stageId === 'temperature') {
+    return EIC_RESOURCES.filter(r => r.id === 'night-lights-decade' || r.id === 'antarctic-sea-ice' || r.id === 'dyamond-co2-transport');
+  }
+  return EIC_RESOURCES;
 };

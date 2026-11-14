@@ -156,8 +156,7 @@ export const translations = {
     modeTemperatureTab: 'Temperature & Climate (NASA POWER)',
     modeAirTab: 'Stage 1: Air Pollution',
     modeWaterTab: 'Stage 2: Water Pollution',
-    modeSoilTab: 'Stage 3: Soil Pollution',
-    modeEicTab: 'NASA Earth Information Center'
+    modeSoilTab: 'Stage 3: Soil Pollution'
   },
 
   ar: {
@@ -313,7 +312,6 @@ export const translations = {
     modeTemperatureTab: 'الحرارة والمناخ (NASA POWER)',
     modeAirTab: 'المرحلة 1: تلوث الهواء',
     modeWaterTab: 'المرحلة 2: تلوث المياه',
-    modeSoilTab: 'المرحلة 3: تلوث التربة',
-    modeEicTab: 'مركز معلومات الأرض (NASA EIC)'
+    modeSoilTab: 'المرحلة 3: تلوث التربة'
   }
 };

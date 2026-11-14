@@ -7,7 +7,9 @@ import {
   FastForward,
   Rewind,
   Repeat,
-  Gauge
+  Gauge,
+  Volume2,
+  VolumeX
 } from 'lucide-react';
 
 export const EICTimeline = ({
@@ -20,6 +22,10 @@ export const EICTimeline = ({
   onSeek,
   onChangeSpeed,
   onToggleLoop,
+  isAudioEnabled = true,
+  onToggleAudio,
+  audioVolume = 0.7,
+  onChangeVolume,
   lang = 'en'
 }) => {
   const sliderId = useId();
@@ -134,8 +140,34 @@ export const EICTimeline = ({
           </div>
         </div>
 
-        {/* Right: Playback Speed & Loop */}
+        {/* Right: Sonification Sound, Playback Speed & Loop */}
         <div className="eic-timeline-actions-right">
+          {/* Quick Sound Toggle Button */}
+          {typeof onToggleAudio === 'function' && (
+            <button
+              type="button"
+              className={`eic-control-btn eic-btn-sound ${isAudioEnabled ? 'active' : ''}`}
+              onClick={onToggleAudio}
+              title={
+                isAudioEnabled
+                  ? lang === 'ar'
+                    ? 'كتم النغمات الصوتية'
+                    : 'Mute visual sonification'
+                  : lang === 'ar'
+                    ? 'تشغيل النغمات الصوتية'
+                    : 'Enable visual sonification'
+              }
+              aria-pressed={isAudioEnabled}
+            >
+              {isAudioEnabled ? (
+                <Volume2 className="icon-xs" />
+              ) : (
+                <VolumeX className="icon-xs text-rose" />
+              )}
+              <span className="btn-label">{lang === 'ar' ? 'صوت' : 'Audio'}</span>
+            </button>
+          )}
+
           {/* Loop toggle */}
           <button
             type="button"

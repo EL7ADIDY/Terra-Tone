@@ -10,7 +10,7 @@ import { DataTable } from './components/DataTable';
 import { KeyboardShortcutsModal } from './components/KeyboardShortcutsModal';
 import { AboutModal } from './components/AboutModal';
 import { PollutionStagesView } from './components/PollutionStagesView';
-import { EICExperience } from './components/eic/EICExperience';
+import { EICContextSection } from './components/eic/EICContextSection';
 
 import { useNasaPower } from './hooks/useNasaPower';
 import { useSonification } from './hooks/useSonification';
@@ -21,7 +21,7 @@ import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { PRESET_LOCATIONS, VARIABLES } from './services/nasaApi';
 import { POLLUTION_STAGES } from './services/pollutionStages';
 import { translations } from './utils/translations';
-import { AlertCircle, RefreshCw, Wind, Droplets, Sprout, Thermometer, Globe } from 'lucide-react';
+import { AlertCircle, RefreshCw, Wind, Droplets, Sprout, Thermometer, Film, MapPin } from 'lucide-react';
 
 export default function App() {
   // 1. Accessibility & Globalization States
@@ -62,6 +62,7 @@ export default function App() {
   const [locationA, setLocationA] = useState(PRESET_LOCATIONS[0]); // Zagazig
   const [locationB, setLocationB] = useState(PRESET_LOCATIONS[1]); // Alexandria
   const [isCompareMode, setIsCompareMode] = useState(false);
+  const [tempViewMode, setTempViewMode] = useState('eic');
 
   // Dedicated Location states for Pollution Stages (default to active stage hotspots)
   const [pollutionLocA, setPollutionLocA] = useState(POLLUTION_STAGES[0].presets[0]); // Cairo for Air stage
@@ -216,9 +217,6 @@ export default function App() {
         setPollutionLocB(st.presets[1] || st.presets[0]);
       }
       if (isPlaying) togglePlay();
-    } else if (mode === 'eic') {
-      if (isPlaying) togglePlay();
-      if (pollution.isPlaying) pollution.togglePlay();
     } else if (pollution.isPlaying) {
       pollution.togglePlay();
     }
@@ -275,8 +273,7 @@ export default function App() {
     { id: 'air', label: t.modeAirTab, count: '3', icon: Wind, accent: 'cyan' },
     { id: 'water', label: t.modeWaterTab, count: '3', icon: Droplets, accent: 'emerald' },
     { id: 'soil', label: t.modeSoilTab, count: '3', icon: Sprout, accent: 'gold' },
-    { id: 'temperature', label: t.modeTemperatureTab, count: 'POWER', icon: Thermometer, accent: 'orange' },
-    { id: 'eic', label: t.modeEicTab, count: 'EIC', icon: Globe, accent: 'cyan' }
+    { id: 'temperature', label: t.modeTemperatureTab, count: 'POWER', icon: Thermometer, accent: 'orange' }
   ];
 
   return (
@@ -339,9 +336,7 @@ export default function App() {
           })}
         </nav>
 
-        {activeMode === 'eic' ? (
-          <EICExperience lang={lang} theme={theme} />
-        ) : activeMode !== 'temperature' ? (
+        {activeMode !== 'temperature' ? (
           <PollutionStagesView
             lang={lang}
             theme={theme}
@@ -389,95 +384,133 @@ export default function App() {
               </div>
             )}
 
-            {/* Primary Row: Map (NASA GIBS Frame Viewer) & Timeline Chart */}
-            <div className="grid-two-columns">
-              <MapPicker
-                lang={lang}
-                theme={theme}
-                locationA={locationA}
-                onSelectLocationA={setLocationA}
-                locationB={locationB}
-                onSelectLocationB={setLocationB}
-                isCompareMode={isCompareMode}
-                onToggleCompareMode={setIsCompareMode}
-                currentYear={currentYear}
-                dataA={dataA}
-                dataB={dataB}
-                primaryVariable={primaryVariable}
-                onPlayFramePixelTone={playFramePixelTone}
-                onStartFrameScan={startFrameScan}
-                isScanning={isScanning}
-                scanProgress={scanProgress}
-              />
-
-              {showTable ? (
-                <DataTable
-                  lang={lang}
-                  dataA={dataA}
-                  dataB={dataB}
-                  statsA={statsA}
-                  statsB={statsB}
-                  primaryVariable={primaryVariable}
-                  locationA={locationA}
-                  locationB={locationB}
-                  isCompareMode={isCompareMode}
-                  currentYear={currentYear}
-                  showTable={showTable}
-                  onToggleTable={setShowTable}
-                />
-              ) : (
-                <TimelineChart
-                  lang={lang}
-                  theme={theme}
-                  dataA={dataA}
-                  dataB={dataB}
-                  statsA={statsA}
-                  statsB={statsB}
-                  currentYear={currentYear}
-                  primaryVariable={primaryVariable}
-                  locationA={locationA}
-                  locationB={locationB}
-                  isCompareMode={isCompareMode}
-                  showTable={showTable}
-                  onToggleTable={setShowTable}
-                />
-              )}
+            {/* View Mode Switcher: NASA EIC Decadal Night Lights vs NASA POWER Climate */}
+            <div className="view-mode-switcher-bar">
+              <div className="view-mode-pill-group" role="tablist" aria-label={lang === 'ar' ? 'طريقة العرض الأساسية' : 'Primary View Mode'}>
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={tempViewMode === 'eic'}
+                  className={`btn-view-mode ${tempViewMode === 'eic' ? 'active' : ''}`}
+                  onClick={() => setTempViewMode('eic')}
+                >
+                  <Film className="icon-xs" aria-hidden="true" />
+                  <span>{lang === 'ar' ? 'مركز معلومات الأرض (NASA EIC): أضواء الليل (2012-2023)' : 'NASA EIC: Decadal Night Lights Visual & Radiance Graph'}</span>
+                </button>
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={tempViewMode === 'power'}
+                  className={`btn-view-mode ${tempViewMode === 'power' ? 'active' : ''}`}
+                  onClick={() => setTempViewMode('power')}
+                >
+                  <MapPin className="icon-xs" aria-hidden="true" />
+                  <span>{lang === 'ar' ? 'خريطة وبيانات المناخ (NASA POWER)' : 'NASA POWER Climate Map & Timeline'}</span>
+                </button>
+              </div>
             </div>
 
-            {/* Secondary Row: Timeline Playback Controls & Audio Controls */}
-            <div className="grid-two-columns">
-              <TimelineControls
+            {/* 1. PRIMARY EXPERIENCE: NASA EIC DECADAL NIGHT LIGHTS & RADIANCE GRAPH */}
+            <div style={{ display: tempViewMode === 'eic' ? 'block' : 'none' }}>
+              <EICContextSection
+                stageId="temperature"
                 lang={lang}
-                currentYear={currentYear}
-                years={years}
-                isPlaying={isPlaying}
-                onTogglePlay={togglePlay}
-                onStepBackward={stepBackward}
-                onStepForward={stepForward}
-                onSelectYear={(yr) => setYear(yr, true)}
-                playbackSpeed={playbackSpeed}
-                onChangeSpeed={changeSpeed}
-                isLooping={isLooping}
-                onToggleLoop={() => setIsLooping(prev => !prev)}
+                theme={theme}
               />
+            </div>
 
-              <AudioControls
-                lang={lang}
-                volume={volume}
-                onChangeVolume={setVolume}
-                isMuted={isMuted}
-                onToggleMute={toggleMute}
-                instrument={instrument}
-                onChangeInstrument={setInstrument}
-                quantizeScale={quantizeScale}
-                onToggleQuantizeScale={setQuantizeScale}
-                primaryVariable={primaryVariable}
-                onChangePrimaryVariable={setPrimaryVariable}
-                secondaryVariable={secondaryVariable}
-                onChangeSecondaryVariable={setSecondaryVariable}
-                isCompareMode={isCompareMode}
-                pitchMappingText={pitchMappingText}
-              />
+            {/* 2. NASA POWER CLIMATE MAP & TIMELINE CHART */}
+            <div style={{ display: tempViewMode === 'power' ? 'block' : 'none' }}>
+              {/* Primary Row: Map (NASA GIBS Frame Viewer) & Timeline Chart */}
+              <div className="grid-two-columns">
+                <MapPicker
+                  lang={lang}
+                  theme={theme}
+                  locationA={locationA}
+                  onSelectLocationA={setLocationA}
+                  locationB={locationB}
+                  onSelectLocationB={setLocationB}
+                  isCompareMode={isCompareMode}
+                  onToggleCompareMode={setIsCompareMode}
+                  currentYear={currentYear}
+                  dataA={dataA}
+                  dataB={dataB}
+                  primaryVariable={primaryVariable}
+                  onPlayFramePixelTone={playFramePixelTone}
+                  onStartFrameScan={startFrameScan}
+                  isScanning={isScanning}
+                  scanProgress={scanProgress}
+                />
+
+                {showTable ? (
+                  <DataTable
+                    lang={lang}
+                    dataA={dataA}
+                    dataB={dataB}
+                    statsA={statsA}
+                    statsB={statsB}
+                    primaryVariable={primaryVariable}
+                    locationA={locationA}
+                    locationB={locationB}
+                    isCompareMode={isCompareMode}
+                    currentYear={currentYear}
+                    showTable={showTable}
+                    onToggleTable={setShowTable}
+                  />
+                ) : (
+                  <TimelineChart
+                    lang={lang}
+                    theme={theme}
+                    dataA={dataA}
+                    dataB={dataB}
+                    statsA={statsA}
+                    statsB={statsB}
+                    currentYear={currentYear}
+                    primaryVariable={primaryVariable}
+                    locationA={locationA}
+                    locationB={locationB}
+                    isCompareMode={isCompareMode}
+                    showTable={showTable}
+                    onToggleTable={setShowTable}
+                  />
+                )}
+              </div>
+
+              {/* Secondary Row: Timeline Playback Controls & Audio Controls */}
+              <div className="grid-two-columns">
+                <TimelineControls
+                  lang={lang}
+                  currentYear={currentYear}
+                  years={years}
+                  isPlaying={isPlaying}
+                  onTogglePlay={togglePlay}
+                  onStepBackward={stepBackward}
+                  onStepForward={stepForward}
+                  onSelectYear={(yr) => setYear(yr, true)}
+                  playbackSpeed={playbackSpeed}
+                  onChangeSpeed={changeSpeed}
+                  isLooping={isLooping}
+                  onToggleLoop={() => setIsLooping(prev => !prev)}
+                />
+
+                <AudioControls
+                  lang={lang}
+                  volume={volume}
+                  onChangeVolume={setVolume}
+                  isMuted={isMuted}
+                  onToggleMute={toggleMute}
+                  instrument={instrument}
+                  onChangeInstrument={setInstrument}
+                  quantizeScale={quantizeScale}
+                  onToggleQuantizeScale={setQuantizeScale}
+                  primaryVariable={primaryVariable}
+                  onChangePrimaryVariable={setPrimaryVariable}
+                  secondaryVariable={secondaryVariable}
+                  onChangeSecondaryVariable={setSecondaryVariable}
+                  isCompareMode={isCompareMode}
+                  pitchMappingText={pitchMappingText}
+                />
+              </div>
             </div>
 
             {/* Plain Language Climate Insights Panel */}
