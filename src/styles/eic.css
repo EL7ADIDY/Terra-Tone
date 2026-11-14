@@ -1,0 +1,1079 @@
+/* ==========================================================================
+   NASA Earth Information Center (EIC) - Stylesheet
+   Self-contained styling for the EIC Visualization Experience
+   ========================================================================== */
+
+.eic-experience-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  width: 100%;
+  color: #f1f5f9;
+  font-family: inherit;
+  margin-top: 0.5rem;
+}
+
+/* --------------------------------------------------------------------------
+   1. Main Side-by-Side Experience Grid
+   -------------------------------------------------------------------------- */
+.eic-main-experience-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 1.5rem;
+  align-items: stretch;
+}
+
+@media (max-width: 1024px) {
+  .eic-main-experience-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.eic-column-left,
+.eic-column-right {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* --------------------------------------------------------------------------
+   2. Original NASA Visualization Card (Left Column)
+   -------------------------------------------------------------------------- */
+.eic-visual-card {
+  display: flex;
+  flex-direction: column;
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 0 15px rgba(56, 189, 248, 0.05);
+  backdrop-filter: blur(12px);
+  position: relative;
+  height: 100%;
+}
+
+.eic-visual-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+  background: rgba(15, 23, 42, 0.4);
+}
+
+.eic-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
+}
+
+.eic-live-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 0.2rem 0.55rem;
+  border-radius: 9999px;
+  background: rgba(56, 189, 248, 0.15);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+}
+
+.eic-live-tag.tag-graph {
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+.eic-id-tag {
+  font-size: 0.75rem;
+  font-family: ui-monospace, monospace;
+  color: #94a3b8;
+  background: rgba(30, 41, 59, 0.6);
+  padding: 0.15rem 0.5rem;
+  border-radius: 0.375rem;
+}
+
+.eic-visual-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #f8fafc;
+  margin: 0;
+  line-height: 1.35;
+}
+
+.eic-visual-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.eic-icon-link,
+.eic-icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.5rem;
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  color: #94a3b8;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.eic-icon-link:hover,
+.eic-icon-btn:hover {
+  background: rgba(56, 189, 248, 0.2);
+  color: #38bdf8;
+  border-color: rgba(56, 189, 248, 0.4);
+}
+
+.eic-video-viewport {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #020617;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.eic-native-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+.eic-video-loading-overlay,
+.eic-video-error-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  background: rgba(2, 6, 23, 0.85);
+  z-index: 10;
+  color: #cbd5e1;
+  text-align: center;
+  padding: 1.5rem;
+}
+
+.eic-video-error-overlay .error-icon {
+  color: #f43f5e;
+  width: 2.25rem;
+  height: 2.25rem;
+}
+
+.eic-btn-retry {
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  background: #0284c7;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-decoration: none;
+  transition: background 0.2s ease;
+}
+
+.eic-btn-retry:hover {
+  background: #0369a1;
+}
+
+.eic-milestone-overlay {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 0.5rem;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  backdrop-filter: blur(8px);
+  z-index: 5;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.eic-milestone-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 9999px;
+  background: #38bdf8;
+  box-shadow: 0 0 8px #38bdf8;
+  animation: pulse 2s infinite;
+}
+
+.eic-milestone-text {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #f8fafc;
+}
+
+.eic-center-play-btn {
+  position: absolute;
+  width: 4rem;
+  height: 4rem;
+  border-radius: 9999px;
+  background: rgba(2, 132, 199, 0.85);
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 5;
+  transition: all 0.25s ease;
+  box-shadow: 0 0 25px rgba(2, 132, 199, 0.6);
+}
+
+.eic-center-play-btn:hover {
+  transform: scale(1.1);
+  background: #0284c7;
+}
+
+.eic-time-pill {
+  position: absolute;
+  bottom: 0.75rem;
+  right: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 0.375rem;
+  background: rgba(15, 23, 42, 0.8);
+  font-size: 0.75rem;
+  font-family: ui-monospace, monospace;
+  color: #cbd5e1;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  z-index: 5;
+}
+
+.eic-time-pill .separator {
+  color: #64748b;
+}
+
+.eic-visual-caption {
+  padding: 0.875rem 1.25rem;
+  background: rgba(15, 23, 42, 0.3);
+}
+
+.eic-caption-text {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #94a3b8;
+  line-height: 1.5;
+}
+
+/* --------------------------------------------------------------------------
+   3. Scientific Graph Card (Right Column)
+   -------------------------------------------------------------------------- */
+.eic-graph-card {
+  display: flex;
+  flex-direction: column;
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 0 15px rgba(16, 185, 129, 0.05);
+  backdrop-filter: blur(12px);
+  height: 100%;
+}
+
+.eic-graph-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+  background: rgba(15, 23, 42, 0.4);
+}
+
+.eic-graph-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #f8fafc;
+  margin: 0;
+  line-height: 1.35;
+}
+
+.eic-live-reading-box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  padding: 0.35rem 0.75rem;
+  border-radius: 0.5rem;
+}
+
+.eic-live-reading-label {
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #6ee7b7;
+  font-weight: 600;
+}
+
+.eic-live-reading-val {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+}
+
+.eic-live-reading-val .value-num {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #f8fafc;
+  font-family: ui-monospace, monospace;
+}
+
+.eic-live-reading-val .value-unit {
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+.eic-chart-viewport {
+  flex: 1;
+  min-height: 280px;
+  padding: 1.25rem 1rem 0.75rem 1rem;
+  position: relative;
+  cursor: crosshair;
+}
+
+.eic-graph-footer-hint {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background: rgba(15, 23, 42, 0.3);
+  border-top: 1px solid rgba(148, 163, 184, 0.08);
+  font-size: 0.8125rem;
+  color: #64748b;
+}
+
+/* --------------------------------------------------------------------------
+   4. Shared Synchronized Timeline
+   -------------------------------------------------------------------------- */
+.eic-timeline-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  border-radius: 1rem;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(12px);
+}
+
+.eic-scrubber-track-wrap {
+  position: relative;
+  width: 100%;
+  height: 2.25rem;
+  display: flex;
+  align-items: center;
+}
+
+.eic-timeline-slider {
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  height: 0.5rem;
+  appearance: none;
+  background: rgba(30, 41, 59, 0.8);
+  border-radius: 9999px;
+  outline: none;
+  cursor: pointer;
+  margin: 0;
+}
+
+.eic-timeline-slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 9999px;
+  background: #38bdf8;
+  border: 2.5px solid #ffffff;
+  box-shadow: 0 0 10px #38bdf8;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.eic-timeline-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+.eic-slider-progress-fill {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 0;
+  height: 0.5rem;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, #0284c7, #38bdf8);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.eic-timeline-milestones {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.eic-milestone-tick {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 0.35rem;
+  height: 0.85rem;
+  background: rgba(148, 163, 184, 0.4);
+  border-radius: 2px;
+  pointer-events: auto;
+  cursor: pointer;
+  border: none;
+  padding: 0;
+  transition: all 0.2s ease;
+}
+
+.eic-milestone-tick.passed {
+  background: #38bdf8;
+  box-shadow: 0 0 6px #38bdf8;
+}
+
+.eic-milestone-tick:hover {
+  transform: translate(-50%, -50%) scale(1.4);
+  background: #ffffff;
+}
+
+.eic-timeline-controls-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.eic-timeline-actions-left {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.eic-control-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.625rem;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  background: rgba(30, 41, 59, 0.6);
+  color: #cbd5e1;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.eic-btn-step {
+  width: 2.25rem;
+  height: 2.25rem;
+}
+
+.eic-btn-step:hover,
+.eic-btn-reset:hover {
+  background: rgba(56, 189, 248, 0.15);
+  color: #38bdf8;
+  border-color: rgba(56, 189, 248, 0.4);
+}
+
+.eic-btn-play-primary {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 9999px;
+  background: #0284c7;
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 0 15px rgba(2, 132, 199, 0.5);
+}
+
+.eic-btn-play-primary:hover {
+  background: #0369a1;
+  transform: scale(1.05);
+}
+
+.eic-btn-reset {
+  width: 2rem;
+  height: 2rem;
+}
+
+.eic-timeline-time-display {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: ui-monospace, monospace;
+  font-size: 0.875rem;
+  background: rgba(15, 23, 42, 0.6);
+  padding: 0.35rem 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  margin-inline-start: 0.5rem;
+}
+
+.eic-timeline-time-display .current {
+  color: #38bdf8;
+  font-weight: 700;
+}
+
+.eic-timeline-time-display .sep {
+  color: #64748b;
+}
+
+.eic-timeline-time-display .total {
+  color: #94a3b8;
+}
+
+.eic-timeline-actions-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.eic-btn-loop {
+  padding: 0.4rem 0.75rem;
+  gap: 0.35rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.eic-btn-loop.active {
+  background: rgba(56, 189, 248, 0.2);
+  color: #38bdf8;
+  border-color: rgba(56, 189, 248, 0.5);
+}
+
+.eic-speed-selector {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(15, 23, 42, 0.6);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(148, 163, 184, 0.15);
+}
+
+.eic-speed-pills {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.eic-speed-pill {
+  border: none;
+  background: transparent;
+  color: #94a3b8;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.2rem 0.45rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.eic-speed-pill.active {
+  background: #38bdf8;
+  color: #0f172a;
+}
+
+/* --------------------------------------------------------------------------
+   5. Scientific Information & Metadata Accordion
+   -------------------------------------------------------------------------- */
+.eic-info-card {
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  border-radius: 1rem;
+  overflow: hidden;
+  backdrop-filter: blur(12px);
+}
+
+.eic-info-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.15rem 1.5rem;
+  cursor: pointer;
+  background: rgba(15, 23, 42, 0.4);
+  transition: background 0.2s ease;
+}
+
+.eic-info-header:hover {
+  background: rgba(30, 41, 59, 0.5);
+}
+
+.eic-info-header-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.eic-info-heading {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0;
+  color: #f8fafc;
+}
+
+.eic-svs-badge-sm {
+  font-size: 0.75rem;
+  font-family: ui-monospace, monospace;
+  background: rgba(56, 189, 248, 0.15);
+  color: #38bdf8;
+  padding: 0.15rem 0.5rem;
+  border-radius: 0.375rem;
+  border: 1px solid rgba(56, 189, 248, 0.25);
+}
+
+.eic-expand-btn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 0.25rem;
+}
+
+.eic-info-content {
+  padding: 1.5rem;
+  border-top: 1px solid rgba(148, 163, 184, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.eic-metadata-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem;
+}
+
+.eic-meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.eic-meta-item .meta-label {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.eic-meta-item .meta-value {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: #f1f5f9;
+  font-weight: 500;
+}
+
+.font-mono-sm {
+  font-family: ui-monospace, monospace;
+  font-size: 0.875rem !important;
+  color: #38bdf8 !important;
+}
+
+.eic-methodology-box {
+  background: rgba(30, 41, 59, 0.4);
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  border-radius: 0.75rem;
+  padding: 1rem 1.25rem;
+}
+
+.methodology-title {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #e2e8f0;
+  margin: 0 0 0.4rem 0;
+}
+
+.methodology-text {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #94a3b8;
+  line-height: 1.55;
+}
+
+.eic-info-footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+  margin-top: 0.5rem;
+}
+
+.eic-primary-link-btn,
+.eic-secondary-link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.eic-primary-link-btn {
+  background: rgba(56, 189, 248, 0.15);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.35);
+}
+
+.eic-primary-link-btn:hover {
+  background: rgba(56, 189, 248, 0.25);
+  border-color: #38bdf8;
+}
+
+.eic-secondary-link-btn {
+  background: rgba(30, 41, 59, 0.6);
+  color: #cbd5e1;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.eic-secondary-link-btn:hover {
+  background: rgba(51, 65, 85, 0.8);
+  color: #ffffff;
+}
+
+/* --------------------------------------------------------------------------
+   6. Showcase Catalog Explorer (Cards Grid)
+   -------------------------------------------------------------------------- */
+.eic-catalog-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.eic-catalog-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.eic-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 0.25rem 0.65rem;
+  border-radius: 9999px;
+  background: rgba(2, 132, 199, 0.2);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  margin-bottom: 0.35rem;
+}
+
+.eic-section-title {
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: #f8fafc;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.eic-section-subtitle {
+  font-size: 0.9375rem;
+  color: #94a3b8;
+  margin: 0;
+  max-width: 750px;
+  line-height: 1.5;
+}
+
+.eic-category-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.35rem;
+}
+
+.eic-cat-btn {
+  padding: 0.45rem 0.9rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  background: rgba(30, 41, 59, 0.6);
+  color: #94a3b8;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.eic-cat-btn:hover {
+  background: rgba(51, 65, 85, 0.8);
+  color: #f1f5f9;
+}
+
+.eic-cat-btn.active {
+  background: #0284c7;
+  color: #ffffff;
+  border-color: #38bdf8;
+  box-shadow: 0 0 12px rgba(2, 132, 199, 0.4);
+}
+
+.eic-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.25rem;
+}
+
+.eic-card {
+  display: flex;
+  flex-direction: column;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  border-radius: 1rem;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  backdrop-filter: blur(10px);
+}
+
+.eic-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(56, 189, 248, 0.4);
+  box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.6), 0 0 15px rgba(56, 189, 248, 0.1);
+}
+
+.eic-card.selected {
+  border-color: #38bdf8;
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.25);
+  background: rgba(15, 23, 42, 0.85);
+}
+
+.eic-card-media-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #020617;
+  overflow: hidden;
+}
+
+.eic-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.eic-card:hover .eic-card-img {
+  transform: scale(1.04);
+}
+
+.eic-svs-badge {
+  position: absolute;
+  top: 0.65rem;
+  left: 0.65rem;
+  font-size: 0.6875rem;
+  font-family: ui-monospace, monospace;
+  padding: 0.15rem 0.5rem;
+  border-radius: 0.375rem;
+  background: rgba(15, 23, 42, 0.85);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  backdrop-filter: blur(6px);
+}
+
+.eic-duration-badge {
+  position: absolute;
+  top: 0.65rem;
+  right: 0.65rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.6875rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 0.375rem;
+  background: rgba(15, 23, 42, 0.85);
+  color: #cbd5e1;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  backdrop-filter: blur(6px);
+}
+
+.eic-card-active-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(2, 132, 199, 0.25);
+  backdrop-filter: blur(1px);
+}
+
+.eic-active-text {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #ffffff;
+  background: #0284c7;
+  padding: 0.35rem 0.85rem;
+  border-radius: 9999px;
+  box-shadow: 0 0 12px rgba(2, 132, 199, 0.8);
+}
+
+.eic-card-body {
+  padding: 1.15rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.eic-card-meta-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.eic-card-category-tag {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.eic-card-unit-tag {
+  font-size: 0.6875rem;
+  font-family: ui-monospace, monospace;
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.1);
+  padding: 0.1rem 0.4rem;
+  border-radius: 0.25rem;
+}
+
+.eic-card-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #f8fafc;
+  margin: 0 0 0.4rem 0;
+  line-height: 1.35;
+}
+
+.eic-card-desc {
+  margin: 0 0 1rem 0;
+  font-size: 0.8125rem;
+  color: #94a3b8;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  flex: 1;
+}
+
+.eic-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.eic-card-source {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  color: #64748b;
+  max-width: 65%;
+}
+
+.eic-card-select-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.1);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  padding: 0.3rem 0.65rem;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.eic-card:hover .eic-card-select-btn {
+  background: #38bdf8;
+  color: #0f172a;
+}
+
+/* --------------------------------------------------------------------------
+   7. Helpers & Animation
+   -------------------------------------------------------------------------- */
+.animate-fade-in {
+  animation: eicFadeIn 0.25s ease-out forwards;
+}
+
+@keyframes eicFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-pulse-glow {
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
+}
+
+.icon-xs {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+.icon-sm {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.icon-lg {
+  width: 1.85rem;
+  height: 1.85rem;
+}
+
+.text-cyan {
+  color: #38bdf8 !important;
+}
+
+.text-emerald {
+  color: #10b981 !important;
+}
+
+.text-muted {
+  color: #64748b !important;
+}
+
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

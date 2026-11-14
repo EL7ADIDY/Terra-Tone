@@ -10,6 +10,7 @@ import { DataTable } from './components/DataTable';
 import { KeyboardShortcutsModal } from './components/KeyboardShortcutsModal';
 import { AboutModal } from './components/AboutModal';
 import { PollutionStagesView } from './components/PollutionStagesView';
+import { EICExperience } from './components/eic/EICExperience';
 
 import { useNasaPower } from './hooks/useNasaPower';
 import { useSonification } from './hooks/useSonification';
@@ -20,7 +21,7 @@ import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { PRESET_LOCATIONS, VARIABLES } from './services/nasaApi';
 import { POLLUTION_STAGES } from './services/pollutionStages';
 import { translations } from './utils/translations';
-import { AlertCircle, RefreshCw, Wind, Droplets, Sprout, Thermometer } from 'lucide-react';
+import { AlertCircle, RefreshCw, Wind, Droplets, Sprout, Thermometer, Globe } from 'lucide-react';
 
 export default function App() {
   // 1. Accessibility & Globalization States
@@ -215,6 +216,9 @@ export default function App() {
         setPollutionLocB(st.presets[1] || st.presets[0]);
       }
       if (isPlaying) togglePlay();
+    } else if (mode === 'eic') {
+      if (isPlaying) togglePlay();
+      if (pollution.isPlaying) pollution.togglePlay();
     } else if (pollution.isPlaying) {
       pollution.togglePlay();
     }
@@ -238,7 +242,7 @@ export default function App() {
   });
 
   // 6. Global Keyboard Shortcuts routed to active tab
-  const isPollutionMode = activeMode !== 'temperature';
+  const isPollutionMode = activeMode === 'air' || activeMode === 'water' || activeMode === 'soil';
   useKeyboardShortcuts({
     onTogglePlay: isPollutionMode ? pollution.togglePlay : togglePlay,
     onStepBackward: isPollutionMode ? pollution.stepBackward : stepBackward,
@@ -271,7 +275,8 @@ export default function App() {
     { id: 'air', label: t.modeAirTab, count: '3', icon: Wind, accent: 'cyan' },
     { id: 'water', label: t.modeWaterTab, count: '3', icon: Droplets, accent: 'emerald' },
     { id: 'soil', label: t.modeSoilTab, count: '3', icon: Sprout, accent: 'gold' },
-    { id: 'temperature', label: t.modeTemperatureTab, count: 'POWER', icon: Thermometer, accent: 'orange' }
+    { id: 'temperature', label: t.modeTemperatureTab, count: 'POWER', icon: Thermometer, accent: 'orange' },
+    { id: 'eic', label: t.modeEicTab, count: 'EIC', icon: Globe, accent: 'cyan' }
   ];
 
   return (
@@ -334,7 +339,9 @@ export default function App() {
           })}
         </nav>
 
-        {activeMode !== 'temperature' ? (
+        {activeMode === 'eic' ? (
+          <EICExperience lang={lang} theme={theme} />
+        ) : activeMode !== 'temperature' ? (
           <PollutionStagesView
             lang={lang}
             theme={theme}
