@@ -107,6 +107,7 @@ function prefetchSite() {
       urls.forEach((href) => {
         const l = document.createElement('link');
         l.rel = 'prefetch';
+        l.crossOrigin = 'anonymous'; // Vite loads these with crossorigin; match so the cache entry is reused
         l.href = href;
         document.head.appendChild(l);
       });
