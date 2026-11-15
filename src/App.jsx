@@ -29,7 +29,7 @@ import { PRESET_LOCATIONS, VARIABLES } from './services/nasaApi';
 import { POLLUTION_STAGES } from './services/pollutionStages';
 import { translations } from './utils/translations';
 import CelestialBackground from './components/CelestialBackground';
-import { MapPin, Layers, ChevronDown, ChevronUp, AlertCircle, RefreshCw, Contrast } from 'lucide-react';
+import { MapPin, Layers, ChevronDown, ChevronUp, AlertCircle, RefreshCw } from 'lucide-react';
 
 export default function App() {
   // 1. Accessibility, Globalization & Theme States
@@ -45,8 +45,6 @@ export default function App() {
   });
 
   const [soundEnabled, setSoundEnabled] = useState(true);
-  const [isHighContrast, setIsHighContrast] = useState(false);
-  const [isLargeText, setIsLargeText] = useState(false);
   const [isShortcutsModalOpen, setIsShortcutsModalOpen] = useState(false);
   const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
   const [isEICModalOpen, setIsEICModalOpen] = useState(false);
@@ -69,14 +67,6 @@ export default function App() {
     });
   }, []);
 
-  const toggleHighContrast = useCallback(() => {
-    setIsHighContrast((prev) => !prev);
-  }, []);
-
-  const toggleLargeText = useCallback(() => {
-    setIsLargeText((prev) => !prev);
-  }, []);
-
   const toggleLang = useCallback(() => {
     setLang((prev) => (prev === 'en' ? 'ar' : 'en'));
   }, []);
@@ -93,28 +83,16 @@ export default function App() {
 
   // Sync HTML / Body Theme & Meta Theme Color
   useEffect(() => {
-    const activeTheme = isHighContrast ? 'high-contrast' : theme;
-    document.documentElement.setAttribute('data-theme', activeTheme);
-    document.body.setAttribute('data-theme', activeTheme);
+    document.documentElement.setAttribute('data-theme', theme);
+    document.body.setAttribute('data-theme', theme);
     const metaColor = document.getElementById('meta-theme-color');
     if (metaColor) {
       metaColor.setAttribute(
         'content',
-        isHighContrast ? '#000000' : (activeTheme === 'light' ? '#F0F6FF' : '#080B1A')
+        theme === 'light' ? '#F0F6FF' : '#080B1A'
       );
     }
-  }, [theme, isHighContrast]);
-
-  // Sync Large Text accessibility attribute on html & body
-  useEffect(() => {
-    if (isLargeText) {
-      document.documentElement.setAttribute('data-font-size', 'large');
-      document.body.setAttribute('data-font-size', 'large');
-    } else {
-      document.documentElement.removeAttribute('data-font-size');
-      document.body.removeAttribute('data-font-size');
-    }
-  }, [isLargeText]);
+  }, [theme]);
 
   // NASA POWER & Legacy Map State Preservation
   const [primaryVariable, setPrimaryVariable] = useState('T2M');
@@ -245,16 +223,16 @@ export default function App() {
   };
 
   return (
-    <div className="terra-redesign-wrapper" data-theme={isHighContrast ? 'high-contrast' : theme}>
+    <div className="terra-redesign-wrapper" data-theme={theme}>
       {/* Immersive Cosmic Observatory Celestial Background */}
-      <CelestialBackground theme={theme} isHighContrast={isHighContrast} />
+      <CelestialBackground theme={theme} />
 
       {/* Screen reader status announcer */}
       <div className="sr-only" role="status" aria-live="polite">
         {srAnnouncement}
       </div>
 
-      {/* Sticky Navigation Bar with Hanging Lamp & Accessibility Controls */}
+      {/* Sticky Navigation Bar with Hanging Lamp & Controls */}
       <Navbar
         theme={theme}
         onToggleTheme={toggleTheme}
@@ -262,10 +240,6 @@ export default function App() {
         onToggleLang={toggleLang}
         soundEnabled={soundEnabled}
         onToggleSound={toggleSound}
-        isHighContrast={isHighContrast}
-        onToggleHighContrast={toggleHighContrast}
-        isLargeText={isLargeText}
-        onToggleLargeText={toggleLargeText}
         onOpenAbout={() => setIsAboutModalOpen(true)}
         onOpenShortcuts={() => setIsShortcutsModalOpen(true)}
         onOpenEICModal={() => setIsEICModalOpen(true)}
@@ -519,38 +493,6 @@ export default function App() {
         lang={lang}
         theme={theme}
       />
-
-      {/* Floating Accessibility Quick-Access Dock (Always reachable) */}
-      <aside className="floating-a11y-pill" aria-label="Accessibility quick controls">
-        <button
-          onClick={toggleHighContrast}
-          className={`navbar-icon-btn a11y-toggle-btn contrast-btn ${isHighContrast ? 'is-active' : ''}`}
-          title={lang === 'ar'
-            ? (isHighContrast ? 'إلغاء التباين العالي' : 'تفعيل وضع التباين العالي (WCAG AAA)')
-            : (isHighContrast ? 'Disable High Contrast' : 'Enable High Contrast (WCAG AAA)')}
-          aria-label="Toggle High Contrast Mode"
-          aria-pressed={isHighContrast}
-        >
-          <Contrast size={16} className="contrast-icon-anim" />
-          <span className="a11y-badge-dot" />
-        </button>
-
-        <button
-          onClick={toggleLargeText}
-          className={`navbar-icon-btn a11y-toggle-btn text-size-btn ${isLargeText ? 'is-active' : ''}`}
-          title={lang === 'ar'
-            ? (isLargeText ? 'استعادة حجم الخط العادي' : 'تكبير حجم الخط (نص كبير)')
-            : (isLargeText ? 'Reset Normal Font Size' : 'Enlarge Font Size (Large Text)')}
-          aria-label="Toggle Large Font Size"
-          aria-pressed={isLargeText}
-        >
-          <span className="text-size-icon-anim">
-            <span className="letter-base">A</span>
-            <span className="letter-plus">+</span>
-          </span>
-          <span className="a11y-badge-dot" />
-        </button>
-      </aside>
     </div>
   );
 }

@@ -58,24 +58,6 @@ export function HomeSection({ lang = 'en', isDark = true, onExploreClick, onHowI
               <span>{isArabic ? 'كيف يعمل الصوت البيئي' : 'How It Works'}</span>
             </a>
           </div>
-
-          {/* Key Metric Highlights */}
-          <div className="hero-metrics-strip">
-            <div className="metric-item">
-              <span className="metric-val">6</span>
-              <span className="metric-lbl">{isArabic ? 'عروض ناسا العلمية' : 'NASA SVS Visualizations'}</span>
-            </div>
-            <div className="metric-divider" />
-            <div className="metric-item">
-              <span className="metric-val">2</span>
-              <span className="metric-lbl">{isArabic ? 'واجهات بيانات ناسا مباشرة' : 'Live NASA Data APIs'}</span>
-            </div>
-            <div className="metric-divider" />
-            <div className="metric-item">
-              <span className="metric-val">EN · AR</span>
-              <span className="metric-lbl">{isArabic ? 'واجهة ثنائية اللغة' : 'Bilingual Interface'}</span>
-            </div>
-          </div>
         </div>
 
         {/* Right Column: Prominent Interactive 3D Earth */}

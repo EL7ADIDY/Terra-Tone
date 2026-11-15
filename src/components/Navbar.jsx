@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { HangingLampToggle } from './HangingLampToggle';
-import { Volume2, VolumeX, Globe, Menu, X, Sparkles, HelpCircle, Layers, Contrast, Info } from 'lucide-react';
+import { Volume2, VolumeX, Globe, Menu, X, Sparkles, HelpCircle, Layers, Info } from 'lucide-react';
 
 export function Navbar({
   theme,
@@ -105,37 +105,6 @@ export function Navbar({
             {soundEnabled ? <Volume2 size={18} /> : <VolumeX size={18} />}
           </button>
 
-          {/* High Contrast Accessibility Toggle with Spin & Glow Animation */}
-          <button
-            onClick={onToggleHighContrast}
-            className={`navbar-icon-btn a11y-toggle-btn contrast-btn ${isHighContrast ? 'is-active' : ''}`}
-            title={lang === 'ar'
-              ? (isHighContrast ? 'إلغاء التباين العالي' : 'تفعيل وضع التباين العالي (WCAG AAA)')
-              : (isHighContrast ? 'Disable High Contrast' : 'Enable High Contrast (WCAG AAA)')}
-            aria-label="Toggle High Contrast Mode"
-            aria-pressed={isHighContrast}
-          >
-            <Contrast size={17} className="contrast-icon-anim" />
-            <span className="a11y-badge-dot" />
-          </button>
-
-          {/* Big Text Accessibility Toggle with Bounce & Pop Animation */}
-          <button
-            onClick={onToggleLargeText}
-            className={`navbar-icon-btn a11y-toggle-btn text-size-btn ${isLargeText ? 'is-active' : ''}`}
-            title={lang === 'ar'
-              ? (isLargeText ? 'استعادة حجم الخط العادي' : 'تكبير حجم الخط (نص كبير)')
-              : (isLargeText ? 'Reset Normal Font Size' : 'Enlarge Font Size (Large Text)')}
-            aria-label="Toggle Large Font Size"
-            aria-pressed={isLargeText}
-          >
-            <span className="text-size-icon-anim">
-              <span className="letter-base">A</span>
-              <span className="letter-plus">+</span>
-            </span>
-            <span className="a11y-badge-dot" />
-          </button>
-
           {/* About / Info Modal Button */}
           <button
             onClick={onOpenAbout}
@@ -189,24 +158,6 @@ export function Navbar({
                 {link.label}
               </button>
             ))}
-          </div>
-
-          {/* Mobile Quick Accessibility Controls */}
-          <div className="mobile-a11y-row">
-            <button
-              onClick={onToggleHighContrast}
-              className={`mobile-a11y-chip ${isHighContrast ? 'is-active' : ''}`}
-            >
-              <Contrast size={16} className="contrast-icon-anim" />
-              <span>{lang === 'ar' ? 'تباين عالي' : 'High Contrast'}</span>
-            </button>
-            <button
-              onClick={onToggleLargeText}
-              className={`mobile-a11y-chip ${isLargeText ? 'is-active' : ''}`}
-            >
-              <span className="text-size-icon-anim" style={{ display: 'inline-flex', fontSize: '0.9rem', fontWeight: 800 }}>A+</span>
-              <span>{lang === 'ar' ? 'تكبير النص' : 'Big Text'}</span>
-            </button>
           </div>
 
           <div className="mobile-nav-footer">
