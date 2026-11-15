@@ -110,6 +110,9 @@ export function SonificationStudio({
     }
   }, [resource, primarySeries, isMuted, volume]);
 
+  const triggerToneRef = useRef(null);
+  triggerToneRef.current = triggerToneForTime;
+
   // Centralized playback controller instantiation
   if (!controllerRef.current) {
     controllerRef.current = new EICPlaybackController({
@@ -118,7 +121,7 @@ export function SonificationStudio({
         // Play acoustic pulse at regular intervals (~0.6s step)
         if (Math.abs(t - lastSoundTimeRef.current) >= 0.6) {
           lastSoundTimeRef.current = t;
-          triggerToneForTime(t);
+          triggerToneRef.current?.(t);
         }
       },
       onPlayStateChange: (playing) => setIsPlaying(playing),
@@ -134,6 +137,19 @@ export function SonificationStudio({
     });
   }
 
+  // Keep playback controller callbacks strictly synchronized with current active resource
+  useEffect(() => {
+    if (controllerRef.current) {
+      controllerRef.current.onTimeUpdate = (t) => {
+        setCurrentTime(t);
+        if (Math.abs(t - lastSoundTimeRef.current) >= 0.6) {
+          lastSoundTimeRef.current = t;
+          triggerToneForTime(t);
+        }
+      };
+    }
+  }, [triggerToneForTime]);
+
   // Handle switching datasets
   const handleSelectDataset = (newId) => {
     if (newId === activeResourceId) return;
@@ -148,7 +164,7 @@ export function SonificationStudio({
     onDatasetChange?.(newId);
 
     // Play signature acoustic tone of newly chosen dataset immediately
-    const nextResource = EIC_RESOURCES.find(r => r.id === newId);
+    const nextResource = getEicResourceById(newId) || EIC_RESOURCES.find(r => r.id === newId);
     if (nextResource && !isMuted && volume > 0) {
       playEICTone(nextResource, 50, volume);
     }

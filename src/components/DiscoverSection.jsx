@@ -68,6 +68,63 @@ export function DiscoverSection({ lang = 'en' }) {
         resourceId: 'perpetual-ocean-2',
         val: 27.8
       }
+    },
+    {
+      id: 'rain-river',
+      title: isArabic ? 'الأنهار الجوية: الرذاذ الخفيف مقابل هطول السيول الغزيرة' : 'Atmospheric River: Light Drizzle vs Torrential Deluge',
+      desc: isArabic
+        ? 'استمع إلى تسارع نقرات الماريمبا المائية مع تدفق ملايين الأطنان من بخار الماء في الغلاف الجوي.'
+        : 'Experience the cascade of dual-tap raindrop plinks accelerating from gentle mist to torrential precipitation.',
+      slotA: {
+        title: isArabic ? 'رذاذ خفيف (3 mm/h)' : 'Light Drizzle (3 mm/h)',
+        desc: isArabic ? 'نقرات ماريمبا خشبية متفرقة وهادئة.' : 'Sparse, gentle wooden marimba drops.',
+        resourceId: 'atmospheric-river-3d',
+        val: 3
+      },
+      slotB: {
+        title: isArabic ? 'طوفان نهري جوي (68 mm/h)' : 'Atmospheric Deluge (68 mm/h)',
+        desc: isArabic ? 'شلال إيقاعي سريع يحاكي هطول الأمطار الغزيرة.' : 'Rapid dual-tap droplet cascade simulating intense rainfall.',
+        resourceId: 'atmospheric-river-3d',
+        val: 68
+      }
+    },
+    {
+      id: 'polar-ice',
+      title: isArabic ? 'الجليد القطبي: ذوبان الصيف مقابل تجمد الشتاء' : 'Cryosphere: Summer Melt Minimum vs Winter Freeze Peak',
+      desc: isArabic
+        ? 'لاحظ رنين الزجاج البلوري البارد الحاد الذي يتصاعد مع تمدد الغطاء الجليدي القطبي عبر ملايين الكيلومترات.'
+        : 'Hear the high crystalline glass bell resonance and frost harmonics expanding across the frozen cryosphere.',
+      slotA: {
+        title: isArabic ? 'أدنى ذوبان صيفي (4.2 M km²)' : 'Summer Melt Minimum (4.2 M km²)',
+        desc: isArabic ? 'رنين جليدي خافت ومنخفض يعكس انحسار الجليد.' : 'Lower frosted glass pitch reflecting retreated sea ice pack.',
+        resourceId: 'antarctic-sea-ice',
+        val: 4.2
+      },
+      slotB: {
+        title: isArabic ? 'ذروة التجمد الشتوي (18.5 M km²)' : 'Winter Freeze Peak (18.5 M km²)',
+        desc: isArabic ? 'رنين بلوري ساطع وحاد يوضح اتساع القشرة الجليدية.' : 'Brilliant, piercing crystal overtone signaling vast sea ice coverage.',
+        resourceId: 'antarctic-sea-ice',
+        val: 18.5
+      }
+    },
+    {
+      id: 'urban-lights',
+      title: isArabic ? 'أضواء الأرض: الساحل الريفي مقابل المدن الكبرى' : 'Night Lights: Rural Darkness vs Megacity Radiance',
+      desc: isArabic
+        ? 'تباين نغمات الرنين الكهربائي الرقمي بين ظلمة السماء الريفية والوهج الساطع للعواصم العالمية.'
+        : 'Contrast the gentle hum of rural areas against the sparkling FM electric chimes of major metropolitan centers.',
+      slotA: {
+        title: isArabic ? 'سماء ريفية مظلمة (4 nW)' : 'Rural Dark Sky (4 nW)',
+        desc: isArabic ? 'نغمة إلكترونية هادئة مع رنين طفيف.' : 'Quiet digital bell chime in low harmonic register.',
+        resourceId: 'night-lights-decade',
+        val: 4
+      },
+      slotB: {
+        title: isArabic ? 'إشعاع عاصمة عملاقة (120 nW)' : 'Megacity Radiance (120 nW)',
+        desc: isArabic ? 'أجراس كهربائية متلألئة ذات رنين معدني ساطع.' : 'Shimmering FM bell synth with sparkling high overtones.',
+        resourceId: 'night-lights-decade',
+        val: 120
+      }
     }
   ];
 

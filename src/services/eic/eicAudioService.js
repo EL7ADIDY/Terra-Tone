@@ -22,6 +22,7 @@ import {
   ensureAudioContextRunning,
   PENTATONIC_FREQUENCIES
 } from '../../utils/audioUtils.js';
+import { EIC_RESOURCES } from './eicResources.js';
 
 export const PENTATONIC_NOTE_NAMES = [
   'C3', 'D3', 'E3', 'G3', 'A3',
@@ -81,10 +82,39 @@ export const EIC_SOUND_PROFILES = {
   }
 };
 
+// Aliases for quick lookup
+EIC_SOUND_PROFILES['aerosols'] = EIC_SOUND_PROFILES['geos-aerosols-2017'];
+EIC_SOUND_PROFILES['carbon'] = EIC_SOUND_PROFILES['dyamond-co2-transport'];
+EIC_SOUND_PROFILES['ocean'] = EIC_SOUND_PROFILES['perpetual-ocean-2'];
+EIC_SOUND_PROFILES['precip'] = EIC_SOUND_PROFILES['atmospheric-river-3d'];
+EIC_SOUND_PROFILES['nightlights'] = EIC_SOUND_PROFILES['night-lights-decade'];
+EIC_SOUND_PROFILES['ice'] = EIC_SOUND_PROFILES['antarctic-sea-ice'];
+
+/**
+ * Robustly resolve resource object from either an object or string ID / alias
+ */
+export function resolveResource(res) {
+  if (!res) return EIC_RESOURCES[0];
+  if (typeof res === 'object' && res.graphConfig?.series?.[0]) return res;
+
+  const idStr = typeof res === 'string' ? res : (res?.id || '');
+  const aliases = {
+    'aerosols': 'geos-aerosols-2017',
+    'carbon': 'dyamond-co2-transport',
+    'ocean': 'perpetual-ocean-2',
+    'precip': 'atmospheric-river-3d',
+    'nightlights': 'night-lights-decade',
+    'ice': 'antarctic-sea-ice',
+  };
+  const targetId = aliases[idStr] || idStr;
+  return EIC_RESOURCES.find(r => r.id === targetId) || EIC_RESOURCES[0];
+}
+
 /**
  * Calculate scientific percentage (0% to 100%) and musical frequency for a resource value
  */
-export function getPercentageAndFreq(resource, value) {
+export function getPercentageAndFreq(rawResource, value) {
+  const resource = resolveResource(rawResource);
   if (!resource || !resource.graphConfig?.series?.[0]) {
     return {
       percentage: 50,
@@ -144,7 +174,7 @@ function getOrCreateNoiseBuffer(ctx) {
  * Each of the 6 NASA EIC datasets possesses a completely unique acoustic timbre,
  * register, synthesis technique, and physical sound character.
  */
-export async function playEICTone(resource, value, volume = 0.7) {
+export async function playEICTone(rawResource, value, volume = 0.7) {
   if (volume <= 0) return;
 
   const running = await ensureAudioContextRunning();
@@ -153,8 +183,9 @@ export async function playEICTone(resource, value, volume = 0.7) {
   const ctx = getAudioContext();
   if (!ctx || ctx.state !== 'running') return;
 
+  const resource = resolveResource(rawResource);
   const { percentage, frequency } = getPercentageAndFreq(resource, value);
-  const profile = EIC_SOUND_PROFILES[resource.id] || { instrument: 'electric_bell' };
+  const profile = EIC_SOUND_PROFILES[resource.id] || EIC_SOUND_PROFILES['night-lights-decade'];
   const now = ctx.currentTime;
   const effectiveVol = Math.max(0.01, Math.min(1, volume));
 
