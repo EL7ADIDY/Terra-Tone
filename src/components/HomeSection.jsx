@@ -62,18 +62,18 @@ export function HomeSection({ lang = 'en', isDark = true, onExploreClick, onHowI
           {/* Key Metric Highlights */}
           <div className="hero-metrics-strip">
             <div className="metric-item">
-              <span className="metric-val">100%</span>
-              <span className="metric-lbl">{isArabic ? 'بيانات ناسا الأصلية' : 'Verified NASA Data'}</span>
+              <span className="metric-val">6</span>
+              <span className="metric-lbl">{isArabic ? 'عروض ناسا العلمية' : 'NASA SVS Visualizations'}</span>
             </div>
             <div className="metric-divider" />
             <div className="metric-item">
-              <span className="metric-val">6+</span>
-              <span className="metric-lbl">{isArabic ? 'أبعاد مناخية' : 'Climate Domains'}</span>
+              <span className="metric-val">2</span>
+              <span className="metric-lbl">{isArabic ? 'واجهات بيانات ناسا مباشرة' : 'Live NASA Data APIs'}</span>
             </div>
             <div className="metric-divider" />
             <div className="metric-item">
-              <span className="metric-val">24/7</span>
-              <span className="metric-lbl">{isArabic ? 'استشعار فضائي مستمر' : 'Orbital Telemetry'}</span>
+              <span className="metric-val">EN · AR</span>
+              <span className="metric-lbl">{isArabic ? 'واجهة ثنائية اللغة' : 'Bilingual Interface'}</span>
             </div>
           </div>
         </div>
