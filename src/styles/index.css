@@ -493,7 +493,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
   padding: 0.85rem 1.25rem;
   background: rgba(239, 68, 68, 0.1);
   border: 1px solid rgba(239, 68, 68, 0.35);
@@ -1949,8 +1950,8 @@ body {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  flex: 1;
-  min-width: 220px;
+  flex: 1 1 260px;
+  min-width: 0; /* let the row wrap instead of pushing the dropdown over the date */
 }
 
 .gibs-label {
@@ -1964,12 +1965,18 @@ body {
 }
 
 .gibs-select {
-  flex: 1;
+  flex: 1 1 auto;
+  min-width: 0; /* a <select> otherwise refuses to shrink below its longest option */
+  width: 100%;
+  max-width: 100%;
+  text-overflow: ellipsis;
   padding: 0.4rem 0.65rem;
   font-size: 0.82rem;
 }
 
 .gibs-date-badge {
+  flex: 0 0 auto;
+  white-space: nowrap;
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
@@ -2296,6 +2303,11 @@ body {
 
   .gibs-layer-picker {
     min-width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .gibs-layer-picker .gibs-select {
+    flex-basis: 100%;
   }
 
   .gibs-sonify-actions-row {
@@ -3393,3 +3405,15 @@ body[data-theme="high-contrast"] .theme-toggle-btn {
 
 
 
+
+/* Error banners: long NASA dataset IDs wrap instead of spilling out of the banner */
+.error-banner > * {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.error-banner > :not(button):not(svg) {
+  flex: 1 1 200px;
+}
+.error-banner > svg {
+  flex: 0 0 auto;
+}

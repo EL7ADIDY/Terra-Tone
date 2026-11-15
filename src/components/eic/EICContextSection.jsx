@@ -223,7 +223,7 @@ export function EICContextSection({
               {lang === 'ar' ? activeResource.titleAr : activeResource.titleEn}
             </h2>
             <p className="card-sub">
-              {activeResource.dataProvider} â€¢ SVS #{activeResource.svsId}
+              {activeResource.dataProvider} • SVS #{activeResource.svsId}
             </p>
           </div>
         </div>

@@ -18,19 +18,20 @@
    -------------------------------------------------------------------------- */
 .eic-main-experience-grid {
   display: grid;
-  grid-template-columns: 1.15fr 0.85fr;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); /* minmax(0,…) lets columns shrink to the screen */
   gap: 1.5rem;
   align-items: stretch;
 }
 
 @media (max-width: 1024px) {
   .eic-main-experience-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
 .eic-column-left,
 .eic-column-right {
+  min-width: 0;
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -64,6 +65,7 @@
 .eic-badge-row {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 0.5rem;
   margin-bottom: 0.35rem;
 }
@@ -293,6 +295,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap; /* the Active Reading box drops below the title instead of overlapping it */
+  gap: 0.75rem;
   padding: 1rem 1.25rem;
   border-bottom: 1px solid rgba(148, 163, 184, 0.1);
   background: rgba(15, 23, 42, 0.4);
@@ -471,6 +475,7 @@
 .eic-timeline-actions-left {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 0.65rem;
 }
 
@@ -547,7 +552,8 @@
 .eic-timeline-actions-right {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
 }
 
 .eic-btn-loop {
@@ -1710,4 +1716,21 @@
   border-color: #38bdf8;
   box-shadow: 0 0 12px rgba(2, 132, 199, 0.5);
   transform: translateY(-1px);
+}
+
+/* Graph header: title block shrinks and wraps; reading box keeps its size */
+.eic-graph-title-group {
+  flex: 1 1 220px;
+  min-width: 0;
+}
+.eic-live-reading-box {
+  flex: 0 0 auto;
+}
+.eic-timeline-controls-row > * {
+  min-width: 0;
+}
+/* Speed buttons may wrap onto a second line on narrow phones */
+.eic-speed-selector {
+  flex-wrap: wrap;
+  max-width: 100%;
 }
