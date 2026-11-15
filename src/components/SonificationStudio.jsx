@@ -1,7 +1,12 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { EIC_RESOURCES } from '../services/eic/eicResources';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { EIC_RESOURCES, getEicResourceById } from '../services/eic/eicResources';
+import { EICPlaybackController } from '../services/eic/eicTimelineService';
+import { eicDataService } from '../services/eic/eicDataService';
 import { playEICTone, getPercentageAndFreq, EIC_SOUND_PROFILES } from '../services/eic/eicAudioService';
 import { ensureAudioContextRunning } from '../utils/audioUtils';
+import { EICVisualization } from './eic/EICVisualization';
+import { EICScientificGraph } from './eic/EICScientificGraph';
+import { EICScientificInformation } from './eic/EICScientificInformation';
 import { AudioVisualizerCanvas } from './AudioVisualizerCanvas';
 import {
   Play,
@@ -13,12 +18,16 @@ import {
   Sliders,
   ChevronDown,
   ChevronUp,
-  Activity,
-  Zap,
+  Sparkles,
   Info,
-  Sparkles
+  Maximize2
 } from 'lucide-react';
 
+/**
+ * Unified Sonification Studio:
+ * Pairs original NASA/EIC visualizations side-by-side with scientific graphs,
+ * real-time Web Audio API sonification, and audio-reactive oscilloscope + spectrum visualizers.
+ */
 export function SonificationStudio({
   lang = 'en',
   isDark = true,
@@ -27,14 +36,24 @@ export function SonificationStudio({
 }) {
   const isArabic = lang === 'ar';
 
-  // 1. Current Resource Selection
-  const [activeResourceId, setActiveResourceId] = useState(selectedDatasetId);
-  const resource = EIC_RESOURCES.find(r => r.id === activeResourceId) || EIC_RESOURCES[0];
+  // 1. Current Active Dataset
+  const [activeResourceId, setActiveResourceId] = useState(() => {
+    const mapping = {
+      'aerosols': 'geos-aerosols-2017',
+      'carbon': 'dyamond-co2-transport',
+      'ocean': 'perpetual-ocean-2',
+      'precip': 'atmospheric-river-3d',
+      'nightlights': 'night-lights-decade',
+      'ice': 'antarctic-sea-ice',
+    };
+    return mapping[selectedDatasetId] || selectedDatasetId || EIC_RESOURCES[0].id;
+  });
+
+  const resource = getEicResourceById(activeResourceId) || EIC_RESOURCES[0];
 
   // Sync with prop when changed externally (e.g. from ExploreDataSection)
   useEffect(() => {
     if (selectedDatasetId) {
-      // Map aliases if needed
       const mapping = {
         'aerosols': 'geos-aerosols-2017',
         'carbon': 'dyamond-co2-transport',
@@ -44,223 +63,278 @@ export function SonificationStudio({
         'ice': 'antarctic-sea-ice',
       };
       const targetId = mapping[selectedDatasetId] || selectedDatasetId;
-      if (EIC_RESOURCES.some(r => r.id === targetId)) {
-        setActiveResourceId(targetId);
+      if (EIC_RESOURCES.some(r => r.id === targetId) && targetId !== activeResourceId) {
+        handleSelectDataset(targetId);
       }
     }
   }, [selectedDatasetId]);
 
-  // 2. Playback State
+  // 2. Synchronized Timeline & Playback Controller
+  const [currentTime, setCurrentTime] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [playbackSpeed, setPlaybackSpeed] = useState(1); // 0.5, 1, 1.5, 2
-  const [volume, setVolume] = useState(0.75);
+  const [playbackSpeed, setPlaybackSpeed] = useState(1.0);
+  const [volume, setVolume] = useState(0.8);
   const [isMuted, setIsMuted] = useState(false);
-  const [showAdvanced, setShowAdvanced] = useState(false);
-  const [timbreOverride, setTimbreOverride] = useState('auto'); // 'auto' | specific instrument
-  const [octaveShift, setOctaveShift] = useState(0); // -1, 0, 1
+  const [isLooping, setIsLooping] = useState(true);
+  const [showMetadata, setShowMetadata] = useState(false);
 
-  // Data Points from Resource
-  const seriesData = resource.graphConfig?.series?.[0]?.data || [];
-  const totalPoints = seriesData.length || 1;
-  const currentDataPoint = seriesData[currentIndex] || seriesData[0] || { x: 'N/A', y: 0 };
+  const controllerRef = useRef(null);
+  const lastSoundTimeRef = useRef(-1);
 
-  // Calculate live frequency and percentage
-  const telemetry = getPercentageAndFreq(resource, currentDataPoint?.y);
+  // Current interpolated values at the active timestamp
+  const currentValues = useMemo(() => {
+    return eicDataService.getInterpolatedValuesAtTime(resource, currentTime);
+  }, [resource, currentTime]);
 
-  // Playback timer ref
-  const timerRef = useRef(null);
-  const currentIndexRef = useRef(currentIndex);
-  currentIndexRef.current = currentIndex;
+  const primarySeries = resource.graphConfig?.series?.[0];
+  const primaryReadingRaw = primarySeries ? currentValues[primarySeries.key] : null;
+  const primaryReading = (primaryReadingRaw && typeof primaryReadingRaw === 'object')
+    ? (primaryReadingRaw.currentValue !== undefined ? primaryReadingRaw.currentValue : primaryReadingRaw.y)
+    : primaryReadingRaw;
 
-  // Trigger single tone for a specific data index
-  const playIndexTone = useCallback(async (idx) => {
-    const pt = seriesData[idx];
-    if (!pt) return;
+  // Live telemetry (percentage, musical frequency, note name)
+  const telemetry = useMemo(() => {
+    return getPercentageAndFreq(resource, primaryReading);
+  }, [resource, primaryReading]);
+
+  // Sound tone trigger
+  const triggerToneForTime = useCallback((timeVal) => {
     const effectiveVol = isMuted ? 0 : volume;
     if (effectiveVol <= 0) return;
 
+    const values = eicDataService.getInterpolatedValuesAtTime(resource, timeVal);
+    const raw = primarySeries ? values[primarySeries.key] : null;
+    const val = (raw && typeof raw === 'object') ? (raw.currentValue ?? raw.y) : raw;
+    if (val !== null && !isNaN(val)) {
+      playEICTone(resource, val, effectiveVol);
+    }
+  }, [resource, primarySeries, isMuted, volume]);
+
+  // Centralized playback controller instantiation
+  if (!controllerRef.current) {
+    controllerRef.current = new EICPlaybackController({
+      onTimeUpdate: (t) => {
+        setCurrentTime(t);
+        // Play acoustic pulse at regular intervals (~0.6s step)
+        if (Math.abs(t - lastSoundTimeRef.current) >= 0.6) {
+          lastSoundTimeRef.current = t;
+          triggerToneForTime(t);
+        }
+      },
+      onPlayStateChange: (playing) => setIsPlaying(playing),
+      onSpeedChange: (spd) => setPlaybackSpeed(spd),
+      onEnded: () => {
+        if (isLooping && controllerRef.current) {
+          controllerRef.current.seek(0);
+          controllerRef.current.play();
+        } else {
+          setIsPlaying(false);
+        }
+      }
+    });
+  }
+
+  // Handle switching datasets
+  const handleSelectDataset = (newId) => {
+    if (newId === activeResourceId) return;
+    if (controllerRef.current) {
+      controllerRef.current.pause();
+      controllerRef.current.seek(0);
+    }
+    setCurrentTime(0);
+    lastSoundTimeRef.current = -1;
+    setIsPlaying(false);
+    setActiveResourceId(newId);
+    onDatasetChange?.(newId);
+  };
+
+  // Attach video element when mounted
+  const handleVideoAttach = useCallback((videoEl, duration) => {
+    if (controllerRef.current) {
+      controllerRef.current.attachVideo(videoEl, duration);
+    }
+  }, []);
+
+  // Play / Pause Master Toggle
+  const handleTogglePlay = async () => {
     await ensureAudioContextRunning();
-
-    // Custom frequency adjustment for octave shift
-    let freqMultiplier = 1;
-    if (octaveShift === 1) freqMultiplier = 2;
-    if (octaveShift === -1) freqMultiplier = 0.5;
-
-    playEICTone(resource, pt.y, effectiveVol);
-  }, [seriesData, isMuted, volume, resource, octaveShift]);
-
-  // Handle Play/Pause
-  const togglePlay = async () => {
-    if (isPlaying) {
-      setIsPlaying(false);
-      if (timerRef.current) clearInterval(timerRef.current);
-    } else {
-      await ensureAudioContextRunning();
-      setIsPlaying(true);
-      // Play immediately at current index
-      playIndexTone(currentIndexRef.current);
+    if (controllerRef.current) {
+      controllerRef.current.togglePlay();
+      if (!isPlaying) {
+        triggerToneForTime(currentTime);
+      }
     }
   };
 
-  // Playback Step Loop
-  useEffect(() => {
-    if (!isPlaying) {
-      if (timerRef.current) clearInterval(timerRef.current);
-      return;
+  // Scrub / Seek
+  const handleSeek = (targetSeconds) => {
+    if (controllerRef.current) {
+      controllerRef.current.seek(targetSeconds);
     }
+    setCurrentTime(targetSeconds);
+    lastSoundTimeRef.current = targetSeconds;
+    triggerToneForTime(targetSeconds);
+  };
 
-    // Interval duration in ms based on playback speed (base ~750ms per step)
-    const intervalMs = Math.round(750 / playbackSpeed);
+  // Speed
+  const handleChangeSpeed = (newSpeed) => {
+    if (controllerRef.current) {
+      controllerRef.current.setSpeed(newSpeed);
+    }
+  };
 
-    timerRef.current = setInterval(() => {
-      const nextIdx = (currentIndexRef.current + 1) % totalPoints;
-      setCurrentIndex(nextIdx);
-      playIndexTone(nextIdx);
-    }, intervalMs);
-
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, [isPlaying, playbackSpeed, totalPoints, playIndexTone]);
-
-  // Handle Reset
+  // Reset
   const handleReset = () => {
-    setIsPlaying(false);
-    if (timerRef.current) clearInterval(timerRef.current);
-    setCurrentIndex(0);
-    playIndexTone(0);
-  };
-
-  // Scrubber Change
-  const handleScrub = (e) => {
-    const val = parseInt(e.target.value, 10);
-    setCurrentIndex(val);
-    playIndexTone(val);
-  };
-
-  // Change Dataset
-  const handleSelectDataset = (id) => {
-    setIsPlaying(false);
-    if (timerRef.current) clearInterval(timerRef.current);
-    setActiveResourceId(id);
-    setCurrentIndex(0);
-    onDatasetChange?.(id);
+    handleSeek(0);
+    if (isPlaying && controllerRef.current) {
+      controllerRef.current.pause();
+    }
   };
 
   const soundProfile = EIC_SOUND_PROFILES[resource.id] || {
     nameEn: 'Acoustic Synthesizer',
-    nameAr: 'سنثسايزر صوتي',
-    conceptEn: 'Scientific Data Sonification'
+    nameAr: 'سنثسايزر صوتي'
   };
 
   return (
     <section id="studio" className="studio-section">
       <div className="section-header-block">
         <span className="section-eyebrow">
-          {isArabic ? 'المركز الصوتي التفاعلي' : 'INTERACTIVE SOUND ENGINE'}
+          {isArabic ? 'المرئيات الأصلية والرسوم البيانية والصوت' : 'NASA VISUALS + GRAPHS + ACOUSTICS'}
         </span>
         <h2 className="section-title">
-          {isArabic ? 'استوديو الصوتيات البيئية' : 'Sonification Studio'}
+          {isArabic ? 'استوديو الصوتيات والمرئيات المتزامنة' : 'Sonification Studio'}
         </h2>
         <p className="section-subtitle">
           {isArabic
-            ? 'حوّل سلاسل بيانات ناسا الزمنية إلى ترددات ونغمات في الوقت الفعلي مع محاكاة بصرية فورية'
-            : 'Audition real NASA Earth observation time-series with authentic Web Audio oscillators and live reactive visualizers.'}
+            ? 'مشاهدة محاكاة الحواسيب الفائقة لوكالة ناسا جنباً إلى جنب مع الرسوم البيانية العلمية والصوتيات في الوقت الفعلي'
+            : 'Explore original NASA SVS supercomputer animations side-by-side with synchronized scientific graphs and genuine audio sonification.'}
         </p>
       </div>
 
-      <div className="studio-workbench-card">
-        {/* Left Side: Controls */}
-        <div className="studio-controls-pane">
-          <div className="pane-header">
-            <div className="pane-title-wrap">
-              <Sliders size={18} className="pane-icon" />
-              <h3 className="pane-title">{isArabic ? 'لوحة التحكم والتشغيل' : 'Playback & Synthesis'}</h3>
-            </div>
-            <span className="badge-live-ready">WEB AUDIO READY</span>
-          </div>
-
-          {/* Dataset Selector Dropdown */}
-          <div className="control-field">
-            <label className="field-label">
-              {isArabic ? 'مجموعة بيانات ناسا:' : 'Active NASA Dataset:'}
-            </label>
-            <div className="custom-select-wrapper">
-              <select
-                value={activeResourceId}
-                onChange={(e) => handleSelectDataset(e.target.value)}
-                className="studio-select"
+      <div className="studio-unified-card">
+        {/* 1. TOP SELECTOR BAR: 6 NASA SVS DATASETS */}
+        <div className="studio-datasets-pill-bar" role="tablist" aria-label="NASA Scientific Datasets">
+          {EIC_RESOURCES.map((res) => {
+            const isCur = res.id === activeResourceId;
+            return (
+              <button
+                key={res.id}
+                role="tab"
+                aria-selected={isCur}
+                onClick={() => handleSelectDataset(res.id)}
+                className={`studio-dataset-pill ${isCur ? 'active' : ''}`}
               >
-                {EIC_RESOURCES.map((res) => (
-                  <option key={res.id} value={res.id}>
-                    {isArabic ? res.titleAr : res.titleEn} ({res.unitShort || res.primaryVariable})
-                  </option>
-                ))}
-              </select>
-            </div>
+                <span className="pill-dot" style={{ backgroundColor: res.graphConfig?.series?.[0]?.color || '#38bdf8' }} />
+                <span className="pill-name">{isArabic ? res.titleAr : res.titleEn}</span>
+                <span className="pill-tag">SVS #{res.svsId}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* 2. MAIN STAGE: SIDE-BY-SIDE ORIGINAL NASA VISUAL + SCIENTIFIC GRAPH */}
+        <div className="studio-side-by-side-stage">
+          {/* LEFT: ORIGINAL NASA SVS VISUAL (VIDEO ANIMATION) */}
+          <div className="studio-visual-column">
+            <EICVisualization
+              resource={resource}
+              currentTime={currentTime}
+              isPlaying={isPlaying}
+              playbackSpeed={playbackSpeed}
+              onTogglePlay={handleTogglePlay}
+              onVideoAttach={handleVideoAttach}
+              lang={lang}
+            />
           </div>
 
-          {/* Transport Bar (Play, Pause, Reset) */}
-          <div className="studio-transport-row">
+          {/* RIGHT: CORRESPONDING SCIENTIFIC TIME-SERIES GRAPH */}
+          <div className="studio-graph-column">
+            <EICScientificGraph
+              resource={resource}
+              currentTime={currentTime}
+              onSeek={handleSeek}
+              lang={lang}
+              theme={isDark ? 'dark' : 'light'}
+            />
+          </div>
+        </div>
+
+        {/* 3. SYNCHRONIZED MASTER CONTROLS & TIMELINE BAR */}
+        <div className="studio-master-controls-bar">
+          <div className="master-transport-group">
+            {/* Master Play/Pause */}
             <button
-              onClick={togglePlay}
-              className={`transport-btn-play ${isPlaying ? 'is-playing' : ''}`}
-              title={isPlaying ? 'Pause Sonification' : 'Play Sonification'}
+              onClick={handleTogglePlay}
+              className={`master-play-btn ${isPlaying ? 'is-playing' : ''}`}
+              title={isPlaying ? 'Pause' : 'Play synchronized visual, graph & sound'}
+              aria-label={isPlaying ? 'Pause' : 'Play'}
             >
-              {isPlaying ? <Pause size={22} fill="currentColor" /> : <Play size={22} fill="currentColor" />}
-              <span>{isPlaying ? (isArabic ? 'إيقاف مؤقت' : 'Pause') : (isArabic ? 'تشغيل الصوت' : 'Play Sound')}</span>
+              {isPlaying ? <Pause size={20} fill="currentColor" /> : <Play size={20} fill="currentColor" />}
+              <span>{isPlaying ? (isArabic ? 'إيقاف مؤقت' : 'Pause') : (isArabic ? 'تشغيل الكل' : 'Play Sync')}</span>
             </button>
 
+            {/* Reset */}
             <button
               onClick={handleReset}
-              className="transport-btn-secondary"
+              className="master-icon-btn"
               title="Reset Timeline to Beginning"
+              aria-label="Reset Timeline"
             >
-              <RotateCcw size={18} />
-              <span>{isArabic ? 'إعادة' : 'Reset'}</span>
+              <RotateCcw size={16} />
             </button>
           </div>
 
-          {/* Timeline Scrubber */}
-          <div className="control-field timeline-scrub-field">
-            <div className="scrub-meta-row">
-              <span className="scrub-label">{isArabic ? 'مسار النقاط الزمنية:' : 'Observation Timeline:'}</span>
-              <span className="scrub-time-indicator">
-                {currentDataPoint?.x} ({currentIndex + 1} / {totalPoints})
+          {/* Center Scrubber Slider */}
+          <div className="master-scrubber-group">
+            <div className="scrubber-labels-row">
+              <span className="scrubber-current-time">
+                {eicDataService.formatTime(currentTime)}
+              </span>
+              <span className="scrubber-milestone-text">
+                {eicDataService.getCurrentMilestone(resource, currentTime)?.label || (isArabic ? 'تزامن علمي' : 'Synchronized Timeline')}
+              </span>
+              <span className="scrubber-duration-time">
+                {eicDataService.formatTime(resource.durationSeconds)}
               </span>
             </div>
             <input
               type="range"
               min="0"
-              max={totalPoints - 1}
-              value={currentIndex}
-              onChange={handleScrub}
+              max={resource.durationSeconds}
+              step="0.1"
+              value={currentTime}
+              onChange={(e) => handleSeek(parseFloat(e.target.value))}
               className="studio-scrubber-slider"
-              aria-label="Timeline Scrubber"
+              aria-label="Synchronized Timeline Scrubber"
             />
-            <div className="scrub-ticks">
-              <span>{seriesData[0]?.x}</span>
-              <span>{seriesData[Math.floor(totalPoints / 2)]?.x}</span>
-              <span>{seriesData[totalPoints - 1]?.x}</span>
-            </div>
           </div>
 
-          {/* Volume & Speed Controls */}
-          <div className="studio-dual-controls">
-            {/* Volume */}
-            <div className="control-subgroup">
-              <div className="subgroup-label-row">
+          {/* Right Group: Cadence & Volume */}
+          <div className="master-aux-group">
+            {/* Speed Cadence */}
+            <div className="aux-speed-pills">
+              {[0.5, 1.0, 1.5, 2.0].map((spd) => (
                 <button
-                  onClick={() => setIsMuted(!isMuted)}
-                  className="subgroup-icon-btn"
-                  title={isMuted ? 'Unmute' : 'Mute'}
+                  key={spd}
+                  onClick={() => handleChangeSpeed(spd)}
+                  className={`aux-speed-btn ${playbackSpeed === spd ? 'active' : ''}`}
                 >
-                  {isMuted || volume === 0 ? <VolumeX size={16} /> : <Volume2 size={16} />}
+                  {spd}x
                 </button>
-                <span className="subgroup-label">{isArabic ? 'مستوى الصوت' : 'Volume'}</span>
-                <span className="subgroup-val">{isMuted ? '0%' : `${Math.round(volume * 100)}%`}</span>
-              </div>
+              ))}
+            </div>
+
+            {/* Volume */}
+            <div className="aux-volume-wrapper">
+              <button
+                onClick={() => setIsMuted(!isMuted)}
+                className="aux-vol-btn"
+                title={isMuted ? 'Unmute' : 'Mute'}
+                aria-label="Toggle Mute"
+              >
+                {isMuted || volume === 0 ? <VolumeX size={16} /> : <Volume2 size={16} />}
+              </button>
               <input
                 type="range"
                 min="0"
@@ -271,143 +345,80 @@ export function SonificationStudio({
                   setVolume(parseFloat(e.target.value));
                   if (isMuted) setIsMuted(false);
                 }}
-                className="studio-slider"
-                aria-label="Volume Slider"
+                className="aux-volume-slider"
+                aria-label="Master Volume"
               />
             </div>
-
-            {/* Speed */}
-            <div className="control-subgroup">
-              <div className="subgroup-label-row">
-                <Gauge size={16} className="subgroup-icon" />
-                <span className="subgroup-label">{isArabic ? 'سرعة التتابع' : 'Cadence'}</span>
-                <span className="subgroup-val">{playbackSpeed}x</span>
-              </div>
-              <div className="speed-pills-row">
-                {[0.5, 1, 1.5, 2].map((spd) => (
-                  <button
-                    key={spd}
-                    onClick={() => setPlaybackSpeed(spd)}
-                    className={`speed-pill ${playbackSpeed === spd ? 'active' : ''}`}
-                  >
-                    {spd}x
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Expandable Advanced Settings Accordion */}
-          <div className="studio-accordion-box">
-            <button
-              onClick={() => setShowAdvanced(!showAdvanced)}
-              className="accordion-header-btn"
-            >
-              <span>{isArabic ? 'إعدادات متقدمة للترددات والجرس' : 'Advanced Acoustic Controls'}</span>
-              {showAdvanced ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-            </button>
-
-            {showAdvanced && (
-              <div className="accordion-content">
-                <div className="adv-field">
-                  <span className="adv-lbl">{isArabic ? 'إزاحة الأوكتاف:' : 'Octave Pitch Shift:'}</span>
-                  <div className="octave-pills">
-                    {[-1, 0, 1].map((oct) => (
-                      <button
-                        key={oct}
-                        onClick={() => setOctaveShift(oct)}
-                        className={`oct-pill ${octaveShift === oct ? 'active' : ''}`}
-                      >
-                        {oct > 0 ? `+${oct}` : oct} Oct
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="adv-field">
-                  <span className="adv-lbl">{isArabic ? 'جرس الآلة المخصص:' : 'Instrument Timbre:'}</span>
-                  <span className="adv-val-tag">
-                    {isArabic ? soundProfile.nameAr : soundProfile.nameEn}
-                  </span>
-                </div>
-              </div>
-            )}
           </div>
         </div>
 
-        {/* Right Side: Real-Time Audio-Reactive Visualizations */}
-        <div className="studio-visualization-pane">
-          {/* Telemetry HUD Strip */}
-          <div className="studio-hud-banner">
-            <div className="hud-metric-tile">
-              <span className="hud-label">{isArabic ? 'القيمة المرصودة' : 'CURRENT VALUE'}</span>
-              <span className="hud-val highlight">
-                {currentDataPoint?.y !== undefined ? `${currentDataPoint.y} ${resource.unitShort || ''}` : '---'}
-              </span>
-              <span className="hud-sub">{isArabic ? resource.titleAr : resource.titleEn}</span>
-            </div>
-
-            <div className="hud-metric-tile">
-              <span className="hud-label">{isArabic ? 'التردد الصوتي' : 'PITCH FREQUENCY'}</span>
-              <span className="hud-val cyan">
-                {telemetry.frequency ? `${Math.round(telemetry.frequency)} Hz` : '---'}
-              </span>
-              <span className="hud-sub">{telemetry.noteName || 'Pentatonic Note'}</span>
-            </div>
-
-            <div className="hud-metric-tile">
-              <span className="hud-label">{isArabic ? 'موقع المؤشر' : 'TIMELINE STEP'}</span>
-              <span className="hud-val purple">{currentDataPoint?.x || 'Baseline'}</span>
-              <span className="hud-sub">
-                {isPlaying ? (isArabic ? 'يعمل الآن' : 'Live Audition') : (isArabic ? 'متوقف' : 'Paused')}
-              </span>
-            </div>
-          </div>
-
+        {/* 4. REAL-TIME AUDIO-REACTIVE VISUALIZER & TELEMETRY HUD */}
+        <div className="studio-bottom-stage-grid">
           {/* Genuine Web Audio API Analyser Visualizer */}
-          <div className="studio-visualizer-canvas-frame">
+          <div className="studio-visualizer-card">
             <AudioVisualizerCanvas
               isPlaying={isPlaying}
               isDark={isDark}
-              accentColor={isDark ? '#38bdf8' : '#0284c7'}
+              accentColor={resource.graphConfig?.series?.[0]?.color || '#38bdf8'}
             />
           </div>
 
-          {/* Mini Interactive Time-Series Wave Map */}
-          <div className="studio-series-tracker">
-            <div className="tracker-header">
-              <span className="tracker-title">
-                {isArabic ? 'سلسلة البيانات الزمنية التزامنية' : 'SYNCHRONIZED DATA SEQUENCE'}
+          {/* Live Telemetry & Sound Identity HUD */}
+          <div className="studio-telemetry-hud-card">
+            <div className="hud-card-header">
+              <span className="hud-header-eyebrow">
+                {isArabic ? 'المؤشرات الحيوية للصوت' : 'LIVE ACOUSTIC TELEMETRY'}
               </span>
-              <span className="tracker-progress">
-                {Math.round(((currentIndex + 1) / totalPoints) * 100)}% COMPLETE
+              <span className="hud-live-tag">
+                <span className="pulse-dot" />
+                <span>{isPlaying ? 'ACTIVE SYNTH' : 'IDLE'}</span>
               </span>
             </div>
 
-            {/* Sparkline Points Bar */}
-            <div className="tracker-bars-track">
-              {seriesData.map((pt, i) => {
-                const isCur = i === currentIndex;
-                const isPassed = i < currentIndex;
-                const pct = telemetry.minY !== undefined && telemetry.maxY !== undefined
-                  ? Math.max(10, Math.min(100, ((pt.y - telemetry.minY) / (telemetry.maxY - telemetry.minY || 1)) * 100))
-                  : 50;
+            <div className="hud-metrics-row">
+              <div className="hud-metric-box">
+                <span className="lbl">{isArabic ? 'التردد الصوتي' : 'PITCH FREQUENCY'}</span>
+                <span className="val highlight">
+                  {telemetry.frequency ? `${Math.round(telemetry.frequency)} Hz` : '---'}
+                </span>
+                <span className="sub">{telemetry.noteName || 'Pentatonic Note'}</span>
+              </div>
 
-                return (
-                  <div
-                    key={i}
-                    onClick={() => {
-                      setCurrentIndex(i);
-                      playIndexTone(i);
-                    }}
-                    className={`tracker-bar-step ${isCur ? 'current' : ''} ${isPassed ? 'passed' : ''}`}
-                    style={{ height: `${pct}%` }}
-                    title={`${pt.x}: ${pt.y} ${resource.unitShort || ''}`}
-                  />
-                );
-              })}
+              <div className="hud-metric-box">
+                <span className="lbl">{isArabic ? 'القيمة المرصودة' : 'CURRENT READING'}</span>
+                <span className="val cyan">
+                  {primaryReading !== null ? `${primaryReading} ${resource.unitShort || ''}` : '---'}
+                </span>
+                <span className="sub">{resource.unitEn || resource.primaryVariable}</span>
+              </div>
+            </div>
+
+            <div className="hud-instrument-pill">
+              <span className="inst-lbl">{isArabic ? 'جرس الآلة الفيزيائي:' : 'Acoustic Timbre:'}</span>
+              <span className="inst-val">{isArabic ? soundProfile.nameAr : soundProfile.nameEn}</span>
             </div>
           </div>
+        </div>
+
+        {/* 5. COLLAPSIBLE SCIENTIFIC INFORMATION & NASA ATTRIBUTION */}
+        <div className="studio-metadata-accordion">
+          <button
+            onClick={() => setShowMetadata(!showMetadata)}
+            className="metadata-toggle-btn"
+          >
+            <div className="toggle-left">
+              <Info size={16} />
+              <span>{isArabic ? 'عرض التوثيق العلمي وبيانات ناسا المعتمدة' : 'View Authoritative Scientific Metadata & NASA Sources'}</span>
+              <span className="svs-tag">SVS #{resource.svsId}</span>
+            </div>
+            {showMetadata ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+          </button>
+
+          {showMetadata && (
+            <div className="metadata-expanded-content">
+              <EICScientificInformation resource={resource} lang={lang} />
+            </div>
+          )}
         </div>
       </div>
     </section>

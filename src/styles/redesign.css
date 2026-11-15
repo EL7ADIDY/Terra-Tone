@@ -1107,6 +1107,402 @@ section {
 }
 
 /* ==========================================================================
+   UNIFIED SONIFICATION STUDIO (VISUALS + GRAPHS + ACOUSTICS)
+   ========================================================================== */
+.studio-unified-card {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 24px;
+  padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  box-shadow: var(--shadow-card-elevated);
+}
+
+/* 1. Dataset Pills Bar */
+.studio-datasets-pill-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+  scrollbar-width: thin;
+}
+
+.studio-dataset-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+  padding: 0.6rem 1rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.studio-dataset-pill:hover {
+  border-color: var(--color-accent-primary);
+  color: var(--color-text-primary);
+}
+
+.studio-dataset-pill.active {
+  background: var(--color-accent-primary);
+  color: #050816;
+  font-weight: 800;
+  border-color: var(--color-accent-primary);
+  box-shadow: 0 4px 14px var(--color-accent-primary-glow);
+}
+
+.pill-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.studio-dataset-pill.active .pill-dot {
+  background-color: #050816 !important;
+}
+
+.pill-tag {
+  font-size: 0.7rem;
+  opacity: 0.8;
+  font-family: var(--font-family-mono, monospace);
+}
+
+/* 2. Side-by-side Stage: Video Animation + Scientific Graph */
+.studio-side-by-side-stage {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 1.5rem;
+  align-items: stretch;
+}
+
+@media (max-width: 1040px) {
+  .studio-side-by-side-stage {
+    grid-template-columns: 1fr;
+  }
+}
+
+.studio-visual-column,
+.studio-graph-column {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* 3. Master Controls & Scrubber Bar */
+.studio-master-controls-bar {
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  padding: 1.15rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.master-transport-group {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.master-play-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  background: var(--color-accent-primary);
+  color: #050816;
+  font-size: 0.95rem;
+  font-weight: 800;
+  padding: 0.65rem 1.35rem;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 16px var(--color-accent-primary-glow);
+  transition: all 0.2s ease;
+}
+
+.master-play-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px var(--color-accent-primary-glow);
+}
+
+.master-play-btn.is-playing {
+  background: #f97316;
+  color: #ffffff;
+  box-shadow: 0 4px 16px rgba(249, 115, 22, 0.4);
+}
+
+.master-icon-btn {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.master-icon-btn:hover {
+  border-color: var(--color-accent-primary);
+}
+
+.master-scrubber-group {
+  flex: 1;
+  min-width: 260px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.scrubber-labels-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.78rem;
+}
+
+.scrubber-current-time,
+.scrubber-duration-time {
+  font-family: var(--font-family-mono, monospace);
+  font-weight: 700;
+  color: var(--color-accent-primary);
+}
+
+.scrubber-milestone-text {
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.master-aux-group {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.aux-speed-pills {
+  display: flex;
+  gap: 0.3rem;
+  background: var(--color-bg-card);
+  padding: 0.25rem;
+  border-radius: 8px;
+  border: 1px solid var(--color-border-subtle);
+}
+
+.aux-speed-btn {
+  background: transparent;
+  border: none;
+  color: var(--color-text-secondary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.aux-speed-btn.active {
+  background: var(--color-accent-primary);
+  color: #050816;
+}
+
+.aux-volume-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.aux-vol-btn {
+  background: transparent;
+  border: none;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
+.aux-volume-slider {
+  width: 80px;
+  height: 5px;
+  accent-color: var(--color-accent-primary);
+  cursor: pointer;
+}
+
+/* 4. Bottom Stage: Audio Visualizer + Telemetry HUD */
+.studio-bottom-stage-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 1.5rem;
+}
+
+@media (max-width: 1040px) {
+  .studio-bottom-stage-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.studio-visualizer-card {
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  padding: 1.25rem;
+}
+
+.studio-telemetry-hud-card {
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.hud-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.hud-header-eyebrow {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: var(--color-accent-primary);
+}
+
+.hud-live-tag {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #10b981;
+}
+
+.pulse-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #10b981;
+  animation: pulse 1.5s infinite;
+}
+
+.hud-metrics-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.hud-metric-box {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-subtle);
+  padding: 1rem;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+.hud-metric-box .lbl {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  margin-bottom: 0.25rem;
+}
+
+.hud-metric-box .val {
+  font-size: 1.55rem;
+  font-weight: 900;
+  line-height: 1.1;
+  margin-bottom: 0.2rem;
+}
+
+.hud-metric-box .val.highlight { color: #f97316; }
+.hud-metric-box .val.cyan { color: var(--color-accent-primary); }
+
+.hud-metric-box .sub {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+
+.hud-instrument-pill {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--color-bg-card);
+  padding: 0.65rem 1rem;
+  border-radius: 10px;
+  font-size: 0.82rem;
+}
+
+.inst-lbl {
+  color: var(--color-text-secondary);
+}
+
+.inst-val {
+  font-weight: 800;
+  color: var(--color-accent-primary);
+}
+
+/* 5. Metadata Accordion */
+.studio-metadata-accordion {
+  border-top: 1px solid var(--color-border-subtle);
+  padding-top: 1rem;
+}
+
+.metadata-toggle-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border-subtle);
+  color: var(--color-text-primary);
+  padding: 0.85rem 1.25rem;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.metadata-toggle-btn:hover {
+  border-color: var(--color-accent-primary);
+}
+
+.toggle-left {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.svs-tag {
+  font-size: 0.72rem;
+  background: var(--color-accent-primary-glow);
+  color: var(--color-accent-primary);
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  font-weight: 800;
+}
+
+.metadata-expanded-content {
+  margin-top: 1rem;
+}
+
+/* ==========================================================================
    SECTION 4 — SONIFICATION STUDIO (CENTERPIECE)
    ========================================================================== */
 .studio-workbench-card {

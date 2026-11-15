@@ -20,7 +20,6 @@ export function Navbar({
   const navLinks = [
     { id: 'home', label: lang === 'ar' ? 'الرئيسية' : 'Home' },
     { id: 'science', label: lang === 'ar' ? 'العلم والمبدأ' : 'The Science' },
-    { id: 'eic-visuals', label: lang === 'ar' ? 'مرئيات EIC' : 'EIC Visuals' },
     { id: 'explore', label: lang === 'ar' ? 'استكشاف البيانات' : 'Explore Data' },
     { id: 'studio', label: lang === 'ar' ? 'استوديو الصوتيات' : 'Sonification Studio' },
     { id: 'discover', label: lang === 'ar' ? 'دليل الاستماع' : 'Discover' },
