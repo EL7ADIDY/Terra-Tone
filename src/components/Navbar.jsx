@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { HangingLampToggle } from './HangingLampToggle';
-import { Volume2, VolumeX, Globe, Menu, X, Sparkles, HelpCircle, Layers, Contrast } from 'lucide-react';
+import { Volume2, VolumeX, Globe, Menu, X, Sparkles, HelpCircle, Layers, Contrast, Info } from 'lucide-react';
 
 export function Navbar({
   theme,
@@ -85,7 +85,7 @@ export function Navbar({
             <button
               key={link.id}
               onClick={() => scrollToSection(link.id)}
-              className={`nav-link-btn ${activeSection === link.id ? 'active' : ''}`}
+              className={`nav-link-btn nav-link-${link.id} ${activeSection === link.id ? 'active' : ''}`}
             >
               {link.label}
               {activeSection === link.id && <span className="nav-active-pill" />}
@@ -134,6 +134,16 @@ export function Navbar({
               <span className="letter-plus">+</span>
             </span>
             <span className="a11y-badge-dot" />
+          </button>
+
+          {/* About / Info Modal Button */}
+          <button
+            onClick={onOpenAbout}
+            className="navbar-icon-btn about-btn"
+            title={lang === 'ar' ? 'معلومات عن المشروع والمصادر العلمية' : 'About Project & NASA Scientific Sources'}
+            aria-label="About Terra-Tone Project"
+          >
+            <Info size={17} />
           </button>
 
           {/* Language Switch */}
