@@ -214,26 +214,25 @@ MIT License. Created for the NASA Space Apps Challenge.
 
 ## Journey: game → moon orbit → website
 
-The site root (`/Terra-Tone/`) now opens the **Terra Tone game** first, embedded unchanged from
-`https://terra-earth-jukebox-playtest.blossomingbutterfly8.chatgpt.site/browser/`.
-“Continue to the Terra Tone website” plays a 1.5 s moon-orbit transition and then opens the
-website, which is served unchanged from **`/Terra-Tone/site/`**.
+The site root (`/Terra-Tone/`) opens the **Terra Tone game** first. The game lives in this repo at
+`public/game/` (served at **`/Terra-Tone/game/`**), copied from *Terra Tone — Previous version 11*
+(source commit 814d91be). In its main menu, **The Website** plays a 1.5 s moon-orbit transition and
+then opens the website, served from **`/Terra-Tone/site/`**.
+
+Game changes (all in `public/game/game.js`):
+- Main menu: “The Learning Web” renamed **Tutorial**; new **The Website** button
+  (inside the journey it sends `{ type: 'terra-tone:continue' }` to the page; opened on its own it
+  goes to `https://el7adidy.github.io/Terra-Tone/site/`).
+- Menu and Tutorial narration lines reuse parts of the existing recorded voice clips.
+- Tutorial page heading reads “TUTORIAL”.
 
 | File | Role |
 | --- | --- |
-| `index.html` | Journey wrapper (game iframe, continue button, transition canvas) |
+| `index.html` | Journey page (game iframe + transition canvas) |
 | `journey/journey.js` | Transition timing (exactly 1500 ms), orbit, prefetch of the website, Back/bfcache handling |
 | `journey/moon.js`, `journey/moon-worker.js` | Procedural moon texture, rendered in a Web Worker |
 | `journey/return-to-game.js` | “Back to the game” pill, shown only to visitors who came through the journey |
-| `site/index.html` | The website’s original entry, moved here; adds a pre-paint background and the return pill |
+| `site/index.html` | The website’s entry (pre-paint background + return pill) |
+| `public/game/` | The Terra Tone browser game |
 
-**Auto-continue at the game’s ending (optional).** The game is on another origin, so the wrapper
-cannot see its state. To start the transition automatically when the final “You helped Terra restore
-her world” screen appears, add this one line at the end of `reward()` in the game’s `game.js`:
-
-```js
-try { if (window.parent !== window) window.parent.postMessage({ type: 'terra-tone:ending' }, '*'); } catch {}
-```
-
-The wrapper then highlights the continue button and starts the journey after 8 seconds (or on click).
-The game can also send `{ type: 'terra-tone:continue' }` to start it immediately.
+The game can also send `{ type: 'terra-tone:ending' }` to start the journey 8 seconds after its final screen.

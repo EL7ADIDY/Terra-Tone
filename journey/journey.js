@@ -4,8 +4,9 @@
 import { renderMoon, pixelsToCanvas } from './moon.js';
 import './journey.css';
 
-const GAME_URL = 'https://terra-earth-jukebox-playtest.blossomingbutterfly8.chatgpt.site/browser/';
-const GAME_ORIGIN = new URL(GAME_URL).origin;
+// The game is hosted on this same site (public/game/ → /Terra-Tone/game/).
+const GAME_URL = new URL('game/', document.baseURI).href;
+const GAME_ORIGIN = window.location.origin;
 const SITE_URL = new URL('site/', document.baseURI).href;
 const DURATION = 1500; // ms — exact length of the moon transition
 // The website's own first-paint background (same rule as App.jsx), so the
@@ -115,9 +116,9 @@ function prefetchSite() {
 setTimeout(() => idle(prefetchSite, { timeout: 5000 }), 4000);
 
 // ---------- triggers ----------
-// Optional: the game can announce its ending with
-//   parent.postMessage({ type: 'terra-tone:ending' }, '*')
-// Only messages from the game's own origin are accepted.
+// The game's main-menu "The Website" button sends { type: 'terra-tone:continue' }.
+// It can also announce its ending with { type: 'terra-tone:ending' }.
+// Only messages from the embedded game on this same origin are accepted.
 window.addEventListener('message', (event) => {
   if (event.origin !== GAME_ORIGIN || event.source !== frame.contentWindow) return;
   const type = event.data && event.data.type;
