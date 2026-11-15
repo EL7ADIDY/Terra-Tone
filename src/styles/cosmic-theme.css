@@ -1,0 +1,797 @@
+/* ==========================================================================
+   TERRA-TONE — COSMIC OBSERVATORY EXPERIENCE
+   Themes: "Midnight Galaxy" (Dark) & "Solar Horizon" (Light)
+   
+   Imported after index.css and redesign.css to provide:
+   - Exact NASA-inspired Cosmic Observatory color palettes
+   - Celestial background system (Starfield, Moon, Sun, Nebulae, Clouds, Shooting Stars)
+   - 1000ms day/night crossfade transitions
+   - Glassmorphism, refined card glow, and scientific micro-interactions
+   - Strict WCAG AAA high-contrast mode preservation
+   - Full prefers-reduced-motion support
+   ========================================================================== */
+
+/* ==========================================================================
+   1. COLOR DESIGN TOKENS
+   ========================================================================== */
+
+/* --- MIDNIGHT GALAXY (DARK MODE) --- */
+:root,
+body:not([data-theme="light"]):not([data-theme="high-contrast"]) {
+  /* Exact Primary Design Tokens */
+  --cosmic-bg-main: #080B1A;
+  --cosmic-bg-secondary: #10172B;
+  --cosmic-bg-card: #171F38;
+  --cosmic-accent-primary: #70CFFF;
+  --cosmic-accent-secondary: #A78BFA;
+  --cosmic-highlight: #DCE8FF;
+  --cosmic-text-primary: #F4F6FF;
+  --cosmic-text-secondary: #A4AEC5;
+  --cosmic-border: #293653;
+
+  /* redesign.css mapping */
+  --color-bg-primary: #080B1A;
+  --color-bg-secondary: #10172B;
+  --color-bg-card: #171F38;
+  --color-bg-card-hover: #1E294A;
+  --color-text-primary: #F4F6FF;
+  --color-text-secondary: #A4AEC5;
+  --color-accent-primary: #70CFFF;
+  --color-accent-primary-glow: rgba(112, 207, 255, 0.28);
+  --color-accent-secondary: #A78BFA;
+  --color-border: #293653;
+  --color-border-subtle: rgba(220, 232, 255, 0.09);
+  --nav-bg: rgba(8, 11, 26, 0.88);
+  --hud-bg: rgba(16, 23, 43, 0.92);
+  --shadow-card-elevated: 0 16px 40px -8px rgba(0, 0, 0, 0.72),
+    0 0 1px 1px rgba(112, 207, 255, 0.14);
+
+  /* index.css mapping */
+  --bg-deep: #080B1A;
+  --bg-surface: #10172B;
+  --bg-card: #171F38;
+  --bg-card-hover: #1E294A;
+  --bg-overlay: rgba(8, 11, 26, 0.9);
+  --bg-header: rgba(8, 11, 26, 0.92);
+  --border-subtle: #293653;
+  --border-medium: #374768;
+  --border-bright: #4D628A;
+  --text-main: #F4F6FF;
+  --text-muted: #A4AEC5;
+  --text-faint: #7A87A2;
+  --accent-cyan: #70CFFF;
+  --accent-cyan-glow: rgba(112, 207, 255, 0.25);
+  --focus-ring: #70CFFF;
+  --bg-grad-1: rgba(112, 207, 255, 0.05);
+  --bg-grad-2: rgba(167, 139, 250, 0.05);
+  --shadow-card: 0 10px 30px -4px rgba(0, 0, 0, 0.65),
+    0 0 1px 1px rgba(112, 207, 255, 0.1);
+}
+
+/* --- SOLAR HORIZON (LIGHT MODE) --- */
+[data-theme="light"]:not([data-theme="high-contrast"]),
+body[data-theme="light"]:not([data-theme="high-contrast"]) {
+  /* Exact Primary Design Tokens */
+  --cosmic-bg-main: #F0F6FF;
+  --cosmic-bg-secondary: #FFFFFF;
+  --cosmic-bg-card: #F9FBFF;
+  --cosmic-accent-primary: #E9A83A;
+  --cosmic-accent-secondary: #55A9E8;
+  --cosmic-highlight: #FFD6A0;
+  --cosmic-text-primary: #17243B;
+  --cosmic-text-secondary: #64748B;
+  --cosmic-border: #DCE7F5;
+
+  /* redesign.css mapping */
+  --color-bg-primary: #F0F6FF;
+  --color-bg-secondary: #FFFFFF;
+  --color-bg-card: #F9FBFF;
+  --color-bg-card-hover: #EEF4FD;
+  --color-text-primary: #17243B;
+  --color-text-secondary: #64748B;
+  --color-accent-primary: #E9A83A;
+  --color-accent-primary-glow: rgba(233, 168, 58, 0.25);
+  --color-accent-secondary: #55A9E8;
+  --color-border: #DCE7F5;
+  --color-border-subtle: rgba(23, 36, 59, 0.08);
+  --nav-bg: rgba(240, 246, 255, 0.90);
+  --hud-bg: rgba(255, 255, 255, 0.95);
+  --shadow-card-elevated: 0 12px 36px -4px rgba(23, 36, 59, 0.09),
+    0 0 1px 1px rgba(233, 168, 58, 0.12);
+
+  /* index.css mapping */
+  --bg-deep: #F0F6FF;
+  --bg-surface: #FFFFFF;
+  --bg-card: #F9FBFF;
+  --bg-card-hover: #EEF4FD;
+  --bg-overlay: rgba(255, 255, 255, 0.92);
+  --bg-header: rgba(240, 246, 255, 0.94);
+  --border-subtle: #DCE7F5;
+  --border-medium: #C5D6E8;
+  --border-bright: #A2B9D4;
+  --text-main: #17243B;
+  --text-muted: #64748B;
+  --text-faint: #94A3B8;
+  --accent-cyan: #E9A83A;
+  --accent-cyan-glow: rgba(233, 168, 58, 0.2);
+  --focus-ring: #E9A83A;
+  --bg-grad-1: rgba(233, 168, 58, 0.05);
+  --bg-grad-2: rgba(85, 169, 232, 0.05);
+  --shadow-card: 0 6px 24px -2px rgba(23, 36, 59, 0.07),
+    0 1px 3px rgba(23, 36, 59, 0.04);
+}
+
+/* ==========================================================================
+   2. GLOBAL FOUNDATIONS & TRANSITIONS
+   ========================================================================== */
+body {
+  background-color: var(--color-bg-primary) !important;
+  color: var(--color-text-primary) !important;
+  background-image: none !important;
+  transition: background-color 0.8s ease, color 0.4s ease;
+}
+
+.terra-redesign-wrapper {
+  background-color: var(--color-bg-primary) !important;
+  background-image: none !important;
+  position: relative;
+  min-height: 100vh;
+  transition: background-color 0.8s ease;
+}
+
+/* Ensure all website content stays crisp and firmly above the celestial layers */
+.terra-redesign-wrapper > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ==========================================================================
+   3. CELESTIAL BACKGROUND CONTAINER & LAYERS
+   ========================================================================== */
+.celestial-system {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+  user-select: none;
+}
+
+.celestial-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  transition: opacity 1.0s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: opacity;
+}
+
+/* Day/Night Crossfade Visibility */
+.celestial-system.mode-dark .celestial-night {
+  opacity: 1;
+}
+.celestial-system.mode-dark .celestial-day {
+  opacity: 0;
+}
+
+.celestial-system.mode-light .celestial-night {
+  opacity: 0;
+}
+.celestial-system.mode-light .celestial-day {
+  opacity: 1;
+}
+
+/* ==========================================================================
+   4. MIDNIGHT GALAXY (DARK MODE) ELEMENTS
+   ========================================================================== */
+
+/* 4-A Subtle Nebula Gradients */
+.celestial-nebula-wrap {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.celestial-nebula {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  opacity: 0.8;
+}
+
+.neb-purple {
+  top: 5%;
+  left: 10%;
+  width: 650px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(167, 139, 250, 0.055) 0%, transparent 70%);
+}
+
+.neb-blue {
+  top: 30%;
+  right: 12%;
+  width: 750px;
+  height: 480px;
+  background: radial-gradient(circle, rgba(112, 207, 255, 0.045) 0%, transparent 70%);
+}
+
+.neb-cyan {
+  bottom: 10%;
+  right: 25%;
+  width: 580px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(112, 207, 255, 0.035) 0%, transparent 70%);
+}
+
+.neb-violet {
+  bottom: 15%;
+  left: 18%;
+  width: 620px;
+  height: 520px;
+  background: radial-gradient(circle, rgba(124, 58, 237, 0.04) 0%, transparent 68%);
+}
+
+/* 4-B Starfield & Twinkling */
+.celestial-starfield {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.celestial-star {
+  position: absolute;
+  border-radius: 50%;
+  opacity: var(--star-opacity, 0.7);
+  animation: starTwinkle var(--star-dur, 4s) ease-in-out var(--star-delay, 0s) infinite alternate;
+  will-change: opacity, transform;
+}
+
+@keyframes starTwinkle {
+  0% {
+    opacity: calc(var(--star-opacity, 0.7) * 0.45);
+    transform: scale(0.85);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+  100% {
+    opacity: var(--star-opacity, 0.7);
+    transform: scale(1);
+  }
+}
+
+/* Prominent Glowing Stars */
+.celestial-star-prominent {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translate(-50%, -50%);
+  animation: prominentPulse var(--prom-dur, 5s) ease-in-out var(--prom-delay, 0s) infinite alternate;
+}
+
+.prom-core {
+  position: relative;
+  border-radius: 50%;
+  z-index: 2;
+  box-shadow: 0 0 8px 1px rgba(112, 207, 255, 0.8);
+}
+
+.prom-glow {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1px solid rgba(112, 207, 255, 0.3);
+  background: radial-gradient(circle, rgba(112, 207, 255, 0.25) 0%, transparent 75%);
+  z-index: 1;
+}
+
+@keyframes prominentPulse {
+  0% {
+    transform: translate(-50%, -50%) scale(0.9);
+    filter: brightness(0.85);
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.2);
+    filter: brightness(1.25);
+  }
+}
+
+/* 4-C Shooting Stars */
+.celestial-shooting-star {
+  position: absolute;
+  width: 140px;
+  height: 1.5px;
+  background: linear-gradient(
+    290deg,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(112, 207, 255, 0.8) 25%,
+    rgba(167, 139, 250, 0.4) 65%,
+    transparent 100%
+  );
+  border-radius: 999px;
+  filter: drop-shadow(0 0 5px rgba(112, 207, 255, 0.9));
+  opacity: 0;
+  transform: rotate(-32deg);
+}
+
+.celestial-shooting-star.star-1 {
+  top: 12%;
+  right: 28%;
+  animation: shootMeteor1 18s cubic-bezier(0.25, 0.1, 0.25, 1) infinite;
+  animation-delay: 4s;
+}
+
+.celestial-shooting-star.star-2 {
+  top: 24%;
+  right: 48%;
+  width: 110px;
+  animation: shootMeteor2 24s cubic-bezier(0.25, 0.1, 0.25, 1) infinite;
+  animation-delay: 13s;
+}
+
+@keyframes shootMeteor1 {
+  0% {
+    transform: translate(140px, -90px) rotate(-32deg);
+    opacity: 0;
+  }
+  3% {
+    opacity: 0.95;
+  }
+  6% {
+    transform: translate(-380px, 240px) rotate(-32deg);
+    opacity: 0;
+  }
+  100% {
+    transform: translate(-380px, 240px) rotate(-32deg);
+    opacity: 0;
+  }
+}
+
+@keyframes shootMeteor2 {
+  0% {
+    transform: translate(110px, -70px) rotate(-28deg);
+    opacity: 0;
+  }
+  2.5% {
+    opacity: 0.85;
+  }
+  5% {
+    transform: translate(-320px, 200px) rotate(-28deg);
+    opacity: 0;
+  }
+  100% {
+    transform: translate(-320px, 200px) rotate(-28deg);
+    opacity: 0;
+  }
+}
+
+/* 4-D Crescent Moon */
+.celestial-moon-container {
+  position: absolute;
+  top: clamp(68px, 9vh, 105px);
+  right: clamp(26px, 6vw, 110px);
+  width: 90px;
+  height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: moonFloat 8s ease-in-out infinite alternate;
+}
+
+.moon-halo-outer {
+  position: absolute;
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(167, 139, 250, 0.06) 0%, rgba(112, 207, 255, 0.02) 50%, transparent 75%);
+  pointer-events: none;
+}
+
+.moon-halo-inner {
+  position: absolute;
+  width: 105px;
+  height: 105px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(112, 207, 255, 0.12) 0%, rgba(220, 232, 255, 0.04) 55%, transparent 70%);
+  pointer-events: none;
+}
+
+.moon-svg {
+  position: relative;
+  overflow: visible;
+  filter: drop-shadow(0 0 14px rgba(112, 207, 255, 0.45));
+}
+
+@keyframes moonFloat {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+    filter: brightness(0.96);
+  }
+  100% {
+    transform: translateY(-5px) rotate(1.5deg);
+    filter: brightness(1.06);
+  }
+}
+
+/* ==========================================================================
+   5. SOLAR HORIZON (LIGHT MODE) ELEMENTS
+   ========================================================================== */
+
+/* 5-A Soft Sunrise Atmosphere */
+.celestial-atmosphere-wrap {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.celestial-sky-wash {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 1200px 700px at 75% 0%,
+    rgba(255, 237, 213, 0.32) 0%,
+    rgba(224, 242, 254, 0.28) 45%,
+    rgba(240, 246, 255, 0.05) 80%,
+    transparent 100%
+  );
+}
+
+.celestial-sunrise-glow {
+  position: absolute;
+  top: -100px;
+  right: 0%;
+  width: 700px;
+  height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(233, 168, 58, 0.12) 0%,
+    rgba(255, 214, 160, 0.08) 40%,
+    transparent 70%
+  );
+  filter: blur(40px);
+}
+
+/* 5-B Soft Drifting Clouds */
+.celestial-clouds-wrap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 340px;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.celestial-cloud {
+  position: absolute;
+  opacity: 0.12;
+  filter: blur(12px);
+  will-change: transform;
+}
+
+.cloud-1 {
+  top: 30px;
+  left: 8%;
+  width: 380px;
+  animation: cloudDriftSlow 110s linear infinite;
+}
+
+.cloud-2 {
+  top: 95px;
+  left: 45%;
+  width: 320px;
+  animation: cloudDriftSlow 95s linear infinite;
+  animation-delay: -25s;
+}
+
+.cloud-3 {
+  top: 15px;
+  right: 15%;
+  width: 420px;
+  animation: cloudDriftSlow 130s linear infinite;
+  animation-delay: -60s;
+}
+
+@keyframes cloudDriftSlow {
+  0% {
+    transform: translateX(-80px);
+  }
+  50% {
+    transform: translateX(80px);
+  }
+  100% {
+    transform: translateX(-80px);
+  }
+}
+
+/* 5-C Glowing Sun with Corona and Rays */
+.celestial-sun-container {
+  position: absolute;
+  top: clamp(68px, 9vh, 105px);
+  right: clamp(26px, 6vw, 110px);
+  width: 120px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: sunBreath 7s ease-in-out infinite alternate;
+}
+
+.sun-core-sphere {
+  position: relative;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #FFFBEB 15%, #FDE68A 45%, #F59E0B 75%, #E9A83A 100%);
+  box-shadow:
+    0 0 20px 4px rgba(233, 168, 58, 0.65),
+    0 0 45px 12px rgba(255, 214, 160, 0.45);
+  z-index: 4;
+}
+
+.sun-corona-inner {
+  position: absolute;
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(233, 168, 58, 0.3) 0%, rgba(255, 214, 160, 0.12) 60%, transparent 80%);
+  filter: blur(6px);
+  z-index: 3;
+}
+
+.sun-corona-mid {
+  position: absolute;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(233, 168, 58, 0.16) 0%, rgba(255, 214, 160, 0.06) 55%, transparent 75%);
+  filter: blur(12px);
+  z-index: 2;
+}
+
+.sun-corona-outer {
+  position: absolute;
+  width: 210px;
+  height: 210px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(233, 168, 58, 0.08) 0%, transparent 65%);
+  filter: blur(20px);
+  z-index: 1;
+}
+
+.sun-rays-rotator {
+  position: absolute;
+  width: 240px;
+  height: 240px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: sunRaysSpin 65s linear infinite;
+  z-index: 2;
+}
+
+.sun-rays-svg {
+  overflow: visible;
+}
+
+@keyframes sunBreath {
+  0% {
+    transform: scale(0.96);
+    filter: brightness(0.96);
+  }
+  100% {
+    transform: scale(1.04);
+    filter: brightness(1.05);
+  }
+}
+
+@keyframes sunRaysSpin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* 5-D Solar Particles */
+.celestial-sun-particles {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 320px;
+  height: 300px;
+  pointer-events: none;
+}
+
+.sun-sparkle {
+  position: absolute;
+  border-radius: 50%;
+  background: #FFFBEB;
+  box-shadow: 0 0 6px 1px #F59E0B;
+  opacity: 0.7;
+  animation: sparkleAnim 3.5s ease-in-out infinite alternate;
+}
+
+@keyframes sparkleAnim {
+  0% {
+    opacity: 0.2;
+    transform: scale(0.7) translateY(0);
+  }
+  50% {
+    opacity: 0.95;
+    transform: scale(1.2) translateY(-4px);
+  }
+  100% {
+    opacity: 0.3;
+    transform: scale(0.8) translateY(-8px);
+  }
+}
+
+/* ==========================================================================
+   6. CARD & INTERACTIVE POLISH (COSMIC OBSERVATORY STYLING)
+   ========================================================================== */
+
+/* Navbar Glassmorphism */
+.navbar-header {
+  background: var(--nav-bg) !important;
+  backdrop-filter: blur(20px) saturate(1.4) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(1.4) !important;
+  border-bottom: 1px solid var(--color-border) !important;
+  transition: background-color 0.8s ease, border-color 0.4s ease !important;
+}
+
+/* Active Nav Pill glow */
+.nav-link-btn.active .nav-active-pill {
+  background: var(--color-accent-primary) !important;
+  box-shadow: 0 0 10px var(--color-accent-primary) !important;
+}
+
+/* Refined Cards across all sections */
+.pipeline-node-card,
+.science-detail-card,
+.dataset-card,
+.studio-panel-left,
+.studio-panel-right,
+.discover-card,
+.hud-panel,
+.eic-panel-visual,
+.eic-panel-graph,
+.eic-metadata-drawer {
+  background: var(--color-bg-card) !important;
+  border: 1px solid var(--color-border) !important;
+  box-shadow: var(--shadow-card-elevated) !important;
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.28s ease,
+              box-shadow 0.28s ease,
+              background-color 0.8s ease !important;
+}
+
+.pipeline-node-card:hover,
+.dataset-card:hover,
+.discover-card:hover {
+  border-color: var(--color-accent-primary) !important;
+  box-shadow: 0 20px 45px -8px rgba(0, 0, 0, 0.6),
+              0 0 16px 2px var(--color-accent-primary-glow) !important;
+}
+
+/* Hero Badge */
+.hero-badge {
+  background: var(--color-bg-card) !important;
+  border: 1px solid var(--color-border) !important;
+  color: var(--color-accent-primary) !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Primary Hero Button */
+.hero-btn-primary {
+  background: var(--color-accent-primary) !important;
+  color: #080B1A !important;
+  box-shadow: 0 4px 20px var(--color-accent-primary-glow) !important;
+}
+
+.hero-btn-primary:hover {
+  box-shadow: 0 6px 28px var(--color-accent-primary-glow) !important;
+}
+
+/* Floating Accessibility Pill */
+.floating-a11y-pill {
+  background: var(--color-bg-card) !important;
+  border: 1px solid var(--color-border) !important;
+  backdrop-filter: blur(16px) saturate(1.3) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(1.3) !important;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35) !important;
+}
+
+/* ==========================================================================
+   7. ACCESSIBILITY & PREFERS-REDUCED-MOTION
+   ========================================================================== */
+
+/* WCAG AAA High Contrast: completely eliminate all celestial decorations */
+[data-theme="high-contrast"],
+body[data-theme="high-contrast"],
+.terra-redesign-wrapper[data-theme="high-contrast"] {
+  --color-bg-primary: #000000 !important;
+  --color-bg-secondary: #0a0a0a !important;
+  --color-bg-card: #050505 !important;
+  --color-bg-card-hover: #141414 !important;
+  --color-text-primary: #FFFFFF !important;
+  --color-text-secondary: #FFFF77 !important;
+  --color-accent-primary: #00FFFF !important;
+  --color-accent-primary-glow: rgba(0, 255, 255, 0.45) !important;
+  --color-accent-secondary: #FFFF00 !important;
+  --color-border: #FFFF00 !important;
+  --color-border-subtle: #FFFF55 !important;
+  --nav-bg: #000000 !important;
+  --hud-bg: #050505 !important;
+  --bg-deep: #000000 !important;
+  --bg-surface: #0a0a0a !important;
+  --bg-card: #050505 !important;
+  --text-main: #FFFFFF !important;
+  --text-muted: #FFFF77 !important;
+  --accent-cyan: #00FFFF !important;
+  background-color: #000000 !important;
+  color: #FFFFFF !important;
+}
+
+[data-theme="high-contrast"] .celestial-system,
+body[data-theme="high-contrast"] .celestial-system {
+  display: none !important;
+}
+
+/* Mobile responsive adjustments for celestial elements */
+@media (max-width: 768px) {
+  .celestial-moon-container {
+    top: 72px;
+    right: 14px;
+    transform: scale(0.62);
+    transform-origin: top right;
+    opacity: 0.82;
+  }
+  .celestial-sun-container {
+    top: 72px;
+    right: 14px;
+    transform: scale(0.62);
+    transform-origin: top right;
+    opacity: 0.82;
+  }
+  .celestial-clouds-wrap {
+    height: 200px;
+  }
+  .celestial-shooting-star {
+    opacity: 0 !important; /* disable shooting stars on small screens to save GPU */
+    animation: none !important;
+  }
+}
+
+/* Prefers-reduced-motion: disable moving space elements */
+@media (prefers-reduced-motion: reduce) {
+  .celestial-star,
+  .celestial-star-prominent,
+  .celestial-shooting-star,
+  .celestial-moon-container,
+  .celestial-cloud,
+  .celestial-sun-container,
+  .sun-rays-rotator,
+  .sun-sparkle {
+    animation: none !important;
+    transform: none !important;
+  }
+
+  .celestial-layer {
+    transition: none !important;
+  }
+}

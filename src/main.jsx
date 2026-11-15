@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import './styles/index.css';
 import './styles/redesign.css';
+import './styles/cosmic-theme.css';
 
 class RootErrorBoundary extends React.Component {
   constructor(props) {

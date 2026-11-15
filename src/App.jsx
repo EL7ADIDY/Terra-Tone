@@ -28,6 +28,7 @@ import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { PRESET_LOCATIONS, VARIABLES } from './services/nasaApi';
 import { POLLUTION_STAGES } from './services/pollutionStages';
 import { translations } from './utils/translations';
+import CelestialBackground from './components/CelestialBackground';
 import { MapPin, Layers, ChevronDown, ChevronUp, AlertCircle, RefreshCw, Contrast } from 'lucide-react';
 
 export default function App() {
@@ -99,7 +100,7 @@ export default function App() {
     if (metaColor) {
       metaColor.setAttribute(
         'content',
-        isHighContrast ? '#000000' : (activeTheme === 'light' ? '#F8FAFC' : '#050816')
+        isHighContrast ? '#000000' : (activeTheme === 'light' ? '#F0F6FF' : '#080B1A')
       );
     }
   }, [theme, isHighContrast]);
@@ -244,7 +245,10 @@ export default function App() {
   };
 
   return (
-    <div className="terra-redesign-wrapper" data-theme={theme}>
+    <div className="terra-redesign-wrapper" data-theme={isHighContrast ? 'high-contrast' : theme}>
+      {/* Immersive Cosmic Observatory Celestial Background */}
+      <CelestialBackground theme={theme} isHighContrast={isHighContrast} />
+
       {/* Screen reader status announcer */}
       <div className="sr-only" role="status" aria-live="polite">
         {srAnnouncement}
