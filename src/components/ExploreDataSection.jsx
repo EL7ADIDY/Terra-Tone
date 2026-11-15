@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Wind, Flame, Droplets, CloudRain, Moon, Snowflake, ArrowRight, Play, ExternalLink, Info } from 'lucide-react';
+import { playEICTone } from '../services/eic/eicAudioService';
+import { EIC_RESOURCES } from '../services/eic/eicResources';
 
 export const SUPPORTED_DATASETS = [
   {
@@ -126,6 +128,22 @@ export function ExploreDataSection({ lang = 'en', onSelectDataset }) {
 
   const handleLaunchStudio = (datasetId) => {
     onSelectDataset?.(datasetId);
+
+    // Play signature acoustic preview of this scientific dataset
+    const mapping = {
+      'aerosols': 'geos-aerosols-2017',
+      'carbon': 'dyamond-co2-transport',
+      'ocean': 'perpetual-ocean-2',
+      'precip': 'atmospheric-river-3d',
+      'nightlights': 'night-lights-decade',
+      'ice': 'antarctic-sea-ice',
+    };
+    const targetId = mapping[datasetId] || datasetId;
+    const res = EIC_RESOURCES.find(r => r.id === targetId);
+    if (res) {
+      playEICTone(res, 50, 0.8);
+    }
+
     const studioEl = document.getElementById('studio');
     if (studioEl) {
       studioEl.scrollIntoView({ behavior: 'smooth', block: 'start' });

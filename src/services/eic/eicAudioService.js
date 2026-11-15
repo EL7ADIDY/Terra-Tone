@@ -125,7 +125,24 @@ export function getPercentageAndFreq(resource, value) {
 }
 
 /**
- * Play a synthesized scientific tone using the resource's distinct instrument
+ * Shared Noise Buffer Generator for atmospheric aerosol wind
+ */
+function getOrCreateNoiseBuffer(ctx) {
+  if (ctx._aerosolNoiseBuffer) return ctx._aerosolNoiseBuffer;
+  const bufferSize = Math.floor(ctx.sampleRate * 1.5);
+  const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+  const channelData = buffer.getChannelData(0);
+  for (let i = 0; i < bufferSize; i++) {
+    channelData[i] = Math.random() * 2 - 1;
+  }
+  ctx._aerosolNoiseBuffer = buffer;
+  return buffer;
+}
+
+/**
+ * Play a synthesized scientific tone using the resource's distinct instrument.
+ * Each of the 6 NASA EIC datasets possesses a completely unique acoustic timbre,
+ * register, synthesis technique, and physical sound character.
  */
 export async function playEICTone(resource, value, volume = 0.7) {
   if (volume <= 0) return;
@@ -143,32 +160,32 @@ export async function playEICTone(resource, value, volume = 0.7) {
 
   switch (profile.instrument) {
     case 'electric_bell':
-      // Night Lights: Dual-frequency harmonic bell with FM sparkle
+      // 1. Night Lights: Shimmering FM Electric Bell with high harmonic sparkle
       playElectricBell(ctx, frequency, effectiveVol, now);
       break;
 
     case 'aerosol_wind':
-      // Aerosols: Warm resonant filtered tone with wind-like envelope
+      // 2. Aerosols: Real atmospheric swept wind & white noise smoke plume
       playAerosolWind(ctx, frequency, effectiveVol, now);
       break;
 
     case 'ocean_flow':
-      // Ocean / SST: Deep aquatic pluck with resonant lowpass filter
+      // 3. Perpetual Ocean & SST: Cavernous Sub-aquatic bass + liquid bubbling swell
       playOceanFlow(ctx, frequency, effectiveVol, now);
       break;
 
     case 'carbon_pulse':
-      // DYAMOND CO2: Ethereal ambient sine with 5th harmonic overtone
+      // 4. DYAMOND CO2: Warm analog detuned pad with slow biospheric breathing envelope
       playCarbonPulse(ctx, frequency, effectiveVol, now);
       break;
 
     case 'rain_marimba':
-      // Atmospheric River: Percussive wooden mallet marimba drop tone
+      // 5. Atmospheric River: Dual-tap raindrop cascade & woody percussive marimba
       playRainMarimba(ctx, frequency, effectiveVol, now);
       break;
 
     case 'ice_crystal':
-      // Antarctic Sea Ice: High crystalline glass bell with shimmering octave
+      // 6. Antarctic Sea Ice: Brittle crystalline glass bell with high frosty shimmer
       playIceCrystal(ctx, frequency, effectiveVol, now);
       break;
 
@@ -179,187 +196,279 @@ export async function playEICTone(resource, value, volume = 0.7) {
 }
 
 // -----------------------------------------------------------------------------
-// 1. Electric Bell (Night Lights - SVS 5276)
+// 1. Electric Bell (Night Lights - SVS 5276): Shimmering FM Electronic Chime
 // -----------------------------------------------------------------------------
 function playElectricBell(ctx, freq, vol, now) {
-  const osc1 = ctx.createOscillator();
-  const osc2 = ctx.createOscillator();
-  const gain = ctx.createGain();
+  // Carrier in bright register
+  const carrier = ctx.createOscillator();
+  const modulator = ctx.createOscillator();
+  const modGain = ctx.createGain();
+  const masterGain = ctx.createGain();
+  const sparkle = ctx.createOscillator();
+  const sparkleGain = ctx.createGain();
 
-  osc1.type = 'sine';
-  osc1.frequency.setValueAtTime(freq, now);
+  carrier.type = 'sine';
+  carrier.frequency.setValueAtTime(freq, now);
 
-  // 2.76x overtone creates metallic bell resonance
-  osc2.type = 'sine';
-  osc2.frequency.setValueAtTime(freq * 2.76, now);
+  // Inharmonic FM bell modulation (2.756x ratio)
+  modulator.type = 'sine';
+  modulator.frequency.setValueAtTime(freq * 2.756, now);
+  modGain.gain.setValueAtTime(freq * 1.5, now);
+  modGain.gain.exponentialRampToValueAtTime(1, now + 0.35);
 
-  gain.gain.setValueAtTime(0.0001, now);
-  gain.gain.linearRampToValueAtTime(vol * 0.7, now + 0.01);
-  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.45);
+  modulator.connect(carrier.frequency); // Frequency Modulation
 
-  osc1.connect(gain);
-  osc2.connect(gain);
-  gain.connect(getAudioAnalyser() || ctx.destination);
+  // High sparkle ping (5.4x overtone)
+  sparkle.type = 'sine';
+  sparkle.frequency.setValueAtTime(freq * 5.4, now);
+  sparkleGain.gain.setValueAtTime(0.0001, now);
+  sparkleGain.gain.linearRampToValueAtTime(vol * 0.35, now + 0.006);
+  sparkleGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.12);
 
-  osc1.start(now);
-  osc2.start(now);
-  osc1.stop(now + 0.5);
-  osc2.stop(now + 0.5);
+  masterGain.gain.setValueAtTime(0.0001, now);
+  masterGain.gain.linearRampToValueAtTime(vol * 0.75, now + 0.008);
+  masterGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.45);
+
+  carrier.connect(masterGain);
+  sparkle.connect(sparkleGain);
+  sparkleGain.connect(masterGain);
+  masterGain.connect(getAudioAnalyser() || ctx.destination);
+
+  carrier.start(now);
+  modulator.start(now);
+  sparkle.start(now);
+
+  carrier.stop(now + 0.5);
+  modulator.stop(now + 0.5);
+  sparkle.stop(now + 0.15);
 }
 
 // -----------------------------------------------------------------------------
-// 2. Resonant Wind (Aerosols - SVS 30910)
+// 2. Resonant Wind Synth (Aerosols - SVS 30910): Swept Atmospheric Wind & Noise Haze
 // -----------------------------------------------------------------------------
 function playAerosolWind(ctx, freq, vol, now) {
-  const osc = ctx.createOscillator();
-  const filter = ctx.createBiquadFilter();
-  const gain = ctx.createGain();
+  // Real White Noise Generator for atmospheric haze
+  const noiseBuffer = getOrCreateNoiseBuffer(ctx);
+  const noise = ctx.createBufferSource();
+  noise.buffer = noiseBuffer;
 
-  osc.type = 'sawtooth';
-  osc.frequency.setValueAtTime(freq, now);
+  // Sweeping resonant bandpass filter (simulates whistling desert dust and smoke gusts)
+  const bandpass = ctx.createBiquadFilter();
+  bandpass.type = 'bandpass';
+  bandpass.Q.setValueAtTime(5.5, now);
+  const center = Math.min(2800, Math.max(260, freq * 2.2));
+  bandpass.frequency.setValueAtTime(center * 0.7, now);
+  bandpass.frequency.exponentialRampToValueAtTime(center * 1.3, now + 0.22);
+  bandpass.frequency.exponentialRampToValueAtTime(center * 0.6, now + 0.55);
 
-  // Warm sweeping lowpass filter
-  filter.type = 'lowpass';
-  filter.Q.setValueAtTime(3.5, now);
-  filter.frequency.setValueAtTime(Math.min(2500, freq * 3), now);
-  filter.frequency.exponentialRampToValueAtTime(Math.max(100, freq * 0.8), now + 0.45);
+  const noiseGain = ctx.createGain();
+  noiseGain.gain.setValueAtTime(0.0001, now);
+  noiseGain.gain.linearRampToValueAtTime(vol * 0.75, now + 0.08); // wind swell
+  noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.58);
 
-  gain.gain.setValueAtTime(0.0001, now);
-  gain.gain.linearRampToValueAtTime(vol * 0.55, now + 0.03);
-  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.45);
+  noise.connect(bandpass);
+  bandpass.connect(noiseGain);
 
-  osc.connect(filter);
-  filter.connect(gain);
-  gain.connect(getAudioAnalyser() || ctx.destination);
+  // Breathy whistling tonal center
+  const whistle = ctx.createOscillator();
+  whistle.type = 'triangle';
+  whistle.frequency.setValueAtTime(freq * 0.9, now);
+  whistle.frequency.exponentialRampToValueAtTime(freq * 1.08, now + 0.3);
 
-  osc.start(now);
-  osc.stop(now + 0.5);
+  const whistleGain = ctx.createGain();
+  whistleGain.gain.setValueAtTime(0.0001, now);
+  whistleGain.gain.linearRampToValueAtTime(vol * 0.35, now + 0.05);
+  whistleGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.52);
+
+  whistle.connect(whistleGain);
+
+  const target = getAudioAnalyser() || ctx.destination;
+  noiseGain.connect(target);
+  whistleGain.connect(target);
+
+  noise.start(now);
+  whistle.start(now);
+
+  noise.stop(now + 0.62);
+  whistle.stop(now + 0.55);
 }
 
 // -----------------------------------------------------------------------------
-// 3. Ocean Flow (Perpetual Ocean & SST - SVS 3912/5425)
+// 3. Ocean Flow (Perpetual Ocean & SST - SVS 3912/5425): Sub-Aquatic Liquid Bass & Bubble
 // -----------------------------------------------------------------------------
 function playOceanFlow(ctx, freq, vol, now) {
-  const osc = ctx.createOscillator();
+  // Deep subterranean ocean bass (60 Hz to 220 Hz)
+  const oceanFreq = Math.max(55, freq * 0.55);
+
   const subOsc = ctx.createOscillator();
-  const filter = ctx.createBiquadFilter();
-  const gain = ctx.createGain();
-
-  osc.type = 'triangle';
-  osc.frequency.setValueAtTime(freq, now);
-
-  // Sub-bass undertone for aquatic depth
   subOsc.type = 'sine';
-  subOsc.frequency.setValueAtTime(freq * 0.5, now);
+  subOsc.frequency.setValueAtTime(oceanFreq, now);
+  // Pitch drop glide mimicking diving into water
+  subOsc.frequency.exponentialRampToValueAtTime(oceanFreq * 0.9, now + 0.55);
 
+  const bodyOsc = ctx.createOscillator();
+  bodyOsc.type = 'triangle';
+  bodyOsc.frequency.setValueAtTime(oceanFreq * 2, now);
+
+  // Liquid bubbling LFO modulating filter cutoff
+  const lfo = ctx.createOscillator();
+  const lfoGain = ctx.createGain();
+  lfo.frequency.setValueAtTime(6.0, now); // 6 Hz water ripple
+  lfoGain.gain.setValueAtTime(160, now);
+
+  const filter = ctx.createBiquadFilter();
   filter.type = 'lowpass';
-  filter.frequency.setValueAtTime(freq * 2.2, now);
-  filter.Q.setValueAtTime(2.0, now);
+  filter.frequency.setValueAtTime(Math.min(700, oceanFreq * 3.5), now);
+  filter.Q.setValueAtTime(4.2, now);
 
+  lfo.connect(filter.frequency);
+
+  const gain = ctx.createGain();
   gain.gain.setValueAtTime(0.0001, now);
-  gain.gain.linearRampToValueAtTime(vol * 0.75, now + 0.012);
-  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.55);
+  gain.gain.linearRampToValueAtTime(vol * 0.85, now + 0.015);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.65);
 
-  osc.connect(filter);
   subOsc.connect(filter);
+  bodyOsc.connect(filter);
   filter.connect(gain);
   gain.connect(getAudioAnalyser() || ctx.destination);
 
-  osc.start(now);
   subOsc.start(now);
-  osc.stop(now + 0.6);
-  subOsc.stop(now + 0.6);
+  bodyOsc.start(now);
+  lfo.start(now);
+
+  subOsc.stop(now + 0.7);
+  bodyOsc.stop(now + 0.7);
+  lfo.stop(now + 0.7);
 }
 
 // -----------------------------------------------------------------------------
-// 4. Carbon Pulse (DYAMOND CO2 - SVS 5196)
+// 4. Carbon Pulse (DYAMOND CO2 - SVS 5196): Warm Biospheric Breathing Analog Drone
 // -----------------------------------------------------------------------------
 function playCarbonPulse(ctx, freq, vol, now) {
-  const osc = ctx.createOscillator();
-  const harmonic = ctx.createOscillator();
-  const gain = ctx.createGain();
-
-  osc.type = 'sine';
-  osc.frequency.setValueAtTime(freq, now);
-
-  // Perfect 5th overtone (1.5x) for atmospheric shimmer
-  harmonic.type = 'sine';
-  harmonic.frequency.setValueAtTime(freq * 1.5, now);
-
-  gain.gain.setValueAtTime(0.0001, now);
-  gain.gain.linearRampToValueAtTime(vol * 0.65, now + 0.04);
-  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.42);
-
-  osc.connect(gain);
-  harmonic.connect(gain);
-  gain.connect(getAudioAnalyser() || ctx.destination);
-
-  osc.start(now);
-  harmonic.start(now);
-  osc.stop(now + 0.48);
-  harmonic.stop(now + 0.48);
-}
-
-// -----------------------------------------------------------------------------
-// 5. Rain Marimba (Atmospheric River - SVS 4960)
-// -----------------------------------------------------------------------------
-function playRainMarimba(ctx, freq, vol, now) {
-  const osc = ctx.createOscillator();
-  const strike = ctx.createOscillator();
-  const gain = ctx.createGain();
-
-  // Wood mallet body
-  osc.type = 'triangle';
-  osc.frequency.setValueAtTime(freq, now);
-
-  // Fast transient strike
-  strike.type = 'sine';
-  strike.frequency.setValueAtTime(freq * 3.8, now);
-
-  gain.gain.setValueAtTime(0.0001, now);
-  gain.gain.linearRampToValueAtTime(vol * 0.85, now + 0.004);
-  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.32);
-
-  osc.connect(gain);
-  strike.connect(gain);
-  gain.connect(getAudioAnalyser() || ctx.destination);
-
-  osc.start(now);
-  strike.start(now);
-  osc.stop(now + 0.35);
-  strike.stop(now + 0.1);
-}
-
-// -----------------------------------------------------------------------------
-// 6. Polar Ice Crystal (Antarctic Sea Ice - SVS 5064)
-// -----------------------------------------------------------------------------
-function playIceCrystal(ctx, freq, vol, now) {
+  // Detuned dual analog saw/triangle oscillators (+/- 5 cents)
   const osc1 = ctx.createOscillator();
   const osc2 = ctx.createOscillator();
-  const filter = ctx.createBiquadFilter();
-  const gain = ctx.createGain();
+  osc1.type = 'sawtooth';
+  osc2.type = 'triangle';
 
-  osc1.type = 'sine';
   osc1.frequency.setValueAtTime(freq, now);
+  osc2.frequency.setValueAtTime(freq * 1.006, now); // Analog chorus detune
 
-  // Crystalline octave + fifth (3.0x harmonic)
-  osc2.type = 'sine';
-  osc2.frequency.setValueAtTime(freq * 2.0, now);
+  const sub5th = ctx.createOscillator();
+  sub5th.type = 'sine';
+  sub5th.frequency.setValueAtTime(freq * 0.75, now); // 4th/5th below weight
 
-  filter.type = 'highpass';
-  filter.frequency.setValueAtTime(Math.min(800, freq * 0.8), now);
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'lowpass';
+  filter.frequency.setValueAtTime(freq * 1.8, now);
+  filter.Q.setValueAtTime(1.8, now);
 
-  gain.gain.setValueAtTime(0.0001, now);
-  gain.gain.linearRampToValueAtTime(vol * 0.6, now + 0.006);
-  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.5);
+  const masterGain = ctx.createGain();
+  // Slow planetary breathing attack (0.09s) and lush sustain (0.75s)
+  masterGain.gain.setValueAtTime(0.0001, now);
+  masterGain.gain.linearRampToValueAtTime(vol * 0.7, now + 0.09);
+  masterGain.gain.exponentialRampToValueAtTime(vol * 0.45, now + 0.4);
+  masterGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.78);
 
   osc1.connect(filter);
   osc2.connect(filter);
-  filter.connect(gain);
+  sub5th.connect(filter);
+  filter.connect(masterGain);
+  masterGain.connect(getAudioAnalyser() || ctx.destination);
+
+  osc1.start(now);
+  osc2.start(now);
+  sub5th.start(now);
+
+  osc1.stop(now + 0.82);
+  osc2.stop(now + 0.82);
+  sub5th.stop(now + 0.82);
+}
+
+// -----------------------------------------------------------------------------
+// 5. Rain Marimba (Atmospheric River - SVS 4960): Dual-Tap Raindrop Splash & Wood Marimba
+// -----------------------------------------------------------------------------
+function playRainMarimba(ctx, freq, vol, now) {
+  // Tap 1: Woody marimba mallet strike
+  const mallet = ctx.createOscillator();
+  mallet.type = 'triangle';
+  mallet.frequency.setValueAtTime(freq, now);
+
+  const malletGain = ctx.createGain();
+  malletGain.gain.setValueAtTime(0.0001, now);
+  malletGain.gain.linearRampToValueAtTime(vol * 0.85, now + 0.003); // Instant acoustic strike
+  malletGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.28);
+
+  // Tap 2: Micro-delayed (+65ms) water droplet plink (falling raindrop splash ripple)
+  const drop = ctx.createOscillator();
+  drop.type = 'sine';
+  const dropFreq = freq * 2.85;
+  drop.frequency.setValueAtTime(dropFreq, now + 0.065);
+  drop.frequency.exponentialRampToValueAtTime(dropFreq * 1.25, now + 0.13); // upward water plink
+
+  const dropGain = ctx.createGain();
+  dropGain.gain.setValueAtTime(0.0001, now);
+  dropGain.gain.setValueAtTime(0.0001, now + 0.064);
+  dropGain.gain.linearRampToValueAtTime(vol * 0.65, now + 0.072);
+  dropGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.24);
+
+  const target = getAudioAnalyser() || ctx.destination;
+  mallet.connect(malletGain);
+  malletGain.connect(target);
+
+  drop.connect(dropGain);
+  dropGain.connect(target);
+
+  mallet.start(now);
+  drop.start(now + 0.065);
+
+  mallet.stop(now + 0.32);
+  drop.stop(now + 0.28);
+}
+
+// -----------------------------------------------------------------------------
+// 6. Polar Ice Crystal (Antarctic Sea Ice - SVS 5064): Brittle High Frost Glass Bell
+// -----------------------------------------------------------------------------
+function playIceCrystal(ctx, freq, vol, now) {
+  // High crystalline freeze register (650 Hz to 2400 Hz)
+  const iceFreq = Math.max(680, freq * 1.55);
+
+  const osc1 = ctx.createOscillator();
+  const osc2 = ctx.createOscillator();
+  const osc3 = ctx.createOscillator();
+
+  osc1.type = 'sine';
+  osc1.frequency.setValueAtTime(iceFreq, now);
+
+  // Inharmonic metallic glass ratios
+  osc2.type = 'sine';
+  osc2.frequency.setValueAtTime(iceFreq * 2.76, now);
+
+  osc3.type = 'sine';
+  osc3.frequency.setValueAtTime(iceFreq * 5.42, now);
+
+  // Highpass filter removing all warmth/bass (leaving pure cold brittle frost)
+  const hpFilter = ctx.createBiquadFilter();
+  hpFilter.type = 'highpass';
+  hpFilter.frequency.setValueAtTime(1100, now);
+
+  const gain = ctx.createGain();
+  gain.gain.setValueAtTime(0.0001, now);
+  gain.gain.linearRampToValueAtTime(vol * 0.7, now + 0.005);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.65); // Shimmering frost ring
+
+  osc1.connect(hpFilter);
+  osc2.connect(hpFilter);
+  osc3.connect(hpFilter);
+  hpFilter.connect(gain);
   gain.connect(getAudioAnalyser() || ctx.destination);
 
   osc1.start(now);
   osc2.start(now);
-  osc1.stop(now + 0.55);
-  osc2.stop(now + 0.55);
+  osc3.start(now);
+
+  osc1.stop(now + 0.7);
+  osc2.stop(now + 0.7);
+  osc3.stop(now + 0.7);
 }

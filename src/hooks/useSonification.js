@@ -113,11 +113,14 @@ export function useSonification({
         }
       }
 
+      // Determine distinct instrument timbre per NASA variable if left on default
+      const resolvedInstrument = (instrument === 'sine' || !instrument) ? primaryVariable : instrument;
+
       playDataTone({
         frequency: freqA,
         duration: 0.5 / playbackSpeed,
         volume: effectiveVolume,
-        instrument,
+        instrument: resolvedInstrument,
         pan: isCompareMode ? -0.75 : 0, // Stereo Left for Location A in compare mode
         isRecordHigh: !!recMetaA?.isRecordHigh,
         isRecordLow: !!recMetaA?.isRecordLow,
@@ -131,12 +134,13 @@ export function useSonification({
       if (pointB && pointB.value !== null && !isNaN(pointB.value)) {
         const freqB = mapValueToFrequency(pointB.value, dynamicMin, dynamicMax, quantizeScale);
         const recMetaB = statsB?.recordsMap?.[yearToPlay];
+        const resolvedInstrument = (instrument === 'sine' || !instrument) ? primaryVariable : instrument;
 
         playDataTone({
           frequency: freqB,
           duration: 0.5 / playbackSpeed,
           volume: effectiveVolume,
-          instrument,
+          instrument: resolvedInstrument,
           pan: 0.75, // Stereo Right for Location B
           isRecordHigh: !!recMetaB?.isRecordHigh,
           isRecordLow: !!recMetaB?.isRecordLow,

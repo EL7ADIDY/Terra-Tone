@@ -152,8 +152,105 @@ export function playDataTone({
     voiceGain.connect(targetNode);
   }
 
-  // Instrument Voice Synthesis
-  if (instrument === 'soft_pluck') {
+  // Instrument Voice Synthesis with distinct acoustic timbres
+  if (instrument === 'wind' || instrument === 'WS10M') {
+    // Atmospheric Wind: sweeping filtered noise & airy tone
+    const osc = ctx.createOscillator();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(frequency, now);
+
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.Q.setValueAtTime(4.0, now);
+    filter.frequency.setValueAtTime(Math.min(2400, frequency * 2), now);
+    filter.frequency.exponentialRampToValueAtTime(Math.max(150, frequency * 0.7), now + noteDuration);
+
+    voiceGain.gain.setValueAtTime(0.0001, now);
+    voiceGain.gain.linearRampToValueAtTime(effectiveVolume * 0.7, now + 0.05);
+    voiceGain.gain.exponentialRampToValueAtTime(0.0001, now + noteDuration);
+
+    osc.connect(filter);
+    filter.connect(voiceGain);
+    osc.start(now);
+    osc.stop(now + noteDuration + 0.05);
+
+  } else if (instrument === 'rain' || instrument === 'PRECTOTCORR') {
+    // Precipitation: snappy woody attack + secondary raindrop ripple plink
+    const osc = ctx.createOscillator();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(frequency, now);
+
+    const drop = ctx.createOscillator();
+    drop.type = 'sine';
+    drop.frequency.setValueAtTime(frequency * 2.8, now + 0.05);
+    drop.frequency.exponentialRampToValueAtTime(frequency * 3.5, now + 0.12);
+
+    voiceGain.gain.setValueAtTime(0.0001, now);
+    voiceGain.gain.linearRampToValueAtTime(effectiveVolume * 0.85, now + 0.003);
+    voiceGain.gain.exponentialRampToValueAtTime(0.0001, now + noteDuration);
+
+    osc.connect(voiceGain);
+    drop.connect(voiceGain);
+    osc.start(now);
+    drop.start(now + 0.05);
+    osc.stop(now + noteDuration + 0.05);
+    drop.stop(now + 0.2);
+
+  } else if (instrument === 'solar' || instrument === 'ALLSKY_SFC_SW_DWN') {
+    // Solar Radiation: bright radiant brassy FM chime
+    const osc = ctx.createOscillator();
+    const bell = ctx.createOscillator();
+    osc.type = 'sine';
+    bell.type = 'sine';
+    osc.frequency.setValueAtTime(frequency, now);
+    bell.frequency.setValueAtTime(frequency * 2.76, now);
+
+    voiceGain.gain.setValueAtTime(0.0001, now);
+    voiceGain.gain.linearRampToValueAtTime(effectiveVolume * 0.8, now + 0.006);
+    voiceGain.gain.exponentialRampToValueAtTime(0.0001, now + noteDuration * 1.1);
+
+    osc.connect(voiceGain);
+    bell.connect(voiceGain);
+    osc.start(now);
+    bell.start(now);
+    osc.stop(now + noteDuration + 0.05);
+    bell.stop(now + noteDuration + 0.05);
+
+  } else if (instrument === 'water' || instrument === 'RH2M') {
+    // Humidity: deep fluid aquatic bubble
+    const osc = ctx.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(frequency * 0.75, now);
+    osc.frequency.exponentialRampToValueAtTime(frequency * 0.65, now + noteDuration);
+
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(Math.min(900, frequency * 2), now);
+
+    voiceGain.gain.setValueAtTime(0.0001, now);
+    voiceGain.gain.linearRampToValueAtTime(effectiveVolume * 0.8, now + 0.02);
+    voiceGain.gain.exponentialRampToValueAtTime(0.0001, now + noteDuration);
+
+    osc.connect(filter);
+    filter.connect(voiceGain);
+    osc.start(now);
+    osc.stop(now + noteDuration + 0.05);
+
+  } else if (instrument === 'pressure' || instrument === 'PS') {
+    // Surface Pressure: deep sub-bass barometer rumble
+    const osc = ctx.createOscillator();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(Math.max(45, frequency * 0.4), now);
+
+    voiceGain.gain.setValueAtTime(0.0001, now);
+    voiceGain.gain.linearRampToValueAtTime(effectiveVolume * 0.9, now + 0.04);
+    voiceGain.gain.exponentialRampToValueAtTime(0.0001, now + noteDuration * 1.2);
+
+    osc.connect(voiceGain);
+    osc.start(now);
+    osc.stop(now + noteDuration + 0.05);
+
+  } else if (instrument === 'soft_pluck' || instrument === 'temp' || instrument === 'T2M') {
     // Synthesized acoustic pluck: triangle wave with fast lowpass filter sweep
     const osc = ctx.createOscillator();
     osc.type = 'triangle';

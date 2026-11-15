@@ -28,7 +28,7 @@ import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { PRESET_LOCATIONS, VARIABLES } from './services/nasaApi';
 import { POLLUTION_STAGES } from './services/pollutionStages';
 import { translations } from './utils/translations';
-import { MapPin, Layers, ChevronDown, ChevronUp, AlertCircle, RefreshCw } from 'lucide-react';
+import { MapPin, Layers, ChevronDown, ChevronUp, AlertCircle, RefreshCw, Contrast } from 'lucide-react';
 
 export default function App() {
   // 1. Accessibility, Globalization & Theme States
@@ -515,6 +515,38 @@ export default function App() {
         lang={lang}
         theme={theme}
       />
+
+      {/* Floating Accessibility Quick-Access Dock (Always reachable) */}
+      <aside className="floating-a11y-pill" aria-label="Accessibility quick controls">
+        <button
+          onClick={toggleHighContrast}
+          className={`navbar-icon-btn a11y-toggle-btn contrast-btn ${isHighContrast ? 'is-active' : ''}`}
+          title={lang === 'ar'
+            ? (isHighContrast ? 'إلغاء التباين العالي' : 'تفعيل وضع التباين العالي (WCAG AAA)')
+            : (isHighContrast ? 'Disable High Contrast' : 'Enable High Contrast (WCAG AAA)')}
+          aria-label="Toggle High Contrast Mode"
+          aria-pressed={isHighContrast}
+        >
+          <Contrast size={16} className="contrast-icon-anim" />
+          <span className="a11y-badge-dot" />
+        </button>
+
+        <button
+          onClick={toggleLargeText}
+          className={`navbar-icon-btn a11y-toggle-btn text-size-btn ${isLargeText ? 'is-active' : ''}`}
+          title={lang === 'ar'
+            ? (isLargeText ? 'استعادة حجم الخط العادي' : 'تكبير حجم الخط (نص كبير)')
+            : (isLargeText ? 'Reset Normal Font Size' : 'Enlarge Font Size (Large Text)')}
+          aria-label="Toggle Large Font Size"
+          aria-pressed={isLargeText}
+        >
+          <span className="text-size-icon-anim">
+            <span className="letter-base">A</span>
+            <span className="letter-plus">+</span>
+          </span>
+          <span className="a11y-badge-dot" />
+        </button>
+      </aside>
     </div>
   );
 }

@@ -146,6 +146,12 @@ export function SonificationStudio({
     setIsPlaying(false);
     setActiveResourceId(newId);
     onDatasetChange?.(newId);
+
+    // Play signature acoustic tone of newly chosen dataset immediately
+    const nextResource = EIC_RESOURCES.find(r => r.id === newId);
+    if (nextResource && !isMuted && volume > 0) {
+      playEICTone(nextResource, 50, volume);
+    }
   };
 
   // Attach video element when mounted
