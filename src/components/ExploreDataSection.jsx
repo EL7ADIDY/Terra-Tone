@@ -13,12 +13,12 @@ export const SUPPORTED_DATASETS = [
     categoryNameAr: 'الغلاف الجوي',
     sensor: 'NASA GEOS / MODIS Terra & Aqua',
     unit: 'Optical Depth (Unitless) & μg/m³',
-    range: '0.05 – 1.20 AOD',
+    range: '0.05 – 1.40 AOD',
     description: 'Tracks particulate matter, dust storms, industrial smog, and wildfire smoke suspended across the atmosphere, revealing air quality variations.',
     descriptionAr: 'رصد الجسيمات الدقيقة، العواصف الغبارية، ودخان الحرائق في الغلاف الجوي لتوضيح تباين جودة الهواء وتأثيرها التنفسي.',
     icon: Wind,
     color: '#38bdf8',
-    soundProfile: 'Airy flute and gentle noise breeze; higher frequencies indicate dense smog and severe pollution events.',
+    soundProfile: 'Resonant wind synth with a soft breathy texture; higher pitches indicate dense smoke, dust, and severe pollution events.',
     soundProfileAr: 'نغمات هوائية سلسة، ترتفع حدتها كلما زادت كثافة الجسيمات العالقة والتلوث الصناعي.'
   },
   {
@@ -35,8 +35,8 @@ export const SUPPORTED_DATASETS = [
     descriptionAr: 'قياسات دقيقة لتركيز الكربون ترصد التنفس السنوي للغابات ودورات التمثيل الضوئي مع التزايد التراكمي المستمر.',
     icon: Flame,
     color: '#f97316',
-    soundProfile: 'Rich resonant warm drone with rhythmic annual undulations reflecting seasonal biospheric breathing.',
-    soundProfileAr: 'نغمات دافئة متناغمة تعكس تنفس المحيط الحيوي للأرض وامتصاص النباتات للكربون صيفاً.'
+    soundProfile: 'Pulsing gas tone whose pitch rises with CO₂ concentration as plumes from power plants, cities, and fires are carried by the weather.',
+    soundProfileAr: 'نبضات صوتية ترتفع طبقتها مع تركيز ثاني أكسيد الكربون أثناء انتقال الانبعاثات من المحطات والمدن والحرائق مع الطقس.'
   },
   {
     id: 'ocean',
@@ -52,8 +52,8 @@ export const SUPPORTED_DATASETS = [
     descriptionAr: 'محاكاة التيارات المائية الدوارة وتيار الخليج الدافئ الذي ينقل الطاقة الحرارية من خط الاستواء نحو القطبين.',
     icon: Droplets,
     color: '#06b6d4',
-    soundProfile: 'Deep aquatic marimba and sweeping liquid sub-oscillations whose tempo echoes oceanic kinetic energy.',
-    soundProfileAr: 'أصوات ماريمبا مائية عميقة مع تموجات تعكس حركة الدوامات البحرية والطاقة الحركية.'
+    soundProfile: 'Deep aquatic plucks whose pitch rises with water temperature as the camera moves between the world\'s strongest currents.',
+    soundProfileAr: 'نقرات مائية عميقة ترتفع طبقتها مع حرارة المياه أثناء التنقل بين أقوى التيارات المحيطية.'
   },
   {
     id: 'precip',
@@ -69,42 +69,42 @@ export const SUPPORTED_DATASETS = [
     descriptionAr: 'أعمدة هائلة من بخار الماء في الغلاف الجوي تعادل تدفق نهر الأمازون، تسبب هطول أمطار غزيرة وثلوج جبلية حيوية.',
     icon: CloudRain,
     color: '#818cf8',
-    soundProfile: 'Crystalline glockenspiel droplets accelerating into rhythmic storm cascades during intense precipitation pulses.',
-    soundProfileAr: 'نغمات رنين بلورية تتسارع مع تدفق قطرات المطر وغزارة العواصف الرعدية.'
+    soundProfile: 'Rain-drop marimba notes that climb in pitch as moisture transport and rainfall intensify at landfall.',
+    soundProfileAr: 'نغمات ماريمبا كقطرات المطر ترتفع طبقتها مع اشتداد نقل الرطوبة وغزارة الهطول عند وصول النهر الجوي إلى اليابسة.'
   },
   {
     id: 'nightlights',
     name: 'Earth Night Lights & Human Energy',
     nameAr: 'أضواء الأرض الليلية ونشاط الطاقة',
-    category: 'environment',
+    category: 'human-polar',
     categoryName: 'Human Environment',
     categoryNameAr: 'البيئة البشرية',
     sensor: 'Suomi NPP VIIRS Day-Night Band',
     unit: 'Radiance (nW/cm²·sr)',
-    range: '0.1 – 150 nW',
-    description: 'Ten-year decadal record (2012–2023) tracking global electrification, urban growth, transit arteries, and localized energy grid disruptions.',
-    descriptionAr: 'سجل زمني لتوثيق نمو المدن وشبكات الكهرباء وتوسع النشاط البشري وانقطاعات الطاقة عبر عقد كامل.',
+    range: '0.1 – 150 nW/(cm²·sr)',
+    description: 'Twelve-year record (2012–2023) tracking global electrification, urban growth, transit arteries, and localized energy grid disruptions.',
+    descriptionAr: 'سجل زمني (2012–2023) لتوثيق نمو المدن وشبكات الكهرباء وتوسع النشاط البشري وانقطاعات الطاقة.',
     icon: Moon,
     color: '#fbbf24',
-    soundProfile: 'Warm analog synthesizer pulses with rising brightness and harmonic overtone complexity in dense metropolitan centers.',
-    soundProfileAr: 'نبضات سنثسايزر دافئة تزداد سطوعاً وتعقيداً مع كثافة التجمعات الحضرية والإضاءة.'
+    soundProfile: 'Shimmering electric bell chimes that rise in pitch and sparkle as cities grow brighter.',
+    soundProfileAr: 'رنين أجراس كهربائية لامعة ترتفع طبقتها كلما ازداد سطوع المدن.'
   },
   {
     id: 'ice',
-    name: 'Cryosphere & Polar Sea Ice Extent',
-    nameAr: 'الغطاء الجليدي القطبي والبحري',
-    category: 'environment',
+    name: 'Antarctic Sea Ice Extent',
+    nameAr: 'امتداد الجليد البحري في القارة القطبية الجنوبية',
+    category: 'human-polar',
     categoryName: 'Cryosphere',
     categoryNameAr: 'البيئة الجليدية',
-    sensor: 'NASA NSIDC / SSMIS Microwave',
+    sensor: 'JAXA AMSR2 (GCOM-W1) / NSIDC Sea Ice Index',
     unit: 'Million Square Kilometers (M km²)',
-    range: '3.5 – 16.0 M km²',
-    description: 'Decadal satellite microwave sensing documenting the minimum and maximum Arctic and Antarctic freeze-thaw cycles and albedo dynamics.',
-    descriptionAr: 'قياسات رادارية ميكروويفية توثق انكماش واتساع الجليد في القطبين وتأثيره على انعكاس الإشعاع الشمسي.',
+    range: '2.0 – 17.2 M km² (2024)',
+    description: 'Daily satellite microwave sensing of Antarctic sea ice through 2024, from its February summer minimum to its September winter maximum.',
+    descriptionAr: 'قياسات ميكروويفية يومية من الأقمار الصناعية للجليد البحري حول القارة القطبية الجنوبية خلال 2024، من أدنى امتداد صيفي في فبراير إلى أقصى امتداد شتوي في سبتمبر.',
     icon: Snowflake,
     color: '#a5f3fc',
-    soundProfile: 'Chilled glass bell harmonics with descending fundamental frequencies illustrating multi-year ice loss.',
-    soundProfileAr: 'أجراس زجاجية نقية تنخفض طبقتها تدريجياً لتعكس ذوبان الجليد القديم وتراجع المساحات.'
+    soundProfile: 'Brittle glass-crystal tones that rise as the ice expands in winter and fall as it melts back in summer.',
+    soundProfileAr: 'نغمات زجاجية بلورية ترتفع مع تمدد الجليد شتاءً وتنخفض مع ذوبانه صيفاً.'
   }
 ];
 
@@ -117,7 +117,7 @@ export function ExploreDataSection({ lang = 'en', onSelectDataset }) {
     { id: 'all', label: isArabic ? 'جميع البيانات' : 'All Datasets' },
     { id: 'atmosphere', label: isArabic ? 'الغلاف الجوي' : 'Atmosphere' },
     { id: 'ocean', label: isArabic ? 'المحيطات والمياه' : 'Ocean' },
-    { id: 'environment', label: isArabic ? 'المناخ والبيئة' : 'Climate & Land' },
+    { id: 'human-polar', label: isArabic ? 'النشاط البشري والقطبان' : 'Human & Polar' },
   ];
 
   const filteredDatasets = selectedCategory === 'all'
@@ -214,7 +214,7 @@ export function ExploreDataSection({ lang = 'en', onSelectDataset }) {
                   <span className="val">{ds.sensor}</span>
                 </div>
                 <div className="metric-row">
-                  <span className="lbl">{isArabic ? 'وحدة القياس:' : 'Measurement Range:'}</span>
+                  <span className="lbl">{isArabic ? 'نطاق القياس:' : 'Measurement Range:'}</span>
                   <span className="val">{ds.range}</span>
                 </div>
               </div>

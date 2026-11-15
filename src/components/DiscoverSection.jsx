@@ -26,7 +26,7 @@ export function DiscoverSection({ lang = 'en' }) {
       },
       slotB: {
         title: isArabic ? 'مركز صناعي ملوث (AOD 0.95)' : 'Dense Industrial Hub (AOD 0.95)',
-        desc: isArabic ? 'تردد حاد مرتفع (C6 ~ 1047 Hz) يعكس حجب الضوء واحتجاز الملوثات.' : 'Soaring high frequency (C6 ~ 1047 Hz) signaling severe aerosol optical depth.',
+        desc: isArabic ? 'تردد مرتفع (C5 ~ 523 Hz) يعكس حجب الضوء واحتجاز الملوثات.' : 'High frequency (C5 ~ 523 Hz) signaling heavy aerosol optical depth.',
         resourceId: 'geos-aerosols-2017',
         val: 0.95
       }
@@ -57,16 +57,18 @@ export function DiscoverSection({ lang = 'en' }) {
         ? 'استمع إلى الفرق في الطاقة الحركية ودرجة الحرارة بين المسطحات المائية القطبية الباردة والتيارات الاستوائية السريعة.'
         : 'Experience the kinetic energy and thermal variance between subpolar gyres and the roaring tropical Gulf Stream.',
       slotA: {
-        title: isArabic ? 'مياه القطب الباردة (1.2°C)' : 'Polar Subpolar Water (1.2°C)',
+        title: isArabic ? 'مياه القطب الباردة (1.2°C)' : 'Cold Subpolar Water (1.2°C)',
         desc: isArabic ? 'نغمة بحرية عميقة وبطيئة تعكس الخمول الحراري.' : 'Sub-bass aquatic thud indicating near-freezing thermal inertia.',
         resourceId: 'perpetual-ocean-2',
-        val: 1.2
+        seriesKey: 'temperature',
+        val: 0.12 // 1.2 °C (series stores °C / 10)
       },
       slotB: {
         title: isArabic ? 'تيار الخليج الدافئ (27.8°C)' : 'Warm Gulf Stream Core (27.8°C)',
         desc: isArabic ? 'إيقاع ماريمبا سريع ومشرق يعبر عن سرعة تدفق الحرارة.' : 'Bright, agile aquatic resonance reflecting massive thermal convection.',
         resourceId: 'perpetual-ocean-2',
-        val: 27.8
+        seriesKey: 'temperature',
+        val: 2.78 // 27.8 °C (series stores °C / 10)
       }
     },
     {
@@ -76,16 +78,18 @@ export function DiscoverSection({ lang = 'en' }) {
         ? 'استمع إلى تسارع نقرات الماريمبا المائية مع تدفق ملايين الأطنان من بخار الماء في الغلاف الجوي.'
         : 'Experience the cascade of dual-tap raindrop plinks accelerating from gentle mist to torrential precipitation.',
       slotA: {
-        title: isArabic ? 'رذاذ خفيف (3 mm/h)' : 'Light Drizzle (3 mm/h)',
+        title: isArabic ? 'رذاذ خفيف (2 mm/h)' : 'Light Drizzle (2 mm/h)',
         desc: isArabic ? 'نقرات ماريمبا خشبية متفرقة وهادئة.' : 'Sparse, gentle wooden marimba drops.',
         resourceId: 'atmospheric-river-3d',
-        val: 3
+        seriesKey: 'rainRate',
+        val: 40 // 2 mm/h (series stores mm/h × 20)
       },
       slotB: {
-        title: isArabic ? 'طوفان نهري جوي (68 mm/h)' : 'Atmospheric Deluge (68 mm/h)',
+        title: isArabic ? 'ذروة الهطول عند اليابسة (24 mm/h)' : 'Landfall Downpour (24 mm/h)',
         desc: isArabic ? 'شلال إيقاعي سريع يحاكي هطول الأمطار الغزيرة.' : 'Rapid dual-tap droplet cascade simulating intense rainfall.',
         resourceId: 'atmospheric-river-3d',
-        val: 68
+        seriesKey: 'rainRate',
+        val: 480 // 24 mm/h (series stores mm/h × 20)
       }
     },
     {
@@ -95,16 +99,16 @@ export function DiscoverSection({ lang = 'en' }) {
         ? 'لاحظ رنين الزجاج البلوري البارد الحاد الذي يتصاعد مع تمدد الغطاء الجليدي القطبي عبر ملايين الكيلومترات.'
         : 'Hear the high crystalline glass bell resonance and frost harmonics expanding across the frozen cryosphere.',
       slotA: {
-        title: isArabic ? 'أدنى ذوبان صيفي (4.2 M km²)' : 'Summer Melt Minimum (4.2 M km²)',
+        title: isArabic ? 'أدنى امتداد صيفي – فبراير 2024 (2.0 M km²)' : 'Summer Minimum – Feb 2024 (2.0 M km²)',
         desc: isArabic ? 'رنين جليدي خافت ومنخفض يعكس انحسار الجليد.' : 'Lower frosted glass pitch reflecting retreated sea ice pack.',
         resourceId: 'antarctic-sea-ice',
-        val: 4.2
+        val: 2.0
       },
       slotB: {
-        title: isArabic ? 'ذروة التجمد الشتوي (18.5 M km²)' : 'Winter Freeze Peak (18.5 M km²)',
+        title: isArabic ? 'ذروة التجمد الشتوي – سبتمبر 2024 (17.2 M km²)' : 'Winter Maximum – Sep 2024 (17.2 M km²)',
         desc: isArabic ? 'رنين بلوري ساطع وحاد يوضح اتساع القشرة الجليدية.' : 'Brilliant, piercing crystal overtone signaling vast sea ice coverage.',
         resourceId: 'antarctic-sea-ice',
-        val: 18.5
+        val: 17.2
       }
     },
     {
@@ -114,13 +118,13 @@ export function DiscoverSection({ lang = 'en' }) {
         ? 'تباين نغمات الرنين الكهربائي الرقمي بين ظلمة السماء الريفية والوهج الساطع للعواصم العالمية.'
         : 'Contrast the gentle hum of rural areas against the sparkling FM electric chimes of major metropolitan centers.',
       slotA: {
-        title: isArabic ? 'سماء ريفية مظلمة (4 nW)' : 'Rural Dark Sky (4 nW)',
+        title: isArabic ? 'سماء ريفية مظلمة (4 nW)' : 'Rural Dark Sky (4 nW/cm²·sr)',
         desc: isArabic ? 'نغمة إلكترونية هادئة مع رنين طفيف.' : 'Quiet digital bell chime in low harmonic register.',
         resourceId: 'night-lights-decade',
         val: 4
       },
       slotB: {
-        title: isArabic ? 'إشعاع عاصمة عملاقة (120 nW)' : 'Megacity Radiance (120 nW)',
+        title: isArabic ? 'إشعاع عاصمة عملاقة (120 nW)' : 'Megacity Radiance (120 nW/cm²·sr)',
         desc: isArabic ? 'أجراس كهربائية متلألئة ذات رنين معدني ساطع.' : 'Shimmering FM bell synth with sparkling high overtones.',
         resourceId: 'night-lights-decade',
         val: 120
@@ -136,7 +140,7 @@ export function DiscoverSection({ lang = 'en' }) {
 
     await ensureAudioContextRunning();
     setPlayingSlot(slotKey);
-    playEICTone(res, slot.val, 0.85);
+    playEICTone(res, slot.val, 0.85, slot.seriesKey || null);
 
     setTimeout(() => {
       setPlayingSlot(null);
@@ -188,8 +192,8 @@ export function DiscoverSection({ lang = 'en' }) {
           <h3 className="principle-title">{isArabic ? 'الأنماط والدورات السنوية' : 'Seasonal Rhythms'}</h3>
           <p className="principle-text">
             {isArabic
-              ? 'تظهر الدورات الموسمية بوضوح: يلاحظ المستمع نغمات منخفضة في فصل الصيف مع امتصاص الغابات للكربون، ونغمات صاعدة في الشتاء مع تراجع التمثيل الضوئي.'
-              : 'Annual cycles produce recognizable waves: hear the dip during Northern Hemisphere summer photosynthesis and the peak during winter dormancy.'}
+              ? 'تظهر الدورات الموسمية بوضوح: تنخفض النغمات صيفاً مع امتصاص غابات نصف الكرة الشمالي للكربون، ثم ترتفع خلال الخريف والشتاء لتبلغ ذروتها في أواخر الربيع.'
+              : 'Annual cycles produce recognizable waves: hear CO₂ dip as Northern Hemisphere forests grow through summer, then climb through autumn and winter to a peak in late spring.'}
           </p>
           <div className="principle-tag">BIOSPHERE BREATHING</div>
         </div>

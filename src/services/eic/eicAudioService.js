@@ -113,7 +113,7 @@ export function resolveResource(res) {
 /**
  * Calculate scientific percentage (0% to 100%) and musical frequency for a resource value
  */
-export function getPercentageAndFreq(rawResource, value) {
+export function getPercentageAndFreq(rawResource, value, seriesKey = null) {
   const resource = resolveResource(rawResource);
   if (!resource || !resource.graphConfig?.series?.[0]) {
     return {
@@ -125,7 +125,11 @@ export function getPercentageAndFreq(rawResource, value) {
     };
   }
 
-  const series = resource.graphConfig.series[0];
+  // Map against the requested series (e.g. 'rainRate') when the value is in that series' units;
+  // otherwise fall back to the primary series.
+  const series =
+    (seriesKey && resource.graphConfig.series.find((s) => s.key === seriesKey)) ||
+    resource.graphConfig.series[0];
   const yVals = series.data.map((d) => d.y);
   const minY = Math.min(...yVals);
   const maxY = Math.max(...yVals);
@@ -174,7 +178,7 @@ function getOrCreateNoiseBuffer(ctx) {
  * Each of the 6 NASA EIC datasets possesses a completely unique acoustic timbre,
  * register, synthesis technique, and physical sound character.
  */
-export async function playEICTone(rawResource, value, volume = 0.7) {
+export async function playEICTone(rawResource, value, volume = 0.7, seriesKey = null) {
   if (volume <= 0) return;
 
   const running = await ensureAudioContextRunning();
@@ -184,7 +188,7 @@ export async function playEICTone(rawResource, value, volume = 0.7) {
   if (!ctx || ctx.state !== 'running') return;
 
   const resource = resolveResource(rawResource);
-  const { percentage, frequency } = getPercentageAndFreq(resource, value);
+  const { percentage, frequency } = getPercentageAndFreq(resource, value, seriesKey);
   const profile = EIC_SOUND_PROFILES[resource.id] || EIC_SOUND_PROFILES['night-lights-decade'];
   const now = ctx.currentTime;
   const effectiveVol = Math.max(0.01, Math.min(1, volume));

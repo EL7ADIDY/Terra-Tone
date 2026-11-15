@@ -132,7 +132,7 @@ export const EIC_RESOURCES = [
     
     // Original NASA SVS Visual Links
     videoUrl: 'https://svs.gsfc.nasa.gov/vis/a030000/a030900/a030910/plot_aerosols-northamerica_720p.mp4',
-    previewImage: 'https://svs.gsfc.nasa.gov/vis/a030000/a030900/a030910/plot_aerosols-northamerica_720p.01000_print.jpg',
+    previewImage: 'https://svs.gsfc.nasa.gov/vis/a030000/a030900/a030910/plot_aerosols-northamerica_F517R06K-GEOS_06KM-REPLAY-20170915_1200_print.jpg',
     sourceUrl: 'https://svs.gsfc.nasa.gov/30910/',
     
     // Scientific Metadata
@@ -149,16 +149,16 @@ export const EIC_RESOURCES = [
     dataCollectionMethod: 'Numerical global climate model constrained with satellite optical depth assimilations.',
     dataType: 'Assimilated Numerical Model Simulation',
     
-    durationSeconds: 45,
+    durationSeconds: 297,
     dataCadence: 'daily',
     timePoints: [
       { timestamp: 0, date: '2017-07-31', label: 'Jul 31: Baseline' },
-      { timestamp: 7, date: '2017-08-15', label: 'Aug 15: Saharan Dust Outbreak' },
-      { timestamp: 12, date: '2017-08-25', label: 'Aug 25: Hurricane Harvey Landfall' },
-      { timestamp: 17, date: '2017-09-06', label: 'Sep 06: Hurricane Irma Peak' },
-      { timestamp: 23, date: '2017-09-20', label: 'Sep 20: Hurricane Maria Landfall' },
-      { timestamp: 32, date: '2017-10-10', label: 'Oct 10: PNW Wildfire Smoke Plume' },
-      { timestamp: 45, date: '2017-11-01', label: 'Nov 01: Seasonal Cessation' }
+      { timestamp: 44.8, date: '2017-08-15', label: 'Aug 15: Saharan Dust Outbreak' },
+      { timestamp: 76.8, date: '2017-08-25', label: 'Aug 25: Hurricane Harvey Landfall' },
+      { timestamp: 115.2, date: '2017-09-06', label: 'Sep 06: Hurricane Irma Peak' },
+      { timestamp: 160, date: '2017-09-20', label: 'Sep 20: Hurricane Maria Landfall' },
+      { timestamp: 224, date: '2017-10-10', label: 'Oct 10: Northern California Wildfire Smoke' },
+      { timestamp: 294.4, date: '2017-11-01', label: 'Nov 01: Seasonal Cessation' }
     ],
     
     graphConfig: {
@@ -173,17 +173,17 @@ export const EIC_RESOURCES = [
           fill: false,
           data: [
             { x: 'Jul 31', y: 0.18, timestamp: 0 },
-            { x: 'Aug 10', y: 0.22, timestamp: 4.8 },
-            { x: 'Aug 20', y: 0.35, timestamp: 9.7 },
-            { x: 'Aug 25', y: 0.89, timestamp: 12.1 }, // Harvey
-            { x: 'Aug 30', y: 0.44, timestamp: 14.5 },
-            { x: 'Sep 06', y: 1.34, timestamp: 17.4 }, // Irma peak
-            { x: 'Sep 12', y: 0.62, timestamp: 20.3 },
-            { x: 'Sep 20', y: 1.15, timestamp: 23.2 }, // Maria
-            { x: 'Sep 28', y: 0.48, timestamp: 27.1 },
-            { x: 'Oct 10', y: 0.31, timestamp: 32.9 },
-            { x: 'Oct 22', y: 0.25, timestamp: 38.7 },
-            { x: 'Nov 01', y: 0.19, timestamp: 45.0 }
+            { x: 'Aug 10', y: 0.22, timestamp: 28.8 },
+            { x: 'Aug 20', y: 0.35, timestamp: 60.8 },
+            { x: 'Aug 25', y: 0.89, timestamp: 76.8 }, // Harvey
+            { x: 'Aug 30', y: 0.44, timestamp: 92.8 },
+            { x: 'Sep 06', y: 1.34, timestamp: 115.2 }, // Irma peak
+            { x: 'Sep 12', y: 0.62, timestamp: 134.4 },
+            { x: 'Sep 20', y: 1.15, timestamp: 160 }, // Maria
+            { x: 'Sep 28', y: 0.48, timestamp: 185.6 },
+            { x: 'Oct 10', y: 0.31, timestamp: 224 },
+            { x: 'Oct 22', y: 0.25, timestamp: 262.4 },
+            { x: 'Nov 01', y: 0.19, timestamp: 294.4 }
           ]
         },
         {
@@ -194,17 +194,17 @@ export const EIC_RESOURCES = [
           fill: false,
           data: [
             { x: 'Jul 31', y: 0.12, timestamp: 0 },
-            { x: 'Aug 10', y: 0.15, timestamp: 4.8 },
-            { x: 'Aug 20', y: 0.28, timestamp: 9.7 },
-            { x: 'Aug 25', y: 0.31, timestamp: 12.1 },
-            { x: 'Aug 30', y: 0.38, timestamp: 14.5 },
-            { x: 'Sep 06', y: 0.42, timestamp: 17.4 },
-            { x: 'Sep 12', y: 0.51, timestamp: 20.3 },
-            { x: 'Sep 20', y: 0.39, timestamp: 23.2 },
-            { x: 'Sep 28', y: 0.47, timestamp: 27.1 },
-            { x: 'Oct 10', y: 0.94, timestamp: 32.9 }, // California wildfire peak
-            { x: 'Oct 22', y: 0.42, timestamp: 38.7 },
-            { x: 'Nov 01', y: 0.16, timestamp: 45.0 }
+            { x: 'Aug 10', y: 0.15, timestamp: 28.8 },
+            { x: 'Aug 20', y: 0.28, timestamp: 60.8 },
+            { x: 'Aug 25', y: 0.31, timestamp: 76.8 },
+            { x: 'Aug 30', y: 0.38, timestamp: 92.8 },
+            { x: 'Sep 06', y: 0.42, timestamp: 115.2 },
+            { x: 'Sep 12', y: 0.51, timestamp: 134.4 },
+            { x: 'Sep 20', y: 0.39, timestamp: 160 },
+            { x: 'Sep 28', y: 0.47, timestamp: 185.6 },
+            { x: 'Oct 10', y: 0.94, timestamp: 224 }, // California wildfire peak
+            { x: 'Oct 22', y: 0.42, timestamp: 262.4 },
+            { x: 'Nov 01', y: 0.16, timestamp: 294.4 }
           ]
         },
         {
@@ -215,17 +215,17 @@ export const EIC_RESOURCES = [
           fill: false,
           data: [
             { x: 'Jul 31', y: 0.45, timestamp: 0 },
-            { x: 'Aug 10', y: 0.68, timestamp: 4.8 },
-            { x: 'Aug 20', y: 0.55, timestamp: 9.7 },
-            { x: 'Aug 25', y: 0.38, timestamp: 12.1 },
-            { x: 'Aug 30', y: 0.42, timestamp: 14.5 },
-            { x: 'Sep 06', y: 0.76, timestamp: 17.4 },
-            { x: 'Sep 12', y: 0.61, timestamp: 20.3 },
-            { x: 'Sep 20', y: 0.45, timestamp: 23.2 },
-            { x: 'Sep 28', y: 0.34, timestamp: 27.1 },
-            { x: 'Oct 10', y: 0.28, timestamp: 32.9 },
-            { x: 'Oct 22', y: 0.22, timestamp: 38.7 },
-            { x: 'Nov 01', y: 0.18, timestamp: 45.0 }
+            { x: 'Aug 10', y: 0.68, timestamp: 28.8 },
+            { x: 'Aug 20', y: 0.55, timestamp: 60.8 },
+            { x: 'Aug 25', y: 0.38, timestamp: 76.8 },
+            { x: 'Aug 30', y: 0.42, timestamp: 92.8 },
+            { x: 'Sep 06', y: 0.76, timestamp: 115.2 },
+            { x: 'Sep 12', y: 0.61, timestamp: 134.4 },
+            { x: 'Sep 20', y: 0.45, timestamp: 160 },
+            { x: 'Sep 28', y: 0.34, timestamp: 185.6 },
+            { x: 'Oct 10', y: 0.28, timestamp: 224 },
+            { x: 'Oct 22', y: 0.22, timestamp: 262.4 },
+            { x: 'Nov 01', y: 0.18, timestamp: 294.4 }
           ]
         }
       ]
@@ -243,9 +243,9 @@ export const EIC_RESOURCES = [
     shortDescriptionEn: 'Using NASA JPL ECCO-2 high-resolution ocean models, this visualization highlights heat transport and deep return flows across the world\'s most powerful western boundary currents.',
     shortDescriptionAr: 'باستخدام نماذج ECCO-2 عالية الدقة من مختبر الدفع النفاث بناسا، توضح هذه المحاكاة نقل الحرارة وتدفقات العودة العميقة عبر أقوى تيارات المحيطات.',
     
-    videoUrl: 'https://svs.gsfc.nasa.gov/vis/a000000/a003900/a003912/flat_global_ecco2_6840x3420_768p30-d1.mp4',
-    previewImage: 'https://svs.gsfc.nasa.gov/vis/a000000/a003900/a003912/flat_global_ecco2_2028x1024.25000.jpg',
-    sourceUrl: 'https://svs.gsfc.nasa.gov/3912/',
+    videoUrl: 'https://svs.gsfc.nasa.gov/vis/a000000/a005400/a005425/perpetual_ocean2_CLOSE_096_temperature_1080p30.mp4',
+    previewImage: 'https://svs.gsfc.nasa.gov/vis/a000000/a005400/a005425/perpetual_ocean2_CLOSE_096_temperature.00000_print.jpg',
+    sourceUrl: 'https://svs.gsfc.nasa.gov/5425/',
     
     phenomenon: 'Western Boundary Currents & Oceanic Heat Transport',
     phenomenonAr: 'تيارات الحدود الغربية ونقل الحرارة بالمحيطات',
@@ -260,15 +260,15 @@ export const EIC_RESOURCES = [
     dataCollectionMethod: 'Synthesized physics-based oceanic general circulation model with 4D-Var data assimilation.',
     dataType: 'Assimilated Ocean Circulation Model',
     
-    durationSeconds: 150,
+    durationSeconds: 316,
     dataCadence: 'geographic-tour',
     timePoints: [
       { timestamp: 0, label: '0:00 - Global Earth Rotation' },
-      { timestamp: 35, label: '0:35 - Western Pacific & Kuroshio Current' },
-      { timestamp: 75, label: '1:15 - Indian Ocean & Agulhas Retroflection' },
-      { timestamp: 110, label: '1:50 - North Atlantic & Gulf Stream Core' },
-      { timestamp: 135, label: '2:15 - Subsurface Return Flow (<600m)' },
-      { timestamp: 150, label: '2:30 - Global Ocean Heat Redistribution' }
+      { timestamp: 73.7, label: '1:13 - Western Pacific & Kuroshio Current' },
+      { timestamp: 158, label: '2:38 - Indian Ocean & Agulhas Retroflection' },
+      { timestamp: 231.7, label: '3:51 - North Atlantic & Gulf Stream Core' },
+      { timestamp: 284.4, label: '4:44 - Subsurface Return Flow (<600m)' },
+      { timestamp: 316, label: '5:16 - Global Ocean Heat Redistribution' }
     ],
     
     graphConfig: {
@@ -283,15 +283,15 @@ export const EIC_RESOURCES = [
           fill: true,
           data: [
             { x: 'Global Orbit', y: 0.32, timestamp: 0 },
-            { x: 'W. Pacific Entry', y: 0.74, timestamp: 20 },
-            { x: 'Kuroshio Core', y: 1.85, timestamp: 38 },
-            { x: 'Kuroshio Meander', y: 1.20, timestamp: 55 },
-            { x: 'Agulhas Entry', y: 1.45, timestamp: 75 },
-            { x: 'Agulhas Ring Shedding', y: 1.95, timestamp: 92 },
-            { x: 'Florida Straits', y: 2.15, timestamp: 110 },
-            { x: 'Gulf Stream Core', y: 2.52, timestamp: 122 },
-            { x: 'Deep Return (<600m)', y: 0.42, timestamp: 138 },
-            { x: 'North Atlantic Drift', y: 0.65, timestamp: 150 }
+            { x: 'W. Pacific Entry', y: 0.74, timestamp: 42.1 },
+            { x: 'Kuroshio Core', y: 1.85, timestamp: 80.1 },
+            { x: 'Kuroshio Meander', y: 1.20, timestamp: 115.9 },
+            { x: 'Agulhas Entry', y: 1.45, timestamp: 158 },
+            { x: 'Agulhas Ring Shedding', y: 1.95, timestamp: 193.8 },
+            { x: 'Florida Straits', y: 2.15, timestamp: 231.7 },
+            { x: 'Gulf Stream Core', y: 2.52, timestamp: 257 },
+            { x: 'Deep Return (<600m)', y: 0.42, timestamp: 290.7 },
+            { x: 'North Atlantic Drift', y: 0.65, timestamp: 316 }
           ]
         },
         {
@@ -302,15 +302,15 @@ export const EIC_RESOURCES = [
           fill: false,
           data: [
             { x: 'Global Orbit', y: 1.6, timestamp: 0 },      // 16 C
-            { x: 'W. Pacific Entry', y: 2.1, timestamp: 20 },  // 21 C
-            { x: 'Kuroshio Core', y: 2.45, timestamp: 38 },   // 24.5 C
-            { x: 'Kuroshio Meander', y: 2.2, timestamp: 55 }, // 22 C
-            { x: 'Agulhas Entry', y: 2.35, timestamp: 75 },   // 23.5 C
-            { x: 'Agulhas Ring Shedding', y: 2.15, timestamp: 92 }, // 21.5 C
-            { x: 'Florida Straits', y: 2.75, timestamp: 110 },// 27.5 C
-            { x: 'Gulf Stream Core', y: 2.68, timestamp: 122 },// 26.8 C
-            { x: 'Deep Return (<600m)', y: 0.48, timestamp: 138 }, // 4.8 C
-            { x: 'North Atlantic Drift', y: 1.42, timestamp: 150 }  // 14.2 C
+            { x: 'W. Pacific Entry', y: 2.1, timestamp: 42.1 },  // 21 C
+            { x: 'Kuroshio Core', y: 2.45, timestamp: 80.1 },   // 24.5 C
+            { x: 'Kuroshio Meander', y: 2.2, timestamp: 115.9 }, // 22 C
+            { x: 'Agulhas Entry', y: 2.35, timestamp: 158 },   // 23.5 C
+            { x: 'Agulhas Ring Shedding', y: 2.15, timestamp: 193.8 }, // 21.5 C
+            { x: 'Florida Straits', y: 2.75, timestamp: 231.7 },// 27.5 C
+            { x: 'Gulf Stream Core', y: 2.68, timestamp: 257 },// 26.8 C
+            { x: 'Deep Return (<600m)', y: 0.48, timestamp: 290.7 }, // 4.8 C
+            { x: 'North Atlantic Drift', y: 1.42, timestamp: 316 }  // 14.2 C
           ]
         }
       ]
@@ -345,15 +345,15 @@ export const EIC_RESOURCES = [
     dataCollectionMethod: 'Atmospheric general circulation simulation resolving individual convective systems and emission plumes.',
     dataType: 'High-Resolution Earth System Model Simulation',
     
-    durationSeconds: 30,
+    durationSeconds: 39,
     dataCadence: 'daily-seasonal',
     timePoints: [
       { timestamp: 0, date: '2020-01-01', label: 'Jan 01: Baseline Mixing Ratio' },
-      { timestamp: 6, date: '2020-01-20', label: 'Jan 20: Mid-Latitude Cyclone Advection' },
-      { timestamp: 13, date: '2020-02-10', label: 'Feb 10: Urban Industrial Plume Peak' },
-      { timestamp: 20, date: '2020-03-01', label: 'Mar 01: Equatorial Biomass Burning' },
-      { timestamp: 26, date: '2020-03-20', label: 'Mar 20: Spring Maximum Concentration' },
-      { timestamp: 30, date: '2020-03-31', label: 'Mar 31: Pre-Photosynthetic Drawdown' }
+      { timestamp: 7.8, date: '2020-01-20', label: 'Jan 20: Mid-Latitude Cyclone Advection' },
+      { timestamp: 16.9, date: '2020-02-10', label: 'Feb 10: Urban Industrial Plume Peak' },
+      { timestamp: 26, date: '2020-03-01', label: 'Mar 01: Equatorial Biomass Burning' },
+      { timestamp: 33.8, date: '2020-03-20', label: 'Mar 20: Spring Maximum Concentration' },
+      { timestamp: 39, date: '2020-03-31', label: 'Mar 31: Pre-Photosynthetic Drawdown' }
     ],
     
     graphConfig: {
@@ -368,15 +368,15 @@ export const EIC_RESOURCES = [
           fill: true,
           data: [
             { x: 'Jan 01', y: 414.2, timestamp: 0 },
-            { x: 'Jan 10', y: 414.8, timestamp: 3.3 },
-            { x: 'Jan 20', y: 415.6, timestamp: 6.6 },
-            { x: 'Feb 01', y: 416.3, timestamp: 10.0 },
-            { x: 'Feb 10', y: 417.1, timestamp: 13.3 },
-            { x: 'Feb 20', y: 417.9, timestamp: 16.6 },
-            { x: 'Mar 01', y: 418.5, timestamp: 20.0 },
-            { x: 'Mar 10', y: 419.2, timestamp: 23.3 },
-            { x: 'Mar 20', y: 419.8, timestamp: 26.6 },
-            { x: 'Mar 31', y: 420.3, timestamp: 30.0 }
+            { x: 'Jan 10', y: 414.8, timestamp: 4.3 },
+            { x: 'Jan 20', y: 415.6, timestamp: 8.6 },
+            { x: 'Feb 01', y: 416.3, timestamp: 13 },
+            { x: 'Feb 10', y: 417.1, timestamp: 17.3 },
+            { x: 'Feb 20', y: 417.9, timestamp: 21.6 },
+            { x: 'Mar 01', y: 418.5, timestamp: 26 },
+            { x: 'Mar 10', y: 419.2, timestamp: 30.3 },
+            { x: 'Mar 20', y: 419.8, timestamp: 34.6 },
+            { x: 'Mar 31', y: 420.3, timestamp: 39 }
           ]
         },
         {
@@ -387,15 +387,15 @@ export const EIC_RESOURCES = [
           fill: false,
           data: [
             { x: 'Jan 01', y: 413.4, timestamp: 0 },
-            { x: 'Jan 10', y: 413.7, timestamp: 3.3 },
-            { x: 'Jan 20', y: 414.1, timestamp: 6.6 },
-            { x: 'Feb 01', y: 414.6, timestamp: 10.0 },
-            { x: 'Feb 10', y: 415.0, timestamp: 13.3 },
-            { x: 'Feb 20', y: 415.4, timestamp: 16.6 },
-            { x: 'Mar 01', y: 415.9, timestamp: 20.0 },
-            { x: 'Mar 10', y: 416.3, timestamp: 23.3 },
-            { x: 'Mar 20', y: 416.7, timestamp: 26.6 },
-            { x: 'Mar 31', y: 417.1, timestamp: 30.0 }
+            { x: 'Jan 10', y: 413.7, timestamp: 4.3 },
+            { x: 'Jan 20', y: 414.1, timestamp: 8.6 },
+            { x: 'Feb 01', y: 414.6, timestamp: 13 },
+            { x: 'Feb 10', y: 415.0, timestamp: 17.3 },
+            { x: 'Feb 20', y: 415.4, timestamp: 21.6 },
+            { x: 'Mar 01', y: 415.9, timestamp: 26 },
+            { x: 'Mar 10', y: 416.3, timestamp: 30.3 },
+            { x: 'Mar 20', y: 416.7, timestamp: 34.6 },
+            { x: 'Mar 31', y: 417.1, timestamp: 39 }
           ]
         }
       ]
@@ -413,8 +413,8 @@ export const EIC_RESOURCES = [
     shortDescriptionEn: 'Using NASA MERRA-2 reanalysis, this 3D animation visualizes an atmospheric river channeling massive tropical water vapor across the Pacific, impacting western North America with extreme precipitation.',
     shortDescriptionAr: 'باستخدام إعادة تحليل MERRA-2 من ناسا، تجسد هذه المحاكاة ثلاثية الأبعاد نهراً جوياً ينقل بخار الماء المداري الهائل عبر المحيط الهادئ نحو الساحل الغربي لأمريكا.',
     
-    videoUrl: 'https://svs.gsfc.nasa.gov/vis/a000000/a004900/a004960/atmos_rivers_narrated_HD.mp4',
-    previewImage: 'https://svs.gsfc.nasa.gov/vis/a000000/a004900/a004960/atmos_rivers_narrated_4k.00090_print.jpg',
+    videoUrl: 'https://svs.gsfc.nasa.gov/vis/a000000/a004900/a004960/atmos_river_HD.mp4',
+    previewImage: 'https://svs.gsfc.nasa.gov/vis/a000000/a004900/a004960/atmos_river.0324_rfm23_2021-11-29_1351.04370_print.jpg',
     sourceUrl: 'https://svs.gsfc.nasa.gov/4960/',
     
     phenomenon: 'Atmospheric River Moisture Transport & Orographic Rainfall',
@@ -430,15 +430,15 @@ export const EIC_RESOURCES = [
     dataCollectionMethod: 'Modern atmospheric reanalysis combining multisatellite microwave and infrared observations with numerical weather forecasting.',
     dataType: 'Atmospheric Reanalysis Blend',
     
-    durationSeconds: 120,
+    durationSeconds: 291,
     dataCadence: 'event-lifecycle',
     timePoints: [
       { timestamp: 0, label: '0:00 - Tropical ITCZ Moisture Convergence' },
-      { timestamp: 25, label: '0:25 - Pressure Gradient Funneling (Hawaiian Origin)' },
-      { timestamp: 50, label: '0:50 - Jet Stream Advection Across Pacific Corridor' },
-      { timestamp: 75, label: '1:15 - Coastal Landfall & Cold Front Condensation' },
-      { timestamp: 95, label: '1:35 - Orographic Lift over Coastal Mountain Ranges' },
-      { timestamp: 120, label: '2:00 - Snowpack Buildup & Hydrologic Replenishment' }
+      { timestamp: 60.6, label: '1:00 - Pressure Gradient Funneling (Hawaiian Origin)' },
+      { timestamp: 121.2, label: '2:01 - Jet Stream Advection Across Pacific Corridor' },
+      { timestamp: 181.9, label: '3:01 - Coastal Landfall & Cold Front Condensation' },
+      { timestamp: 230.4, label: '3:50 - Orographic Lift over Coastal Mountain Ranges' },
+      { timestamp: 291, label: '4:51 - Snowpack Buildup & Hydrologic Replenishment' }
     ],
     
     graphConfig: {
@@ -453,11 +453,11 @@ export const EIC_RESOURCES = [
           fill: true,
           data: [
             { x: 'Tropical Genesis', y: 280, timestamp: 0 },
-            { x: 'Pacific Corridor', y: 460, timestamp: 25 },
-            { x: 'Mid-Ocean Funnel', y: 720, timestamp: 50 },
-            { x: 'Landfall Peak (Cat 4)', y: 1040, timestamp: 75 },
-            { x: 'Mountain Interception', y: 580, timestamp: 95 },
-            { x: 'Inland Dissipation', y: 210, timestamp: 120 }
+            { x: 'Pacific Corridor', y: 460, timestamp: 60.6 },
+            { x: 'Mid-Ocean Funnel', y: 720, timestamp: 121.2 },
+            { x: 'Landfall Peak (Cat 4)', y: 1040, timestamp: 181.9 },
+            { x: 'Mountain Interception', y: 580, timestamp: 230.4 },
+            { x: 'Inland Dissipation', y: 210, timestamp: 291 }
           ]
         },
         {
@@ -468,11 +468,11 @@ export const EIC_RESOURCES = [
           fill: false,
           data: [
             { x: 'Tropical Genesis', y: 40, timestamp: 0 },     // 2 mm/hr
-            { x: 'Pacific Corridor', y: 80, timestamp: 25 },    // 4 mm/hr
-            { x: 'Mid-Ocean Funnel', y: 160, timestamp: 50 },   // 8 mm/hr
-            { x: 'Landfall Peak (Cat 4)', y: 480, timestamp: 75 }, // 24 mm/hr extreme
-            { x: 'Mountain Interception', y: 320, timestamp: 95 }, // 16 mm/hr
-            { x: 'Inland Dissipation', y: 60, timestamp: 120 }   // 3 mm/hr
+            { x: 'Pacific Corridor', y: 80, timestamp: 60.6 },    // 4 mm/hr
+            { x: 'Mid-Ocean Funnel', y: 160, timestamp: 121.2 },   // 8 mm/hr
+            { x: 'Landfall Peak (Cat 4)', y: 480, timestamp: 181.9 }, // 24 mm/hr extreme
+            { x: 'Mountain Interception', y: 320, timestamp: 230.4 }, // 16 mm/hr
+            { x: 'Inland Dissipation', y: 60, timestamp: 291 }   // 3 mm/hr
           ]
         }
       ]
@@ -485,38 +485,38 @@ export const EIC_RESOURCES = [
     category: 'polar',
     titleEn: 'Daily Antarctic Sea Ice Extent',
     titleAr: 'امتداد الجليد البحري اليومي في القارة القطبية الجنوبية',
-    subtitleEn: 'Annual freeze and melt cycles captured by satellite radiometry',
+    subtitleEn: 'The 2024 freeze and melt cycle captured by satellite microwave radiometry',
     subtitleAr: 'دورات التجمد والذوبان السنوية عبر مقاييس الإشعاع الفضائية',
-    shortDescriptionEn: 'Produced by NASA Cryospheric Sciences, this high-contrast visualization follows the daily expansion and retreat of Antarctic sea ice through annual minimums and maximums.',
-    shortDescriptionAr: 'من إنتاج مختبر العلوم الجليدية بناسا، ترصد هذه المحاكاة التمدد والتقلص اليومي للجليد البحري حول القارة القطبية الجنوبية عبر فصول التجمد والذوبان.',
+    shortDescriptionEn: 'Produced by NASA\'s Scientific Visualization Studio from JAXA AMSR2 data, this visualization follows the daily expansion and retreat of Antarctic sea ice through 2024, from its February minimum to its September maximum.',
+    shortDescriptionAr: 'من إنتاج استوديو التصور العلمي بناسا ببيانات AMSR2 من جاكسا، ترصد هذه المحاكاة التمدد والتقلص اليومي للجليد البحري حول القارة القطبية الجنوبية عبر فصول التجمد والذوبان.',
     
-    videoUrl: 'https://svs.gsfc.nasa.gov/vis/a000000/a005000/a005064/antarctic_sea_ice_moving_two_year_w_dates.mp4',
-    previewImage: 'https://svs.gsfc.nasa.gov/vis/a000000/a005000/a005064/antarctic_sea_ice_moving_two_year_w_dates.00001_print.jpg',
+    videoUrl: 'https://svs.gsfc.nasa.gov/vis/a000000/a005000/a005064/antarctic_sea_ice_2024_w_dates.mp4',
+    previewImage: 'https://svs.gsfc.nasa.gov/vis/a000000/a005000/a005064/antarctic_sea_ice_w_dates.2024001_print.jpg',
     sourceUrl: 'https://svs.gsfc.nasa.gov/5064/',
     
     phenomenon: 'Cryospheric Polar Ice Dynamics & Seasonal Feedback',
     phenomenonAr: 'ديناميكيات الجليد القطبي ودورات التغذية الراجعة المناخية',
-    datasetName: 'NASA Cryospheric Sciences / NSIDC Sea Ice Index',
-    dataProvider: 'NASA Goddard Space Flight Center Cryospheric Sciences Laboratory & NSIDC',
-    instrument: 'Passive Microwave Radiometers (DMSP SSM/I-SSMIS and AMSR-2)',
+    datasetName: 'JAXA AMSR2 10 km Daily Sea Ice Concentration (visualization); NSIDC Sea Ice Index (extent values)',
+    dataProvider: 'Japan Aerospace Exploration Agency (JAXA), NASA Scientific Visualization Studio & NSIDC',
+    instrument: 'AMSR2 passive microwave radiometer aboard GCOM-W1 (SHIZUKU)',
     primaryVariable: 'Daily Sea Ice Extent (areas with ≥15% ice concentration)',
     unitEn: 'Million Square Kilometers (10⁶ km²)',
     unitShort: '10⁶ km²',
     geographicCoverage: 'Southern Ocean and Antarctic Circumpolar Seas',
-    temporalCoverage: 'Daily Continuous Observation',
+    temporalCoverage: 'January 1 – December 31, 2024 (one frame per day)',
     dataCollectionMethod: 'Multifrequency satellite passive microwave brightness temperature inversion.',
     dataType: 'Direct Satellite Observation',
     
-    durationSeconds: 40,
+    durationSeconds: 12,
     dataCadence: 'daily-annual',
     timePoints: [
       { timestamp: 0, label: 'January: Mid-Summer Melt' },
-      { timestamp: 6.6, label: 'February: Annual Minimum Extent (~2.2M km²)' },
-      { timestamp: 13.3, label: 'April: Autumn Freeze Initiation' },
-      { timestamp: 20.0, label: 'June: Polar Winter Expansion' },
-      { timestamp: 26.6, label: 'August: Peak Growth Rate' },
-      { timestamp: 33.3, label: 'September: Annual Maximum Extent (~18.5M km²)' },
-      { timestamp: 40.0, label: 'December: Rapid Spring Retreat' }
+      { timestamp: 1.67, label: 'Feb 20: Annual Minimum Extent (1.99M km²)' },
+      { timestamp: 3.03, label: 'April: Autumn Freeze Initiation' },
+      { timestamp: 5.07, label: 'June: Polar Winter Expansion' },
+      { timestamp: 7.1, label: 'August: Late-Winter Growth' },
+      { timestamp: 8.73, label: 'Sep 19: Annual Maximum Extent (17.16M km²)' },
+      { timestamp: 11.17, label: 'December: Rapid Spring Retreat' }
     ],
     
     graphConfig: {
@@ -525,44 +525,44 @@ export const EIC_RESOURCES = [
       series: [
         {
           key: 'extent',
-          nameEn: 'Antarctic Sea Ice Extent (10⁶ km²)',
+          nameEn: '2024 Antarctic Sea Ice Extent (10⁶ km²; min & max from NSIDC, other months approximate)',
           nameAr: 'امتداد الجليد البحري (مليون كم²)',
           color: '#38bdf8',
           fill: true,
           data: [
-            { x: 'Jan', y: 5.1, timestamp: 0 },
-            { x: 'Feb (Min)', y: 2.2, timestamp: 6.6 },
-            { x: 'Mar', y: 3.8, timestamp: 10.0 },
-            { x: 'Apr', y: 7.2, timestamp: 13.3 },
-            { x: 'May', y: 11.4, timestamp: 16.6 },
-            { x: 'Jun', y: 14.8, timestamp: 20.0 },
-            { x: 'Jul', y: 16.9, timestamp: 23.3 },
-            { x: 'Aug', y: 17.8, timestamp: 26.6 },
-            { x: 'Sep (Max)', y: 18.6, timestamp: 33.3 },
-            { x: 'Oct', y: 17.2, timestamp: 35.5 },
-            { x: 'Nov', y: 13.5, timestamp: 37.8 },
-            { x: 'Dec', y: 8.9, timestamp: 40.0 }
+            { x: 'Jan', y: 5.1, timestamp: 0.0 },
+            { x: 'Feb 20 (Min)', y: 1.99, timestamp: 1.67 },
+            { x: 'Mar', y: 3.8, timestamp: 2.0 },
+            { x: 'Apr', y: 7.2, timestamp: 3.03 },
+            { x: 'May', y: 11.4, timestamp: 4.03 },
+            { x: 'Jun', y: 14.8, timestamp: 5.07 },
+            { x: 'Jul', y: 16.2, timestamp: 6.07 },
+            { x: 'Aug', y: 16.9, timestamp: 7.1 },
+            { x: 'Sep 19 (Max)', y: 17.16, timestamp: 8.73 },
+            { x: 'Oct', y: 16.8, timestamp: 9.13 },
+            { x: 'Nov', y: 13.5, timestamp: 10.17 },
+            { x: 'Dec', y: 8.9, timestamp: 11.17 }
           ]
         },
         {
           key: 'climatology',
-          nameEn: '1981–2010 Historical Climatological Median',
+          nameEn: '1981–2010 Average (min 2.84, max 18.71; other months approximate)',
           nameAr: 'المعدل المناخي التاريخي (1981–2010)',
           color: '#94a3b8',
           fill: false,
           data: [
-            { x: 'Jan', y: 5.8, timestamp: 0 },
-            { x: 'Feb (Min)', y: 2.8, timestamp: 6.6 },
-            { x: 'Mar', y: 4.5, timestamp: 10.0 },
-            { x: 'Apr', y: 8.1, timestamp: 13.3 },
-            { x: 'May', y: 12.3, timestamp: 16.6 },
-            { x: 'Jun', y: 15.6, timestamp: 20.0 },
-            { x: 'Jul', y: 17.5, timestamp: 23.3 },
-            { x: 'Aug', y: 18.5, timestamp: 26.6 },
-            { x: 'Sep (Max)', y: 19.1, timestamp: 33.3 },
-            { x: 'Oct', y: 18.0, timestamp: 35.5 },
-            { x: 'Nov', y: 14.8, timestamp: 37.8 },
-            { x: 'Dec', y: 9.8, timestamp: 40.0 }
+            { x: 'Jan', y: 5.8, timestamp: 0.0 },
+            { x: 'Feb 20 (Min)', y: 2.84, timestamp: 1.67 },
+            { x: 'Mar', y: 4.5, timestamp: 2.0 },
+            { x: 'Apr', y: 8.1, timestamp: 3.03 },
+            { x: 'May', y: 12.3, timestamp: 4.03 },
+            { x: 'Jun', y: 15.6, timestamp: 5.07 },
+            { x: 'Jul', y: 17.5, timestamp: 6.07 },
+            { x: 'Aug', y: 18.5, timestamp: 7.1 },
+            { x: 'Sep 19 (Max)', y: 18.71, timestamp: 8.73 },
+            { x: 'Oct', y: 18.0, timestamp: 9.13 },
+            { x: 'Nov', y: 14.8, timestamp: 10.17 },
+            { x: 'Dec', y: 9.8, timestamp: 11.17 }
           ]
         }
       ]

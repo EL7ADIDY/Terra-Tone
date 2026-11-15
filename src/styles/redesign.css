@@ -2918,3 +2918,65 @@ section {
   background: #eef4fa !important;
   border-color: rgba(2, 132, 199, 0.15) !important;
 }
+
+/* ==========================================================================
+   Small-phone header fix: keep the menu button, language switch and theme lamp
+   on screen. Contrast / Big Text stay reachable from the mobile drawer and the
+   floating accessibility dock, so they are hidden from the header here.
+   ========================================================================== */
+@media (max-width: 640px) {
+  .navbar-container {
+    padding: 0 0.6rem;
+    gap: 0.4rem;
+  }
+  .navbar-brand {
+    gap: 0.5rem;
+    flex-shrink: 1;
+    min-width: 0;
+  }
+  .brand-text {
+    min-width: 0;
+    overflow: hidden;
+  }
+  .brand-title {
+    font-size: 0.95rem;
+    letter-spacing: 0.04em;
+  }
+  .brand-tag {
+    font-size: 0.5rem;
+    letter-spacing: 0.04em;
+  }
+  .navbar-actions {
+    flex-shrink: 0;
+    gap: 0.35rem;
+  }
+  .navbar-actions .a11y-toggle-btn {
+    display: none !important;
+  }
+  .navbar-icon-btn,
+  .navbar-pill-btn {
+    padding: 0.4rem 0.5rem;
+  }
+  .navbar-lamp-wrapper {
+    margin: 0 0.15rem;
+  }
+  .floating-a11y-pill {
+    bottom: 14px;
+    right: 14px;
+  }
+}
+
+@media (max-width: 400px) {
+  .brand-logo-icon {
+    display: none;
+  }
+}
+
+@media (max-width: 340px) {
+  .brand-tag {
+    display: none;
+  }
+  .navbar-pill-btn svg {
+    display: none;
+  }
+}

@@ -1,3 +1,5 @@
 node_modules
 .env
 all_code.txt
+dist
+docs
