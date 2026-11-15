@@ -1,12 +1,12 @@
 # Terra-Tone 🌍🎵
 **NASA Earth Environmental Data Sonification & Visual Explorer — NASA Space Apps Challenge**
 
-An interactive, production-ready web application that pairs NASA Earth environmental data and NASA GIBS satellite frames with real-time harmonic sonification and dynamic visuals, empowering people who are blind, low-vision, or sighted to explore multi-decadal climate and environmental trends by listening. Includes an eye-comfort dual theme system (Dark Space Mode & Soft Eye-Comfort Light Mode).
+An interactive web application that pairs NASA Earth environmental data and NASA GIBS satellite frames with real-time harmonic sonification and dynamic visuals, empowering people who are blind, low-vision, or sighted to explore multi-decadal climate and environmental trends by listening. Includes an eye-comfort dual theme system (Dark Space Mode & Soft Eye-Comfort Light Mode).
 
 ![NASA Space Apps Challenge](https://img.shields.io/badge/NASA%20Space%20Apps-The%20Earth%20Information%20Jukebox-0284c7?style=for-the-badge)
 ![Zero Backend](https://img.shields.io/badge/Architecture-100%25%20Client--Side-10b981?style=for-the-badge)
 ![Web Audio API](https://img.shields.io/badge/Audio-Pure%20Web%20Audio%20API-f97316?style=for-the-badge)
-![WCAG AAA](https://img.shields.io/badge/Accessibility-WCAG%20AAA%20Compliant-a855f7?style=for-the-badge)
+![Accessibility](https://img.shields.io/badge/Accessibility-Keyboard%20%C2%B7%20Screen%20Reader%20%C2%B7%20RTL-a855f7?style=for-the-badge)
 ![Dual Theme](https://img.shields.io/badge/UI-Dark%20%26%20Light%20Eye--Comfort-38bdf8?style=for-the-badge)
 
 ---
@@ -56,8 +56,7 @@ An interactive, production-ready web application that pairs NASA Earth environme
   - <kbd>H</kbd>: Open Keyboard Shortcuts help modal
   - <kbd>Esc</kbd>: Close modal dialogs
 - **Screen Reader Announcements**: Live `aria-live="polite"` region continuously announces year, variable, value, and record events.
-- **High Contrast Mode**: Toggle ultra-high contrast palette (pure `#000000` dark background, `#ffffff` text, vivid `#ffff00` borders) exceeding WCAG AAA (> 7:1) contrast ratios.
-- **Large Text Mode**: Increases base font sizes and interactive button touch targets to $\ge 48\text{px}$.
+- **Dark & Light Themes**: Follows the system color scheme; switchable with the lamp toggle.
 - **Prefers-Reduced-Motion**: Respects system animation preferences.
 - **Semantic Data Table**: Accessible alternative to the chart with `<table>`, `<caption>`, and `<th scope="col">` elements, plus one-click CSV download.
 - **Skip-to-Content Link**: Direct keyboard navigation to main content.
@@ -104,6 +103,33 @@ Every dataset ID, TileMatrixSet, colormap XML, and date range below was verified
 - **Colormap XML Lookup**: RGB is matched via Euclidean distance against NASA GIBS v1.3 Colormap XMLs (with Kelvin-to-Celsius conversion where applicable), or perceived luminance (`0.299R + 0.587G + 0.114B`) for true-color imagery.
 - **Added Feature: Media & Data Export**: Browser-side composite export via `JSZip` (PNG sequence + `frames_metadata.json`), HTML5 `canvas.captureStream()` + `MediaRecorder` (`.webm`), and JSON time-series export for scientific analysis.
 - **Limitations**: Satellite sensors cannot directly detect chemical soil toxins (heavy metals/pesticides); AOD (~50 km) is a column proxy rather than breathing-height PM2.5; true-color brightness includes clouds; optical layers (Chlorophyll-a, NDVI) can show cloud/orbital swath gaps; coarse grids (4–50 km) smooth hyper-local variations.
+
+---
+
+## ✅ Validity: Data, Verification & Limits
+
+**What is real NASA data**
+- **Climate mode** reads monthly values directly from the **NASA POWER API** in the browser (1990 – latest full year) for the chosen location.
+- **Pollution Stages** sample live **NASA GIBS** imagery; values are recovered from each layer's official colormap (section C above), so they are close approximations of the underlying product, not the raw science files.
+- **No synthetic fallback**: if NASA POWER or GIBS cannot be reached, the app shows an error with a Retry button instead of substituting made-up numbers (`src/services/nasaApi.js`).
+
+**How the numbers are checked**
+- Trend statistics (linear regression slope, change per decade, percent change, Student's *t* and two-tailed *p*-value, record high/low) are computed in plain JavaScript and verified by a test suite:
+  ```bash
+  node src/utils/__tests__/verify_math.js   # ✓ All 3 test suites passed
+  ```
+- Every GIBS layer ID, date range and colormap listed above was checked against NASA GIBS `GetCapabilities`.
+
+**What is illustrative, not measured**
+- **Discover → Acoustic Comparison Lab** uses representative values chosen to contrast two conditions (e.g., clean vs. polluted air); they are teaching examples, not live readings.
+- **NASA SVS animations** (e.g., GEOS aerosols, DYAMOND CO₂) are NASA model visualizations and simulations.
+- **The Terra Tone game** uses illustrative values from its world-map model; the game itself states that its missions are simulations, not live measurements.
+- **Turn Your Image Into Sound** maps the brightness of a user's own image to pitch; it does not infer pollution from an uncalibrated photo.
+
+**Limits to keep in mind**
+- A sound or a trend shows *change*, not its *cause*.
+- Satellite and reanalysis grids (≈4–50 km) smooth out local differences; see the scientific limitations in section C.
+- Accessibility features (keyboard control, screen-reader announcements, data-table alternative, reduced motion, Arabic RTL) are implemented, but the app has not been formally audited against WCAG.
 
 ---
 
@@ -196,7 +222,7 @@ Nasa/
     │   └── __tests__/
     │       └── verify_math.js    # Math and statistical verification test suite
     └── styles/
-        └── index.css             # Cosmic theme, WCAG AAA contrast, RTL logical styles
+        └── index.css             # Cosmic theme, RTL logical styles
 ```
 
 ---
