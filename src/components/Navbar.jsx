@@ -27,6 +27,7 @@ export function Navbar({
     { id: 'explore', label: lang === 'ar' ? 'استكشاف البيانات' : 'Explore Data' },
     { id: 'studio', label: lang === 'ar' ? 'استوديو الصوتيات' : 'Sonification Studio' },
     { id: 'discover', label: lang === 'ar' ? 'دليل الاستماع' : 'Discover' },
+    { id: 'image-sound', label: lang === 'ar' ? 'صورتك صوتاً' : 'Image to Sound' },
     { id: 'about', label: lang === 'ar' ? 'عن المشروع' : 'About' },
   ];
 

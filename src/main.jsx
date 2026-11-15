@@ -5,6 +5,7 @@ import './styles/index.css';
 import './styles/redesign.css';
 import './styles/cosmic-theme.css';
 import './styles/scroll-reveal.css';
+import './styles/image-sound.css';
 import { initScrollReveal } from './utils/scrollReveal';
 
 initScrollReveal();

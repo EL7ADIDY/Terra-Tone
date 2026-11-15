@@ -5,6 +5,7 @@ import { ScienceSection } from './components/ScienceSection';
 import { ExploreDataSection } from './components/ExploreDataSection';
 import { SonificationStudio } from './components/SonificationStudio';
 import { DiscoverSection } from './components/DiscoverSection';
+import { ImageSonifierSection } from './components/ImageSonifierSection';
 import { AboutSection } from './components/AboutSection';
 import { EICExperience } from './components/eic/EICExperience';
 
@@ -469,6 +470,9 @@ export default function App() {
 
         {/* SECTION 5 — DISCOVER WHAT YOU ARE HEARING */}
         <DiscoverSection lang={lang} />
+
+        {/* SECTION 5b — TURN YOUR IMAGE INTO SOUND (from the Terra Tone game's Learning Web) */}
+        <ImageSonifierSection lang={lang} />
 
         {/* SECTION 6 — ABOUT */}
         <AboutSection lang={lang} />
