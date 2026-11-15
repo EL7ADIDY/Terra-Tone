@@ -19,8 +19,6 @@ function siteBackground() {
 const AUTO_CONTINUE_MS = 8000; // after the game reports its ending
 
 const frame = document.getElementById('game');
-const continueBtn = document.getElementById('continue');
-const continueLabel = continueBtn.querySelector('.label');
 const canvas = document.getElementById('space');
 const live = document.getElementById('journey-live');
 const ctx = canvas.getContext('2d');
@@ -117,8 +115,6 @@ function prefetchSite() {
 setTimeout(() => idle(prefetchSite, { timeout: 5000 }), 4000);
 
 // ---------- triggers ----------
-continueBtn.addEventListener('click', () => startTransition());
-
 // Optional: the game can announce its ending with
 //   parent.postMessage({ type: 'terra-tone:ending' }, '*')
 // Only messages from the game's own origin are accepted.
@@ -126,15 +122,9 @@ window.addEventListener('message', (event) => {
   if (event.origin !== GAME_ORIGIN || event.source !== frame.contentWindow) return;
   const type = event.data && event.data.type;
   if (type === 'terra-tone:continue') startTransition();
+  // Let the final reward screen stay up for a moment before the journey continues.
   if (type === 'terra-tone:ending' && !autoTimer && !running) {
-    continueBtn.classList.add('ending');
-    let left = Math.round(AUTO_CONTINUE_MS / 1000);
-    continueLabel.textContent = `Your journey continues… ${left}`;
-    autoTimer = setInterval(() => {
-      left -= 1;
-      if (left <= 0) { clearInterval(autoTimer); startTransition(); }
-      else continueLabel.textContent = `Your journey continues… ${left}`;
-    }, 1000);
+    autoTimer = setTimeout(startTransition, AUTO_CONTINUE_MS);
   }
 });
 
@@ -146,7 +136,7 @@ const ramp = (t, a, b) => clamp01((t - a) / (b - a));
 function startTransition() {
   if (running) return;
   running = true;
-  if (autoTimer) { clearInterval(autoTimer); autoTimer = null; }
+  if (autoTimer) { clearTimeout(autoTimer); autoTimer = null; }
   if (!moonSprite || !starsLayer) prepare();
 
   const s = sizes();
@@ -252,8 +242,7 @@ window.addEventListener('pageshow', (e) => {
   running = false;
   document.body.classList.remove('traveling');
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  continueBtn.classList.remove('ending');
-  continueLabel.textContent = continueBtn.dataset.label;
+  autoTimer = null;
   if (frame.src === 'about:blank' || !frame.src.startsWith(GAME_ORIGIN)) frame.src = GAME_URL;
 });
 
