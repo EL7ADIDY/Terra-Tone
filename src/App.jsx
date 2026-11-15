@@ -45,6 +45,7 @@ export default function App() {
 
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [isHighContrast, setIsHighContrast] = useState(false);
+  const [isLargeText, setIsLargeText] = useState(false);
   const [isShortcutsModalOpen, setIsShortcutsModalOpen] = useState(false);
   const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
   const [isEICModalOpen, setIsEICModalOpen] = useState(false);
@@ -65,6 +66,14 @@ export default function App() {
       } catch {}
       return next;
     });
+  }, []);
+
+  const toggleHighContrast = useCallback(() => {
+    setIsHighContrast((prev) => !prev);
+  }, []);
+
+  const toggleLargeText = useCallback(() => {
+    setIsLargeText((prev) => !prev);
   }, []);
 
   const toggleLang = useCallback(() => {
@@ -90,10 +99,21 @@ export default function App() {
     if (metaColor) {
       metaColor.setAttribute(
         'content',
-        activeTheme === 'light' ? '#F8FAFC' : '#050816'
+        isHighContrast ? '#000000' : (activeTheme === 'light' ? '#F8FAFC' : '#050816')
       );
     }
   }, [theme, isHighContrast]);
+
+  // Sync Large Text accessibility attribute on html & body
+  useEffect(() => {
+    if (isLargeText) {
+      document.documentElement.setAttribute('data-font-size', 'large');
+      document.body.setAttribute('data-font-size', 'large');
+    } else {
+      document.documentElement.removeAttribute('data-font-size');
+      document.body.removeAttribute('data-font-size');
+    }
+  }, [isLargeText]);
 
   // NASA POWER & Legacy Map State Preservation
   const [primaryVariable, setPrimaryVariable] = useState('T2M');
@@ -230,7 +250,7 @@ export default function App() {
         {srAnnouncement}
       </div>
 
-      {/* Sticky Navigation Bar with Hanging Lamp */}
+      {/* Sticky Navigation Bar with Hanging Lamp & Accessibility Controls */}
       <Navbar
         theme={theme}
         onToggleTheme={toggleTheme}
@@ -238,6 +258,10 @@ export default function App() {
         onToggleLang={toggleLang}
         soundEnabled={soundEnabled}
         onToggleSound={toggleSound}
+        isHighContrast={isHighContrast}
+        onToggleHighContrast={toggleHighContrast}
+        isLargeText={isLargeText}
+        onToggleLargeText={toggleLargeText}
         onOpenAbout={() => setIsAboutModalOpen(true)}
         onOpenShortcuts={() => setIsShortcutsModalOpen(true)}
         onOpenEICModal={() => setIsEICModalOpen(true)}
@@ -324,6 +348,7 @@ export default function App() {
 
               {classicMode === 'pollution' ? (
                 <PollutionStagesView
+                  pollution={pollution}
                   pollutionState={pollution}
                   lang={lang}
                   theme={theme}

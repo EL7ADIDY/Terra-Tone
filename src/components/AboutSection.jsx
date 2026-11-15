@@ -9,7 +9,7 @@ export function AboutSection({ lang = 'en' }) {
       name: 'NASA Earth Information Center (EIC)',
       nameAr: 'مركز معلومات الأرض التابع لناسا',
       desc: 'Interactive climate exhibits, physical visualizations, and Earth systems data.',
-      url: 'https://www.nasa.gov/earth-information-center/'
+      url: 'https://earth.gov/'
     },
     {
       name: 'NASA Scientific Visualization Studio (SVS)',
@@ -172,7 +172,7 @@ export function AboutSection({ lang = 'en' }) {
             </a>
             <span className="footer-sep">•</span>
             <a
-              href="https://www.nasa.gov/earth-information-center/"
+              href="https://earth.gov/"
               target="_blank"
               rel="noopener noreferrer"
               className="footer-link"

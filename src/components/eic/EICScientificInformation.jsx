@@ -147,7 +147,7 @@ export const EICScientificInformation = ({ resource, lang = 'en' }) => {
             </a>
 
             <a
-              href="https://www.nasa.gov/earth-information-center/"
+              href="https://earth.gov/"
               target="_blank"
               rel="noopener noreferrer"
               className="eic-secondary-link-btn"
