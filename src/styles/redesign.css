@@ -2081,3 +2081,45 @@ section {
 [dir="rtl"] .provider-item:hover {
   transform: translateX(-4px);
 }
+
+/* ==========================================================================
+   NASA EIC SHOWCASE SECTION INTEGRATION
+   ========================================================================== */
+.eic-showcase-section {
+  padding-top: 3.5rem;
+  padding-bottom: 5rem;
+}
+
+.eic-experience-embed-container {
+  width: 100%;
+}
+
+/* Seamless Light Mode Theming for EIC Components */
+[data-theme="light"] .eic-visual-card,
+[data-theme="light"] .eic-graph-card,
+[data-theme="light"] .eic-timeline-card,
+[data-theme="light"] .eic-details-card,
+[data-theme="light"] .eic-selector-card {
+  background: #ffffff !important;
+  border-color: rgba(2, 132, 199, 0.2) !important;
+  color: #0f172a !important;
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.08) !important;
+}
+
+[data-theme="light"] .eic-visual-title,
+[data-theme="light"] .eic-graph-title,
+[data-theme="light"] .eic-details-title,
+[data-theme="light"] .eic-selector-title {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .eic-visual-subtitle,
+[data-theme="light"] .eic-meta-val,
+[data-theme="light"] .eic-details-text {
+  color: #475569 !important;
+}
+
+[data-theme="light"] .eic-meta-tile {
+  background: #eef4fa !important;
+  border-color: rgba(2, 132, 199, 0.15) !important;
+}

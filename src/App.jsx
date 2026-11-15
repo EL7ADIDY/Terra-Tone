@@ -6,6 +6,7 @@ import { ExploreDataSection } from './components/ExploreDataSection';
 import { SonificationStudio } from './components/SonificationStudio';
 import { DiscoverSection } from './components/DiscoverSection';
 import { AboutSection } from './components/AboutSection';
+import { EICExperience } from './components/eic/EICExperience';
 
 import { KeyboardShortcutsModal } from './components/KeyboardShortcutsModal';
 import { AboutModal } from './components/AboutModal';
@@ -253,6 +254,27 @@ export default function App() {
 
         {/* SECTION 2 — THE SCIENCE */}
         <ScienceSection lang={lang} />
+
+        {/* SECTION: NASA EARTH INFORMATION CENTER VISUALIZATIONS & SCIENTIFIC GRAPHS */}
+        <section id="eic-visuals" className="eic-showcase-section">
+          <div className="section-header-block">
+            <span className="section-eyebrow">
+              {lang === 'ar' ? 'مركز معلومات الأرض التابع لناسا' : 'NASA EARTH INFORMATION CENTER'}
+            </span>
+            <h2 className="section-title">
+              {lang === 'ar' ? 'المحاكاة البصرية والرسوم البيانية العلمية' : 'Original EIC Visuals & Scientific Graphs'}
+            </h2>
+            <p className="section-subtitle">
+              {lang === 'ar'
+                ? 'مشاهدة محاكاة الحواسيب الفائقة لوكالة ناسا الأصلية جنباً إلى جنب مع الرسوم البيانية العلمية المتزامنة زمنياً'
+                : 'Original NASA SVS supercomputer visualizations paired side-by-side with synchronized authentic scientific time-series data.'}
+            </p>
+          </div>
+
+          <div className="eic-experience-embed-container">
+            <EICExperience lang={lang} theme={theme} />
+          </div>
+        </section>
 
         {/* SECTION 3 — EXPLORE EARTH DATA */}
         <ExploreDataSection
