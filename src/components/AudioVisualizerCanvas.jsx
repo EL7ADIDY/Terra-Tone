@@ -37,6 +37,8 @@ export function AudioVisualizerCanvas({ isPlaying = false, isDark = true, accent
     const timeBuffer = new Uint8Array(256);
     const freqBuffer = new Uint8Array(128);
 
+    // Only animate while the visualizer is on screen and the tab is visible
+    let isOnScreen = true;
     const render = () => {
       animFrameRef.current = requestAnimationFrame(render);
       const analyser = getAudioAnalyser();
@@ -139,10 +141,33 @@ export function AudioVisualizerCanvas({ isPlaying = false, isDark = true, accent
       specCtx.shadowBlur = 0; // reset
     };
 
-    render();
+    const startLoop = () => {
+      if (animFrameRef.current === null && isOnScreen && !document.hidden) render();
+    };
+    const stopLoop = () => {
+      if (animFrameRef.current !== null) cancelAnimationFrame(animFrameRef.current);
+      animFrameRef.current = null;
+    };
+    animFrameRef.current = null;
+    startLoop();
+
+    const observedEl = waveCanvas.closest('section') || waveCanvas.parentElement;
+    const visibilityObserver =
+      'IntersectionObserver' in window && observedEl
+        ? new IntersectionObserver(([entry]) => {
+            isOnScreen = entry.isIntersecting;
+            if (isOnScreen) startLoop();
+            else stopLoop();
+          })
+        : null;
+    visibilityObserver?.observe(observedEl);
+    const onVisibilityChange = () => (document.hidden ? stopLoop() : startLoop());
+    document.addEventListener('visibilitychange', onVisibilityChange);
 
     return () => {
-      cancelAnimationFrame(animFrameRef.current);
+      stopLoop();
+      visibilityObserver?.disconnect();
+      document.removeEventListener('visibilitychange', onVisibilityChange);
       window.removeEventListener('resize', resizeCanvases);
     };
   }, [isPlaying, isDark, accentColor]);

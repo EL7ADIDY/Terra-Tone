@@ -131,13 +131,18 @@ export function Earth3D({ isDark = true }) {
     camera.position.z = 2.7;
 
     // 2. Renderer
+    // Phones/tablets: cap pixel density at 1.5 and skip MSAA (invisible on high-DPI
+    // screens, but it multiplies GPU work). Desktop keeps full quality.
+    const isTouchDevice =
+      window.matchMedia?.('(pointer: coarse)').matches || window.innerWidth <= 768;
+    const dpr = window.devicePixelRatio || 1;
     const renderer = new THREE.WebGLRenderer({
       alpha: true,
-      antialias: true,
-      powerPreference: 'high-performance'
+      antialias: !isTouchDevice || dpr < 1.5,
+      powerPreference: isTouchDevice ? 'default' : 'high-performance'
     });
     renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(dpr, isTouchDevice ? 1.5 : 2));
     container.appendChild(renderer.domElement);
 
     // 3. Earth Sphere
@@ -215,12 +220,17 @@ export function Earth3D({ isDark = true }) {
     };
 
     const domElement = renderer.domElement;
+    // Horizontal drags rotate the globe; vertical swipes still scroll the page.
+    domElement.style.touchAction = 'pan-y';
     domElement.addEventListener('pointerdown', onPointerDown);
     window.addEventListener('pointermove', onPointerMove);
     window.addEventListener('pointerup', onPointerUp);
+    // If the browser takes over the touch (e.g. to scroll), stop "dragging" so auto-spin resumes.
+    window.addEventListener('pointercancel', onPointerUp);
 
-    // 8. Animation Loop
-    let animationFrameId;
+    // 8. Animation Loop — runs only while the globe is on screen and the tab is visible
+    let animationFrameId = null;
+    let isOnScreen = true;
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
 
@@ -234,13 +244,33 @@ export function Earth3D({ isDark = true }) {
       starField.rotation.y += 0.0002;
       renderer.render(scene, camera);
     };
-    animate();
+    const startLoop = () => {
+      if (animationFrameId === null && isOnScreen && !document.hidden) animate();
+    };
+    const stopLoop = () => {
+      if (animationFrameId !== null) cancelAnimationFrame(animationFrameId);
+      animationFrameId = null;
+    };
+    startLoop();
+
+    const visibilityObserver =
+      'IntersectionObserver' in window
+        ? new IntersectionObserver(([entry]) => {
+            isOnScreen = entry.isIntersecting;
+            if (isOnScreen) startLoop();
+            else stopLoop();
+          })
+        : null;
+    visibilityObserver?.observe(container);
+    const onVisibilityChange = () => (document.hidden ? stopLoop() : startLoop());
+    document.addEventListener('visibilitychange', onVisibilityChange);
 
     // 9. Resize Handling
     const handleResize = () => {
       if (!container) return;
       const newWidth = container.clientWidth;
       const newHeight = container.clientHeight;
+      if (!newWidth || !newHeight) return;
       camera.aspect = newWidth / newHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(newWidth, newHeight);
@@ -250,11 +280,14 @@ export function Earth3D({ isDark = true }) {
     resizeObserver.observe(container);
 
     return () => {
-      cancelAnimationFrame(animationFrameId);
+      stopLoop();
+      visibilityObserver?.disconnect();
+      document.removeEventListener('visibilitychange', onVisibilityChange);
       resizeObserver.disconnect();
       domElement.removeEventListener('pointerdown', onPointerDown);
       window.removeEventListener('pointermove', onPointerMove);
       window.removeEventListener('pointerup', onPointerUp);
+      window.removeEventListener('pointercancel', onPointerUp);
 
       earthGeometry.dispose();
       earthMaterial.dispose();
